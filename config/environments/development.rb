@@ -28,7 +28,7 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
+  # Store uploaded files on the local file system during development.
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
@@ -43,7 +43,7 @@ Rails.application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
-  # Raise an error on page load if there are pending migrations.
+  # Allow static pages to render while the development database is unavailable.
   config.active_record.migration_error = :page_load
 
   # Highlight code that triggered database queries in logs.
