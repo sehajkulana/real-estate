@@ -36,15 +36,16 @@
 <section class="ftco-section ftco-agent">
   <div class="container">
     <div class="row">
-      <% [{name: "James Stallon", image: "team-1.jpg"}, {name: "James Stallon", image: "team-2.jpg"}, {name: "James Stallon", image: "team-3.jpg"}, {name: "James Stallon", image: "team-4.jpg"}, {name: "James Stallon", image: "team-5.jpg"}, {name: "James Stallon", image: "team-6.jpg"}, {name: "James Stallon", image: "team-7.jpg"}, {name: "James Stallon", image: "team-8.jpg"}].each do |agent| %>
+      <% @agents.each_with_index do |agent, index| %>
+        <% image_url = agent.profile_image.presence || "/uptown/images/team-#{(index % 8) + 1}.jpg" %>
         <div class="col-md-3">
           <div class="agent">
             <div class="img">
-              <img src="/uptown/images/<%= agent[:image] %>" class="img-fluid" alt="Colorlib Template">
+              <img src="<%= image_url %>" class="img-fluid" alt="<%= [agent.first_name, agent.last_name].compact_blank.join(" ") %>">
             </div>
             <div class="desc">
-              <h3><a href="<%= properties_path %>"><%= agent[:name] %></a></h3>
-              <p class="h-info"><span class="location">Listing</span> <span class="details">&mdash; 10 Properties</span></p>
+              <h3><a href="<%= properties_path %>"><%= [agent.first_name, agent.last_name].compact_blank.join(" ").presence || agent.email %></a></h3>
+              <p class="h-info"><span class="location"><%= agent.city.presence || "Location not specified" %></span> <span class="details">&mdash; <%= pluralize(agent.listed_properties.size, "Property") %></span></p>
             </div>
           </div>
         </div>

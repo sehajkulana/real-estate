@@ -1,6 +1,6 @@
 <% content_for :title, "Uptown - Property Details" %>
-<% cover_image = @property.property_images.find(&:is_cover?) || @property.property_images.first %>
-<% image_url = cover_image&.image&.attached? ? url_for(cover_image.image) : "/uptown/images/work-1.jpg" %>
+<% property_images = @property.property_images.select { |property_image| property_image.image.attached? } %>
+<% display_images = property_images.presence || [nil] %>
 <% location = [@property.city, @property.state, @property.country].compact_blank.join(", ").presence || "Location not specified" %>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
@@ -41,7 +41,25 @@
     <div class="row justify-content-center">
       <div class="col-md-12">
         <div class="property-details">
-          <div class="img" style="background-image: url('<%= image_url %>');"></div>
+          <div id="property-image-carousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+            <div class="carousel-inner">
+              <% display_images.each_with_index do |property_image, index| %>
+                <% image_url = property_image ? url_for(property_image.image) : "/uptown/images/work-1.jpg" %>
+                <div class="carousel-item <%= "active" if index.zero? %>">
+                  <div class="img" style="background-image: url('<%= image_url %>');"></div>
+                </div>
+              <% end %>
+            </div>
+
+            <% if display_images.many? %>
+              <a class="carousel-control-prev" href="#property-image-carousel" role="button" data-slide="prev" aria-label="Previous image">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              </a>
+              <a class="carousel-control-next" href="#property-image-carousel" role="button" data-slide="next" aria-label="Next image">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              </a>
+            <% end %>
+          </div>
           <div class="text text-center">
             <span class="subheading"><%= location %></span>
             <h2><%= @property.title %></h2>

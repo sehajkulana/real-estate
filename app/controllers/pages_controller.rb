@@ -3,11 +3,23 @@ class PagesController < ApplicationController
     @latest_properties = Property.includes(property_images: { image_attachment: :blob })
                                  .order(created_at: :desc)
                                  .limit(3)
+    @agents = User.where(role: "agent")
+                  .left_joins(:listed_properties)
+                  .group("users.id")
+                  .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
+                  .limit(4)
+                  .preload(:listed_properties)
   end
 
   def about; end
 
-  def agent; end
+  def agent
+    @agents = User.where(role: "agent")
+                  .left_joins(:listed_properties)
+                  .group("users.id")
+                  .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
+                  .preload(:listed_properties)
+  end
 
   def services; end
 
