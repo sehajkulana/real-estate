@@ -1,0 +1,63 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  property_type: MyString
+  listing_type: MyString
+  price: 9.99
+  area: 9.99
+  area_unit: MyString
+  bedrooms: 1
+  bathrooms: 1
+  balconies: 1
+  parking: 1
+  furnished: MyString
+  construction_status: MyString
+  age_of_property: 1
+  floor: 1
+  total_floors: 1
+  facing: MyString
+  ownership: MyString
+  address: MyText
+  city: MyString
+  state: MyString
+  country: MyString
+  pincode: MyString
+  latitude: 9.99
+  longitude: 9.99
+  seller: one
+  status: MyString
+  featured: false
+  views: 1
+
+two:
+  title: MyString
+  description: MyText
+  property_type: MyString
+  listing_type: MyString
+  price: 9.99
+  area: 9.99
+  area_unit: MyString
+  bedrooms: 1
+  bathrooms: 1
+  balconies: 1
+  parking: 1
+  furnished: MyString
+  construction_status: MyString
+  age_of_property: 1
+  floor: 1
+  total_floors: 1
+  facing: MyString
+  ownership: MyString
+  address: MyText
+  city: MyString
+  state: MyString
+  country: MyString
+  pincode: MyString
+  latitude: 9.99
+  longitude: 9.99
+  seller: two
+  status: MyString
+  featured: false
+  views: 1
