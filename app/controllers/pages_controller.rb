@@ -1,5 +1,9 @@
 class PagesController < ApplicationController
-  def home; end
+  def home
+    @latest_properties = Property.includes(property_images: { image_attachment: :blob })
+                                 .order(created_at: :desc)
+                                 .limit(3)
+  end
 
   def about; end
 
