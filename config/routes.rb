@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get "properties" => "pages#properties", as: :properties
   get "property" => "pages#property", as: :property
   get "blog" => "pages#blog", as: :blog
+  get "admin" => "pages#admin", as: :admin
+  post "admin" => "pages#create_property", as: :create_property
   get "blog_post" => "pages#blog_post", as: :blog_post
   get "contact" => "pages#contact", as: :contact
 end

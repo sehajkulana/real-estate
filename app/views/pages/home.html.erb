@@ -115,7 +115,7 @@
           <div class="property-wrap ftco-animate">
             <a href="<%= property_path %>" class="img" style="background-image: url('/uptown/images/<%= property[:image] %>');"></a>
             <div class="text">
-              <p class="price"><span class="old-price">800,000</span><span class="orig-price">$3,050<small>/mo</small></span></p>
+              <p class="price"><span class="old-price">800,000</span><span class="orig-price">₹2,93,759<small>/mo</small></span></p>
               <ul class="property_list">
                 <li><span class="flaticon-bed"></span>3</li>
                 <li><span class="flaticon-bathtub"></span>2</li>
@@ -179,6 +179,111 @@
   </div>
 </section>
 
+<section class="ftco-counter img" id="section-counter">
+  <div class="container">
+    <div class="row">
+      <% [{number: 305, line1: "Area", line2: "Population"}, {number: 1090, line1: "Total", line2: "Properties"}, {number: 209, line1: "Average", line2: "House"}, {number: 67, line1: "Total", line2: "Branches"}].each do |item| %>
+        <div class="col-md-6 col-lg-3 justify-content-center counter-wrap ftco-animate">
+          <div class="block-18 py-4 mb-4">
+            <div class="text text-border d-flex align-items-center">
+              <strong class="number" data-number="<%= item[:number] %>">0</strong>
+              <span><%= item[:line1] %><br><%= item[:line2] %></span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section testimony-section">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-7 text-center heading-section ftco-animate">
+        <span class="subheading">Testimonial</span>
+        <h2 class="mb-3">Happy Clients</h2>
+      </div>
+    </div>
+    <div class="row ftco-animate">
+      <div class="col-md-12">
+        <div class="carousel-testimony owl-carousel ftco-owl">
+          <% [{name: "Roger Scott", role: "Marketing Manager", image: "person_1.jpg"}, {name: "Roger Scott", role: "Marketing Manager", image: "person_2.jpg"}, {name: "Roger Scott", role: "Marketing Manager", image: "person_3.jpg"}].each do |person| %>
+            <div class="item">
+              <div class="testimony-wrap py-4">
+                <div class="text">
+                  <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                  <div class="d-flex align-items-center">
+                    <div class="user-img" style="background-image: url('/uptown/images/<%= person[:image] %>')"></div>
+                    <div class="pl-3">
+                      <p class="name"><%= person[:name] %></p>
+                      <span class="position"><%= person[:role] %></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-agent ftco-no-pt">
+  <div class="container">
+    <div class="row justify-content-center pb-5">
+      <div class="col-md-12 heading-section text-center ftco-animate">
+        <span class="subheading">Agents</span>
+        <h2 class="mb-4">Our Agents</h2>
+      </div>
+    </div>
+    <div class="row">
+      <% [{name: "James Stallon", image: "team-1.jpg", details: "10 Properties"}, {name: "James Stallon", image: "team-2.jpg", details: "10 Properties"}, {name: "James Stallon", image: "team-3.jpg", details: "10 Properties"}, {name: "James Stallon", image: "team-4.jpg", details: "10 Properties"}].each do |agent| %>
+        <div class="col-md-3 ftco-animate">
+          <div class="agent">
+            <div class="img">
+              <img src="/uptown/images/<%= agent[:image] %>" class="img-fluid" alt="<%= agent[:name] %>">
+            </div>
+            <div class="desc">
+              <h3><a href="<%= properties_path %>"><%= agent[:name] %></a></h3>
+              <p class="h-info"><span class="location">Listing</span> <span class="details">&mdash; <%= agent[:details] %></span></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-no-pt">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-7 heading-section text-center ftco-animate">
+        <span class="subheading">Blog</span>
+        <h2>Recent Blog</h2>
+      </div>
+    </div>
+    <div class="row d-flex">
+      <% [{title: "Why Lead Generation is Key for Business Growth", image: "image_1.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_2.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_3.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_4.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}].each do |post| %>
+        <div class="col-md-3 d-flex ftco-animate">
+          <div class="blog-entry justify-content-end">
+            <div class="text">
+              <h3 class="heading"><a href="<%= blog_post_path %>"><%= post[:title] %></a></h3>
+              <div class="meta mb-3">
+                <div><a href="<%= blog_post_path %>"><%= post[:date] %></a></div>
+                <div><a href="<%= blog_post_path %>"><%= post[:author] %></a></div>
+                <div><a href="<%= blog_post_path %>" class="meta-chat"><span class="icon-chat"></span> <%= post[:comments] %></a></div>
+              </div>
+              <a href="<%= blog_post_path %>" class="block-20 img" style="background-image: url('/uptown/images/<%= post[:image] %>');"></a>
+              <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
 <footer class="ftco-footer ftco-section">
   <div class="container">
     <div class="row mb-5">
@@ -236,11 +341,6 @@
             </ul>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
       </div>
     </div>
   </div>
