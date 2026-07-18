@@ -115,7 +115,7 @@
         <% image_url = cover_image&.image&.attached? ? url_for(cover_image.image) : "/uptown/images/work-1.jpg" %>
         <div class="col-md-4">
           <div class="property-wrap ftco-animate">
-            <a href="<%= property_path %>" class="img" style="background-image: url('<%= image_url %>');"></a>
+            <a href="<%= property_path(property) %>" class="img" style="background-image: url('<%= image_url %>');"></a>
             <div class="text">
               <p class="price"><span class="orig-price"><%= number_to_currency(property.price || 0, unit: "₹", precision: 0) %></span></p>
               <ul class="property_list">
@@ -123,9 +123,9 @@
                 <li><span class="flaticon-bathtub"></span><%= property.bathrooms || 0 %></li>
                 <li><span class="flaticon-floor-plan"></span><%= [property.area, property.area_unit].compact.join(" ").presence || "Not specified" %></li>
               </ul>
-              <h3><a href="<%= property_path %>"><%= property.title %></a></h3>
+              <h3><a href="<%= property_path(property) %>"><%= property.title %></a></h3>
               <span class="location"><%= [property.city, property.state].compact_blank.join(", ").presence || "Location not specified" %></span>
-              <a href="<%= property_path %>" class="d-flex align-items-center justify-content-center btn-custom">
+              <a href="<%= property_path(property) %>" class="d-flex align-items-center justify-content-center btn-custom">
                 <span class="ion-ios-link"></span>
               </a>
             </div>

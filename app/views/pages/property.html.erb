@@ -1,4 +1,7 @@
 <% content_for :title, "Uptown - Property Details" %>
+<% cover_image = @property.property_images.find(&:is_cover?) || @property.property_images.first %>
+<% image_url = cover_image&.image&.attached? ? url_for(cover_image.image) : "/uptown/images/work-1.jpg" %>
+<% location = [@property.city, @property.state, @property.country].compact_blank.join(", ").presence || "Location not specified" %>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
   <div class="container">
@@ -27,7 +30,7 @@
     <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center">
       <div class="col-md-9 ftco-animate pb-5 text-center">
         <p class="breadcrumbs"><span class="mr-2"><a href="<%= root_path %>">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Properties <i class="ion-ios-arrow-forward"></i></span></p>
-        <h1 class="mb-3 bread">Properties Single</h1>
+        <h1 class="mb-3 bread"><%= @property.title %></h1>
       </div>
     </div>
   </div>
@@ -38,10 +41,11 @@
     <div class="row justify-content-center">
       <div class="col-md-12">
         <div class="property-details">
-          <div class="img" style="background-image: url('/uptown/images/work-1.jpg');"></div>
+          <div class="img" style="background-image: url('<%= image_url %>');"></div>
           <div class="text text-center">
-            <span class="subheading">Oakland</span>
-            <h2>The Blue Sky Home</h2>
+            <span class="subheading"><%= location %></span>
+            <h2><%= @property.title %></h2>
+            <p class="price"><%= number_to_currency(@property.price || 0, unit: "₹", precision: 0) %></p>
           </div>
         </div>
       </div>
@@ -62,37 +66,36 @@
               <div class="row">
                 <div class="col-md-4">
                   <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Lot Area: 1,250 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Bed Rooms: 4</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Bath Rooms: 4</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Luggage</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Garage: 2</li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Area: <%= [@property.area, @property.area_unit].compact.join(" ").presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Bed Rooms: <%= @property.bedrooms || 0 %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Bath Rooms: <%= @property.bathrooms || 0 %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Balconies: <%= @property.balconies || 0 %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Parking: <%= @property.parking || 0 %></li>
                   </ul>
                 </div>
                 <div class="col-md-4">
                   <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Floor Area: 1,300 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Year Build: 2019</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Water</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Stories: 2</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Roofing: New</li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Property Type: <%= @property.property_type.presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Listing Type: <%= @property.listing_type.presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Construction: <%= @property.construction_status.presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Property Age: <%= @property.age_of_property || 0 %> years</li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Furnished: <%= @property.furnished.presence || "Not specified" %></li>
                   </ul>
                 </div>
                 <div class="col-md-4">
                   <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Floor Area: 1,300 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Year Build: 2019</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Water</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Stories: 2</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Roofing: New</li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Address: <%= @property.address.presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Floor: <%= @property.floor || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Total Floors: <%= @property.total_floors || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Facing: <%= @property.facing.presence || "Not specified" %></li>
+                    <li class="check"><span class="ion-ios-checkmark"></span>Ownership: <%= @property.ownership.presence || "Not specified" %></li>
                   </ul>
                 </div>
               </div>
             </div>
 
             <div class="tab-pane fade" id="pills-manufacturer" role="tabpanel">
-              <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-              <p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way.</p>
+              <%= simple_format(@property.description.presence || "No description has been provided for this property.") %>
             </div>
 
             <div class="tab-pane fade" id="pills-review" role="tabpanel">

@@ -11,9 +11,13 @@ class PagesController < ApplicationController
 
   def services; end
 
-  def properties; end
+  def properties
+    @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+  end
 
-  def property; end
+  def property
+    @property = Property.includes(property_images: { image_attachment: :blob }).find(params[:id])
+  end
 
   def blog; end
 

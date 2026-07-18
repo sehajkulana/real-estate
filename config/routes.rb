@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "agent" => "pages#agent", as: :agent
   get "services" => "pages#services", as: :services
   get "properties" => "pages#properties", as: :properties
-  get "property" => "pages#property", as: :property
+  get "property/:id" => "pages#property", as: :property
   get "blog" => "pages#blog", as: :blog
   get "admin" => "pages#admin", as: :admin
   post "admin" => "pages#create_property", as: :create_property
