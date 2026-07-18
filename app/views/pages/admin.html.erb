@@ -52,13 +52,13 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <%= form.label :listing_type, "Listing type" %>
-                  <%= form.select :listing_type, ["For Sale", "For Rent"], { prompt: "Select type" }, class: "form-control", required: true %>
+                  <%= form.select :listing_type, [ "For Sale", "For Rent" ], { prompt: "Select type" }, class: "form-control", required: true %>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <%= form.label :property_type, "Property type" %>
-                  <%= form.select :property_type, ["Apartment", "House", "Villa", "Plot", "Commercial"], { prompt: "Select type" }, class: "form-control", required: true %>
+                  <%= form.select :property_type, [ "Apartment", "House", "Villa", "Plot", "Commercial" ], { prompt: "Select type" }, class: "form-control", required: true %>
                 </div>
               </div>
               <div class="col-md-6">
@@ -76,7 +76,7 @@
               <div class="col-md-2">
                 <div class="form-group">
                   <%= form.label :area_unit, "Unit" %>
-                  <%= form.select :area_unit, ["sq ft", "sq m", "acre"], { prompt: "Unit" }, class: "form-control" %>
+                  <%= form.select :area_unit, [ "sq ft", "sq m", "acre" ], { prompt: "Unit" }, class: "form-control" %>
                 </div>
               </div>
               <div class="col-md-2"><div class="form-group"><%= form.label :bedrooms %><%= form.number_field :bedrooms, min: 0, class: "form-control" %></div></div>
@@ -84,13 +84,13 @@
               <div class="col-md-2"><div class="form-group"><%= form.label :balconies %><%= form.number_field :balconies, min: 0, class: "form-control" %></div></div>
               <div class="col-md-2"><div class="form-group"><%= form.label :parking %><%= form.number_field :parking, min: 0, class: "form-control" %></div></div>
               <div class="col-md-3"><div class="form-group"><%= form.label :age_of_property, "Property age (years)" %><%= form.number_field :age_of_property, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :construction_status, "Construction status" %><%= form.select :construction_status, ["Ready to Move", "Under Construction"], { prompt: "Select status" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :furnished, "Furnishing" %><%= form.select :furnished, ["Furnished", "Semi-furnished", "Unfurnished"], { prompt: "Select furnishing" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :ownership %><%= form.select :ownership, ["Freehold", "Leasehold", "Co-operative Society"], { prompt: "Select ownership" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :facing %><%= form.select :facing, ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"], { prompt: "Select facing" }, class: "form-control" %></div></div>
+              <div class="col-md-3"><div class="form-group"><%= form.label :construction_status, "Construction status" %><%= form.select :construction_status, [ "Ready to Move", "Under Construction" ], { prompt: "Select status" }, class: "form-control" %></div></div>
+              <div class="col-md-3"><div class="form-group"><%= form.label :furnished, "Furnishing" %><%= form.select :furnished, [ "Furnished", "Semi-furnished", "Unfurnished" ], { prompt: "Select furnishing" }, class: "form-control" %></div></div>
+              <div class="col-md-3"><div class="form-group"><%= form.label :ownership %><%= form.select :ownership, [ "Freehold", "Leasehold", "Co-operative Society" ], { prompt: "Select ownership" }, class: "form-control" %></div></div>
+              <div class="col-md-3"><div class="form-group"><%= form.label :facing %><%= form.select :facing, [ "North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West" ], { prompt: "Select facing" }, class: "form-control" %></div></div>
               <div class="col-md-3"><div class="form-group"><%= form.label :floor %><%= form.number_field :floor, min: 0, class: "form-control" %></div></div>
               <div class="col-md-3"><div class="form-group"><%= form.label :total_floors, "Total floors" %><%= form.number_field :total_floors, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :status %><%= form.select :status, ["Available", "Sold", "Rented", "Inactive"], { prompt: "Select status" }, class: "form-control" %></div></div>
+              <div class="col-md-3"><div class="form-group"><%= form.label :status %><%= form.select :status, [ "Available", "Sold", "Rented", "Inactive" ], { prompt: "Select status" }, class: "form-control" %></div></div>
               <div class="col-md-3"><div class="form-group"><%= form.label :views %><%= form.number_field :views, min: 0, class: "form-control" %></div></div>
               <div class="col-md-3 d-flex align-items-center"><div class="form-group mb-0"><%= form.check_box :featured %> <%= form.label :featured, "Featured property" %></div></div>
               <div class="col-md-12">
