@@ -24,13 +24,18 @@ class PagesController < ApplicationController
   def services; end
 
   def properties
-    @search_city = params[:city].to_s.strip
-   
-    if @search_city.present?
-      @properties =  Property.includes(property_images: { image_attachment: :blob }).where("city ILIKE ?","%#{@search_city}%").order(created_at: :desc)
-    else
-       @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
-    end
+    @filters = property_filter_params.to_h
+    @search_city = @filters["city"].to_s.strip
+    @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+
+    @properties = @properties.where("properties.city ILIKE ?", "%#{@search_city}%") if @search_city.present?
+    @properties = @properties.where("properties.bathrooms >= ?", @filters["bathrooms"].to_i) if @filters["bathrooms"].present?
+    @properties = apply_range_filter(@properties, :price, @filters["budget"])
+    @properties = @properties.where(facing: @filters["facing"]) if @filters["facing"].present?
+    @properties = @properties.where(property_type: @filters["property_type"]) if @filters["property_type"].present?
+    @properties = @properties.where("properties.parking >= ?", @filters["parking"].to_i) if @filters["parking"].present?
+    @properties = apply_range_filter(@properties, :area, @filters["area"])
+    @properties = @properties.where(listing_type: @filters["listing_type"]) if @filters["listing_type"].present?
   end
 
   def property
@@ -60,6 +65,18 @@ class PagesController < ApplicationController
   end
 
   private
+
+  def property_filter_params
+    params.permit(:city, :bathrooms, :budget, :facing, :property_type, :parking, :area, :listing_type)
+  end
+
+  def apply_range_filter(scope, column, range)
+    return scope if range.blank?
+
+    minimum, maximum = range.split("-", 2).map(&:to_d)
+    scope = scope.where("properties.#{column} >= ?", minimum)
+    maximum.positive? ? scope.where("properties.#{column} <= ?", maximum) : scope
+  end
 
   def property_params
     params.require(:property).permit(

@@ -36,6 +36,111 @@
 <section class="ftco-section">
   <div class="container">
     <input type="hidden" id="searched-city" name="city" value="<%= @search_city %>">
+    <div class="d-flex justify-content-end mb-4">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#propertyFiltersModal">
+        <span class="ion-funnel mr-2"></span>Filter
+      </button>
+    </div>
+
+    <div class="modal fade" id="propertyFiltersModal" tabindex="-1" role="dialog" aria-labelledby="propertyFiltersModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <form action="<%= properties_path %>" method="get">
+            <div class="modal-header">
+              <h5 class="modal-title" id="propertyFiltersModalLabel">Filter properties</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+        <div class="col-md-3 mb-3">
+          <label for="filter-city">Location</label>
+          <input id="filter-city" type="text" name="city" value="<%= @search_city %>" class="form-control" placeholder="City">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-bathrooms">Bathrooms</label>
+          <select id="filter-bathrooms" name="bathrooms" class="form-control">
+            <option value="">Any</option>
+            <% [["1+", "1"], ["2+", "2"], ["3+", "3"], ["4+", "4"]].each do |label, value| %>
+              <option value="<%= value %>" <%= "selected" if @filters["bathrooms"] == value %>><%= label %></option>
+            <% end %>
+          </select>
+        </div>
+        <% budget_minimum, budget_maximum = @filters["budget"].to_s.split("-", 2) %>
+        <% budget_minimum = budget_minimum.presence || 0 %>
+        <% budget_maximum = budget_maximum.presence || 10_000_000 %>
+        <div class="col-md-3 mb-3" data-controller="budget-range">
+          <label for="filter-budget-minimum">Budget</label>
+          <output class="d-block mb-2 font-weight-bold" data-budget-range-target="value"></output>
+          <input type="hidden" name="budget" value="<%= @filters["budget"] %>" data-budget-range-target="input">
+          <input id="filter-budget-minimum" type="range" min="0" max="10000000" step="50000" value="<%= budget_minimum %>" class="custom-range" aria-label="Minimum budget" data-budget-range-target="minimum" data-action="input->budget-range#updateMinimum">
+          <input id="filter-budget-maximum" type="range" min="0" max="10000000" step="50000" value="<%= budget_maximum %>" class="custom-range" aria-label="Maximum budget" data-budget-range-target="maximum" data-action="input->budget-range#updateMaximum">
+          <!--
+          <select id="filter-budget" name="budget" class="form-control">
+            <option value="">Any budget</option>
+            <% [["₹0 – ₹100,000", "0-100000"], ["₹100,000 – ₹250,000", "100000-250000"], ["₹250,000 – ₹500,000", "250000-500000"], ["₹500,000 – ₹1,000,000", "500000-1000000"], ["₹1,000,000+", "1000000-"]].each do |label, value| %>
+              <option value="<%= value %>" <%= "selected" if @filters["budget"] == value %>><%= label %></option>
+            <% end %>
+          </select>
+          -->
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-facing">Facing</label>
+          <select id="filter-facing" name="facing" class="form-control">
+            <option value="">Any facing</option>
+            <% ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"].each do |facing| %>
+              <option value="<%= facing %>" <%= "selected" if @filters["facing"] == facing %>><%= facing %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-property-type">Property type</label>
+          <select id="filter-property-type" name="property_type" class="form-control">
+            <option value="">Any type</option>
+            <% ["Apartment", "House", "Villa", "Plot", "Commercial"].each do |type| %>
+              <option value="<%= type %>" <%= "selected" if @filters["property_type"] == type %>><%= type %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-parking">Car parking</label>
+          <select id="filter-parking" name="parking" class="form-control">
+            <option value="">Any</option>
+            <% [["1+ car", "1"], ["2+ cars", "2"], ["3+ cars", "3"]].each do |label, value| %>
+              <option value="<%= value %>" <%= "selected" if @filters["parking"] == value %>><%= label %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-area">Area (sq. ft.)</label>
+          <select id="filter-area" name="area" class="form-control">
+            <option value="">Any area</option>
+            <% [["Up to 500", "0-500"], ["500 – 1,000", "500-1000"], ["1,000 – 2,000", "1000-2000"], ["2,000+", "2000-"]].each do |label, value| %>
+              <option value="<%= value %>" <%= "selected" if @filters["area"] == value %>><%= label %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="filter-listing-type">Listing type</label>
+          <select id="filter-listing-type" name="listing_type" class="form-control">
+            <option value="">Any listing</option>
+            <% ["For Sale", "For Rent"].each do |type| %>
+              <option value="<%= type %>" <%= "selected" if @filters["listing_type"] == type %>><%= type %></option>
+            <% end %>
+          </select>
+        </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a href="<%= properties_path %>" class="mr-auto">Clear filters</a>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Apply filters</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <% @properties.each do |property| %>
         <% cover_image = property.property_images.find(&:is_cover?) || property.property_images.first %>
