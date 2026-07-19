@@ -24,7 +24,13 @@ class PagesController < ApplicationController
   def services; end
 
   def properties
-    @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+    @search_city = params[:city].to_s.strip
+   
+    if @search_city.present?
+      @properties =  Property.includes(property_images: { image_attachment: :blob }).where("city ILIKE ?","%#{@search_city}%").order(created_at: :desc)
+    else
+       @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+    end
   end
 
   def property

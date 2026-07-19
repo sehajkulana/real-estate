@@ -35,6 +35,7 @@
 
 <section class="ftco-section">
   <div class="container">
+    <input type="hidden" id="searched-city" name="city" value="<%= @search_city %>">
     <div class="row">
       <% @properties.each do |property| %>
         <% cover_image = property.property_images.find(&:is_cover?) || property.property_images.first %>
