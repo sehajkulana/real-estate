@@ -1,250 +1,51 @@
-<% content_for :title, "Uptown - Properties" %>
-
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="<%= root_path %>">Uptown</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="oi oi-menu"></span> Menu
-    </button>
-
-    <div class="collapse navbar-collapse" id="ftco-nav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a href="<%= root_path %>" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="<%= about_path %>" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="<%= agent_path %>" class="nav-link">Agent</a></li>
-        <li class="nav-item"><a href="<%= services_path %>" class="nav-link">Services</a></li>
-        <li class="nav-item active"><a href="<%= properties_path %>" class="nav-link">Properties</a></li>
-        <li class="nav-item"><a href="<%= blog_path %>" class="nav-link">Blog</a></li>
-        <li class="nav-item"><a href="<%= contact_path %>" class="nav-link">Contact</a></li>
-      </ul>
-    </div>
+<section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mb-12">
+    <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Signature Portfolio</span>
+    <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight">Curated Premium Listings</h1>
+    <p class="text-gray-400 mt-4 max-w-2xl">Explore luxury residences and commercial spaces selected for sophistication, location, and investment potential.</p>
   </div>
-</nav>
 
-<section class="hero-wrap hero-wrap-2 ftco-degree-bg js-fullheight" style="background-image: url('/uptown/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center">
-      <div class="col-md-9 ftco-animate pb-5 text-center">
-        <p class="breadcrumbs"><span class="mr-2"><a href="<%= root_path %>">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Properties <i class="ion-ios-arrow-forward"></i></span></p>
-        <h1 class="mb-3 bread">Choose <br>Your Desired Home</h1>
+  <div class="glass-card rounded-3xl p-6 md:p-8 mb-10">
+    <%= form_with url: properties_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do %>
+      <div>
+        <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-2">City</label>
+        <%= text_field_tag :city, @filters["city"], class: "w-full rounded-xl border border-white/10 bg-obsidian-950/70 px-3 py-2 text-sm text-white" %>
       </div>
-    </div>
+      <div>
+        <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-2">Property Type</label>
+        <%= select_tag :property_type, options_for_select([['Any', ''], ['Residential', 'Residential'], ['Commercial', 'Commercial']], @filters["property_type"]), class: "w-full rounded-xl border border-white/10 bg-obsidian-950/70 px-3 py-2 text-sm text-white" %>
+      </div>
+      <div>
+        <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-2">Budget</label>
+        <%= select_tag :budget, options_for_select([['Any', ''], ['Under $1.5M', '0-1500000'], ['Under $3.0M', '0-3000000'], ['Under $5.0M', '0-5000000']], @filters["budget"]), class: "w-full rounded-xl border border-white/10 bg-obsidian-950/70 px-3 py-2 text-sm text-white" %>
+      </div>
+      <div class="flex items-end">
+        <%= submit_tag "Search", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-semibold uppercase text-xs py-3 px-4 rounded-full transition-all" %>
+      </div>
+    <% end %>
   </div>
-</section>
 
-<section class="ftco-section">
-  <div class="container">
-    <input type="hidden" id="searched-city" name="city" value="<%= @search_city %>">
-    <div class="d-flex justify-content-end mb-4">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#propertyFiltersModal">
-        <span class="ion-funnel mr-2"></span>Filter
-      </button>
-    </div>
-
-    <div class="modal fade" id="propertyFiltersModal" tabindex="-1" role="dialog" aria-labelledby="propertyFiltersModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-          <form action="<%= properties_path %>" method="get">
-            <div class="modal-header">
-              <h5 class="modal-title" id="propertyFiltersModalLabel">Filter properties</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-        <div class="col-md-3 mb-3">
-          <label for="filter-city">Location</label>
-          <input id="filter-city" type="text" name="city" value="<%= @search_city %>" class="form-control" placeholder="City">
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-bathrooms">Bathrooms</label>
-          <select id="filter-bathrooms" name="bathrooms" class="form-control">
-            <option value="">Any</option>
-            <% [["1+", "1"], ["2+", "2"], ["3+", "3"], ["4+", "4"]].each do |label, value| %>
-              <option value="<%= value %>" <%= "selected" if @filters["bathrooms"] == value %>><%= label %></option>
-            <% end %>
-          </select>
-        </div>
-        <% budget_minimum, budget_maximum = @filters["budget"].to_s.split("-", 2) %>
-        <% budget_minimum = budget_minimum.presence || 0 %>
-        <% budget_maximum = budget_maximum.presence || 10_000_000 %>
-        <div class="col-md-3 mb-3" data-controller="budget-range">
-          <label for="filter-budget-minimum">Budget</label>
-          <output class="d-block mb-2 font-weight-bold" data-budget-range-target="value"></output>
-          <input type="hidden" name="budget" value="<%= @filters["budget"] %>" data-budget-range-target="input">
-          <input id="filter-budget-minimum" type="range" min="0" max="10000000" step="50000" value="<%= budget_minimum %>" class="custom-range" aria-label="Minimum budget" data-budget-range-target="minimum" data-action="input->budget-range#updateMinimum">
-          <input id="filter-budget-maximum" type="range" min="0" max="10000000" step="50000" value="<%= budget_maximum %>" class="custom-range" aria-label="Maximum budget" data-budget-range-target="maximum" data-action="input->budget-range#updateMaximum">
-          <!--
-          <select id="filter-budget" name="budget" class="form-control">
-            <option value="">Any budget</option>
-            <% [["₹0 – ₹100,000", "0-100000"], ["₹100,000 – ₹250,000", "100000-250000"], ["₹250,000 – ₹500,000", "250000-500000"], ["₹500,000 – ₹1,000,000", "500000-1000000"], ["₹1,000,000+", "1000000-"]].each do |label, value| %>
-              <option value="<%= value %>" <%= "selected" if @filters["budget"] == value %>><%= label %></option>
-            <% end %>
-          </select>
-          -->
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-facing">Facing</label>
-          <select id="filter-facing" name="facing" class="form-control">
-            <option value="">Any facing</option>
-            <% ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"].each do |facing| %>
-              <option value="<%= facing %>" <%= "selected" if @filters["facing"] == facing %>><%= facing %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-property-type">Property type</label>
-          <select id="filter-property-type" name="property_type" class="form-control">
-            <option value="">Any type</option>
-            <% ["Apartment", "House", "Villa", "Plot", "Commercial"].each do |type| %>
-              <option value="<%= type %>" <%= "selected" if @filters["property_type"] == type %>><%= type %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-parking">Car parking</label>
-          <select id="filter-parking" name="parking" class="form-control">
-            <option value="">Any</option>
-            <% [["1+ car", "1"], ["2+ cars", "2"], ["3+ cars", "3"]].each do |label, value| %>
-              <option value="<%= value %>" <%= "selected" if @filters["parking"] == value %>><%= label %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-area">Area (sq. ft.)</label>
-          <select id="filter-area" name="area" class="form-control">
-            <option value="">Any area</option>
-            <% [["Up to 500", "0-500"], ["500 – 1,000", "500-1000"], ["1,000 – 2,000", "1000-2000"], ["2,000+", "2000-"]].each do |label, value| %>
-              <option value="<%= value %>" <%= "selected" if @filters["area"] == value %>><%= label %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="filter-listing-type">Listing type</label>
-          <select id="filter-listing-type" name="listing_type" class="form-control">
-            <option value="">Any listing</option>
-            <% ["For Sale", "For Rent"].each do |type| %>
-              <option value="<%= type %>" <%= "selected" if @filters["listing_type"] == type %>><%= type %></option>
-            <% end %>
-          </select>
-        </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <a href="<%= properties_path %>" class="mr-auto">Clear filters</a>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary">Apply filters</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <% @properties.each do |property| %>
-        <% cover_image = property.property_images.find(&:is_cover?) || property.property_images.first %>
-        <% image_url = cover_image&.image&.attached? ? url_for(cover_image.image) : "/uptown/images/work-1.jpg" %>
-        <div class="col-md-4">
-          <div class="property-wrap ftco-animate">
-            <a href="<%= property_path(property) %>" class="img" style="background-image: url('<%= image_url %>');"></a>
-            <div class="text">
-              <p class="price"><span class="orig-price"><%= number_to_currency(property.price || 0, unit: "₹", precision: 0) %></span></p>
-              <ul class="property_list">
-                <li><span class="flaticon-bed"></span><%= property.bedrooms || 0 %></li>
-                <li><span class="flaticon-bathtub"></span><%= property.bathrooms || 0 %></li>
-                <li><span class="flaticon-floor-plan"></span><%= [property.area, property.area_unit].compact.join(" ").presence || "Not specified" %></li>
-              </ul>
-              <h3><a href="<%= property_path(property) %>"><%= property.title %></a></h3>
-              <span class="location"><%= [property.city, property.state].compact_blank.join(", ").presence || "Location not specified" %></span>
-              <a href="<%= property_path(property) %>" class="d-flex align-items-center justify-content-center btn-custom">
-                <span class="ion-ios-link"></span>
-              </a>
-            </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <% @properties.each do |property| %>
+      <article class="glass-card rounded-3xl overflow-hidden">
+        <% if property.property_images.first&.image&.attached? %>
+          <%= image_tag property.property_images.first.image, class: "h-64 w-full object-cover" %>
+        <% else %>
+          <div class="h-64 w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
+        <% end %>
+        <div class="p-7">
+          <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-gray-400 mb-4">
+            <span><%= property.property_type %></span>
+            <span><%= property.city %></span>
+          </div>
+          <h3 class="font-serif text-2xl text-white mb-3"><%= property.title %></h3>
+          <p class="text-gray-400 text-sm leading-relaxed mb-5"><%= truncate(property.description, length: 120) %></p>
+          <div class="flex items-center justify-between">
+            <p class="text-gold-400 font-semibold">$<%= number_with_delimiter(property.price.to_i) %></p>
+            <%= link_to "View Details", property_path(property), class: "text-sm text-gold-400 hover:text-gold-300" %>
           </div>
         </div>
-      <% end %>
-    </div>
-    <div class="row mt-5 d-none">
-      <div class="col text-center">
-        <div class="block-27">
-          <ul>
-            <li><a href="#">&lt;</a></li>
-            <li class="active"><span>1</span></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">&gt;</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+      </article>
+    <% end %>
   </div>
 </section>
-
-<footer class="ftco-footer ftco-section">
-  <div class="container">
-    <div class="row mb-5">
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Uptown</h2>
-          <p>Far far away, behind the word mountains, far from the countries.</p>
-          <ul class="ftco-footer-social list-unstyled mt-5">
-            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">Community</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Search Properties</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>For Agents</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Reviews</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>FAQs</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">About Us</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Our Story</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Meet the team</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Company</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>About Us</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Press</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Contact</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Have a Questions?</h2>
-          <div class="block-23 mb-3">
-            <ul>
-              <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-              <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-              <li><a href="#"><span class="icon icon-envelope pr-4"></span><span class="text">info@yourdomain.com</span></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 text-center">
-      </div>
-    </div>
-  </div>
-</footer>

@@ -1,31 +1,59 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
-
-.home-agents .agent .img {
-  overflow: hidden;
+/* Premium DUA real estate experience */
+html {
+  scroll-behavior: smooth;
 }
 
-.home-agents .agent .img img {
-  filter: blur(3px);
-  transition: filter 250ms ease, transform 250ms ease;
+body {
+  background-color: #0a0a0c;
 }
 
-.home-agents .agent:hover .img img {
-  filter: blur(0);
-  transform: scale(1.04);
+.gold-glow {
+  text-shadow: 0 0 20px rgba(197, 155, 39, 0.4);
 }
 
-.modal-backdrop.show {
-  background-color: rgba(18, 179, 182, 0.12);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
-  opacity: 1;
+.glass-nav {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(197, 155, 39, 0.15);
+}
+
+.glass-card {
+  background: rgba(20, 20, 22, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border: 1px solid rgba(197, 155, 39, 0.35);
+  box-shadow: 0 10px 30px rgba(197, 155, 39, 0.08);
+  transform: translateY(-4px);
+}
+
+.loader-span {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #c59b27;
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #c59b27;
+  border: 2px solid #fff;
+  cursor: pointer;
 }

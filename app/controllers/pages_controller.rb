@@ -1,13 +1,13 @@
 class PagesController < ApplicationController
   def home
-    @latest_properties = Property.includes(property_images: { image_attachment: :blob })
-                                 .order(created_at: :desc)
-                                 .limit(3)
+    @featured_properties = Property.includes(property_images: { image_attachment: :blob })
+                                   .order(created_at: :desc)
+                                   .limit(3)
     @agents = User.where(role: "agent")
                   .left_joins(:listed_properties)
                   .group("users.id")
                   .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
-                  .limit(4)
+                  .limit(3)
                   .preload(:listed_properties)
   end
 
@@ -36,6 +36,7 @@ class PagesController < ApplicationController
     @properties = @properties.where("properties.parking >= ?", @filters["parking"].to_i) if @filters["parking"].present?
     @properties = apply_range_filter(@properties, :area, @filters["area"])
     @properties = @properties.where(listing_type: @filters["listing_type"]) if @filters["listing_type"].present?
+    @properties = @properties.limit(9)
   end
 
   def property
@@ -47,6 +48,7 @@ class PagesController < ApplicationController
   def blog_post; end
 
   def contact; end
+
   def admin
     @property = Property.new
     @sellers = User.where(role: "agent").order(:first_name, :last_name)

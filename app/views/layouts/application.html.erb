@@ -1,52 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
-    <title><%= content_for(:title) || "Uptown - Real Estate" %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= content_for(:title) || "DUA Real Estate | Ultra-Premium Residential & Commercial Spaces" %></title>
+    <meta name="description" content="Discover ultra-premium residences, executive offices, and tailored advisory experiences in a refined real estate portfolio.">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Real Estate">
+    <meta name="application-name" content="DUA Real Estate">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700,800,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/uptown/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="/uptown/css/animate.css">
-    <link rel="stylesheet" href="/uptown/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="/uptown/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="/uptown/css/magnific-popup.css">
-    <link rel="stylesheet" href="/uptown/css/aos.css">
-    <link rel="stylesheet" href="/uptown/css/ionicons.min.css">
-    <link rel="stylesheet" href="/uptown/css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="/uptown/css/jquery.timepicker.css">
-    <link rel="stylesheet" href="/uptown/css/flaticon.css">
-    <link rel="stylesheet" href="/uptown/css/icomoon.css">
-    <link rel="stylesheet" href="/uptown/css/style.css">
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: '#FAF6ED',
+                100: '#F3EAD3',
+                200: '#E7D5AA',
+                300: '#DBBF80',
+                400: '#CFA957',
+                500: '#C59B27',
+                600: '#A47D1C',
+                700: '#7E5F13',
+                800: '#58410B',
+                900: '#322303'
+              },
+              obsidian: {
+                50: '#F4F4F5',
+                900: '#141416',
+                950: '#0A0A0C'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif']
+            }
+          }
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-obsidian-950 text-gray-200 font-sans overflow-x-hidden antialiased selection:bg-gold-500 selection:text-obsidian-950">
+    <div id="loader" class="fixed inset-0 z-[100] bg-obsidian-950 flex flex-col justify-center items-center transition-opacity duration-700">
+      <div class="text-center">
+        <h2 class="font-serif text-5xl md:text-6xl text-gold-500 tracking-wider gold-glow loader-span mb-4">DUA</h2>
+        <p class="text-gray-400 tracking-[0.25em] text-xs uppercase">Curating Infinite Elegance</p>
+      </div>
+    </div>
 
-    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+    <%= render "shared/navbar" %>
 
-    <script src="/uptown/js/jquery.min.js"></script>
-    <script src="/uptown/js/jquery-migrate-3.0.1.min.js"></script>
-    <script src="/uptown/js/popper.min.js"></script>
-    <script src="/uptown/js/bootstrap.min.js"></script>
-    <script src="/uptown/js/jquery.easing.1.3.js"></script>
-    <script src="/uptown/js/jquery.waypoints.min.js"></script>
-    <script src="/uptown/js/jquery.stellar.min.js"></script>
-    <script src="/uptown/js/owl.carousel.min.js"></script>
-    <script src="/uptown/js/jquery.magnific-popup.min.js"></script>
-    <script src="/uptown/js/aos.js"></script>
-    <script src="/uptown/js/jquery.animateNumber.min.js"></script>
-    <script src="/uptown/js/bootstrap-datepicker.js"></script>
-    <script src="/uptown/js/jquery.timepicker.min.js"></script>
-    <script src="/uptown/js/scrollax.min.js"></script>
-    <script src="/uptown/js/google-map.js"></script>
-    <script src="/uptown/js/main.js?v=counter-scroll-trigger"></script>
+    <main class="pt-24 md:pt-28 min-h-[calc(100vh-100px)]">
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+
+    <script>
+      function hideLoader() {
+        const loader = document.getElementById("loader");
+        if (loader) {
+          loader.classList.add("opacity-0", "pointer-events-none");
+        }
+      }
+
+      function bindMobileMenu() {
+        const menuButton = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuButton && mobileMenu) {
+          menuButton.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        window.setTimeout(hideLoader, 700);
+        bindMobileMenu();
+      });
+
+      document.addEventListener("turbo:load", function () {
+        window.setTimeout(hideLoader, 300);
+        bindMobileMenu();
+      });
+    </script>
   </body>
 </html>

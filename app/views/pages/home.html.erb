@@ -1,350 +1,275 @@
-<% content_for :title, "Uptown - Home" %>
-
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="<%= root_path %>">Uptown</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="oi oi-menu"></span> Menu
-    </button>
-
-    <div class="collapse navbar-collapse" id="ftco-nav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item active"><a href="<%= root_path %>" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="<%= about_path %>" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="<%= agent_path %>" class="nav-link">Agent</a></li>
-        <li class="nav-item"><a href="<%= services_path %>" class="nav-link">Services</a></li>
-        <li class="nav-item"><a href="<%= properties_path %>" class="nav-link">Properties</a></li>
-        <li class="nav-item"><a href="<%= blog_path %>" class="nav-link">Blog</a></li>
-        <li class="nav-item"><a href="<%= contact_path %>" class="nav-link">Contact</a></li>
-      </ul>
+<section id="view-home" class="page-view animate-section active">
+  <div class="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-black py-16">
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80" alt="Luxury penthouse" class="w-full h-full object-cover opacity-35 object-center scale-110">
+      <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-obsidian-950/80 via-transparent to-obsidian-950/80"></div>
     </div>
-  </div>
-</nav>
 
-<div class="hero-wrap ftco-degree-bg" style="background-image: url('/uptown/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row no-gutters slider-text justify-content-center align-items-center">
-      <div class="col-lg-8 col-md-6 ftco-animate d-flex align-items-end">
-        <div class="text text-center">
-          <h1 class="mb-4">The Simplest <br>Way to Find Property</h1>
-          <p style="font-size: 18px;">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts</p>
-          <form action="<%= properties_path %>" method="get" class="search-location mt-md-5">
-            <div class="row justify-content-center">
-              <div class="col-lg-10 align-items-end">
-                <div class="form-group">
-                  <div class="form-field">
-                    <input type="text" name="city" class="form-control" placeholder="Search location">
-                    <button type="submit"><span class="ion-ios-search"></span></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
+      <div class="inline-flex items-center space-x-2 bg-gold-500/10 border border-gold-500/30 px-4 py-1.5 rounded-full mb-6">
+        <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-ping"></span>
+        <span class="text-[10px] md:text-xs tracking-[0.25em] text-gold-300 uppercase font-medium">Bespoke Real Estate Advisory</span>
       </div>
-    </div>
-  </div>
-  <div class="mouse">
-    <a href="#" class="mouse-icon">
-      <div class="mouse-wheel"><span class="ion-ios-arrow-round-down"></span></div>
-    </a>
-  </div>
-</div>
 
-<section class="ftco-section ftco-no-pb">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-12 heading-section text-center ftco-animate mb-5">
-        <span class="subheading">Our Services</span>
-        <h2 class="mb-2">The smartest way to buy a home</h2>
-      </div>
-    </div>
-    <div class="row d-flex">
-      <div class="col-md-3 d-flex align-self-stretch ftco-animate">
-        <div class="media block-6 services d-block text-center">
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-piggy-bank"></span></div>
-          <div class="media-body py-md-4">
-            <h3>No Downpayment</h3>
-            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight leading-none mb-6 max-w-5xl mx-auto">
+        Architectural Wonders <br><span class="italic text-gold-400 font-normal">Made Manifest</span>
+      </h1>
+
+      <p class="text-gray-300 text-sm md:text-lg lg:text-xl max-w-2xl mx-auto tracking-wide font-light mb-12">
+        Discover DUA’s curated collection of handpicked luxuries, estates, and high-growth commercial developments.
+      </p>
+
+      <div class="max-w-4xl mx-auto glass-card p-4 rounded-2xl md:rounded-full border border-white/10 shadow-2xl">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <div class="px-4 text-left border-b md:border-b-0 md:border-r border-white/10 pb-3 md:pb-0">
+            <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-1">Property Type</label>
+            <select class="bg-transparent text-white w-full focus:outline-none text-sm font-medium cursor-pointer">
+              <option value="all" class="bg-obsidian-900">All Asset Classes</option>
+              <option value="Residential" class="bg-obsidian-900">Residential Estates</option>
+              <option value="Commercial" class="bg-obsidian-900">Commercial Hubs</option>
+            </select>
           </div>
-        </div>
-      </div>
-      <div class="col-md-3 d-flex align-self-stretch ftco-animate">
-        <div class="media block-6 services d-block text-center">
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-wallet"></span></div>
-          <div class="media-body py-md-4">
-            <h3>All Cash Offer</h3>
-            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+
+          <div class="px-4 text-left border-b md:border-b-0 md:border-r border-white/10 pb-3 md:pb-0">
+            <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-1">Max Budget</label>
+            <select class="bg-transparent text-white w-full focus:outline-none text-sm font-medium cursor-pointer">
+              <option value="99999999" class="bg-obsidian-900">No Limit</option>
+              <option value="1500000" class="bg-obsidian-900">Under $1.5M</option>
+              <option value="3000000" class="bg-obsidian-900">Under $3.0M</option>
+            </select>
           </div>
-        </div>
-      </div>
-      <div class="col-md-3 d-flex align-self-stretch ftco-animate">
-        <div class="media block-6 services d-block text-center">
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-file"></span></div>
-          <div class="media-body py-md-4">
-            <h3>Experts in Your Corner</h3>
-            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+
+          <div class="px-4 text-left pb-3 md:pb-0 md:border-r border-white/10">
+            <label class="block text-[10px] text-gold-400 font-semibold uppercase tracking-widest mb-1">Minimum Area</label>
+            <select class="bg-transparent text-white w-full focus:outline-none text-sm font-medium cursor-pointer">
+              <option value="0" class="bg-obsidian-900">Any Size</option>
+              <option value="1500" class="bg-obsidian-900">1,500+ sq ft</option>
+              <option value="3000" class="bg-obsidian-900">3,000+ sq ft</option>
+            </select>
           </div>
-        </div>
-      </div>
-      <div class="col-md-3 d-flex align-self-stretch ftco-animate">
-        <div class="media block-6 services d-block text-center">
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-locked"></span></div>
-          <div class="media-body py-md-4">
-            <h3>Locked in Pricing</h3>
-            <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+
+          <div class="px-2">
+            <%= link_to properties_path, class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs py-3.5 px-6 rounded-full transition-all duration-300 flex items-center justify-center space-x-2" do %>
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Explore Collection</span>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<section class="ftco-section goto-here">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-12 heading-section text-center ftco-animate mb-5">
-        <span class="subheading">What we offer</span>
-        <h2 class="mb-2">Exclusive Offer For You</h2>
-      </div>
-    </div>
-    <div class="row">
-      <% @latest_properties.each do |property| %>
-        <% cover_image = property.property_images.find(&:is_cover?) || property.property_images.first %>
-        <% image_url = cover_image&.image&.attached? ? url_for(cover_image.image) : "/uptown/images/work-1.jpg" %>
-        <div class="col-md-4">
-          <div class="property-wrap ftco-animate">
-            <a href="<%= property_path(property) %>" class="img" style="background-image: url('<%= image_url %>');"></a>
-            <div class="text">
-              <p class="price"><span class="orig-price"><%= number_to_currency(property.price || 0, unit: "₹", precision: 0) %></span></p>
-              <ul class="property_list">
-                <li><span class="flaticon-bed"></span><%= property.bedrooms || 0 %></li>
-                <li><span class="flaticon-bathtub"></span><%= property.bathrooms || 0 %></li>
-                <li><span class="flaticon-floor-plan"></span><%= [property.area, property.area_unit].compact.join(" ").presence || "Not specified" %></li>
-              </ul>
-              <h3><a href="<%= property_path(property) %>"><%= property.title %></a></h3>
-              <span class="location"><%= [property.city, property.state].compact_blank.join(", ").presence || "Location not specified" %></span>
-              <a href="<%= property_path(property) %>" class="d-flex align-items-center justify-content-center btn-custom">
-                <span class="ion-ios-link"></span>
-              </a>
-            </div>
-          </div>
+  <div class="bg-obsidian-900/40 py-12 border-y border-gold-500/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="p-4 border-r border-white/5 last:border-0">
+          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">$1.8B+</span>
+          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Premium Sales Volume</span>
         </div>
-      <% end %>
+        <div class="p-4 border-r border-white/5 last:border-0">
+          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">450+</span>
+          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Curated Handpicked Assets</span>
+        </div>
+        <div class="p-4 border-r border-white/5 last:border-0">
+          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">98.4%</span>
+          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">VIP Client Retention</span>
+        </div>
+        <div class="p-4 last:border-0">
+          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">40+</span>
+          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Years of Advisory Experience</span>
+        </div>
+      </div>
     </div>
   </div>
-</section>
 
-<section class="ftco-section ftco-degree-bg services-section img mx-md-5" style="background-image: url('/uptown/images/bg_2.jpg');">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row justify-content-start mb-5">
-      <div class="col-md-6 text-center heading-section heading-section-white ftco-animate">
-        <span class="subheading">Work flow</span>
-        <h2 class="mb-3">How it works</h2>
+  <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+      <div>
+        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Dua Premier Signature Collection</span>
+        <h2 class="font-serif text-4xl md:text-6xl text-white font-bold leading-none tracking-tight">Epitome of Architectural Glory</h2>
+      </div>
+      <div class="mt-6 md:mt-0 flex items-center space-x-4">
+        <%= link_to properties_path, class: "group text-gold-400 hover:text-gold-500 text-sm tracking-widest font-semibold uppercase flex items-center space-x-2 transition-all" do %>
+          <span>Browse All Real Estate</span>
+          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        <% end %>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="row">
-          <% [{number: "01", title: "Evaluate Property", text: "A small river named Duden flows by their place and supplies it with the necessary regelialia."}, {number: "02", title: "Meet Your Agent", text: "A small river named Duden flows by their place and supplies it with the necessary regelialia."}, {number: "03", title: "Close the Deal", text: "A small river named Duden flows by their place and supplies it with the necessary regelialia."}, {number: "04", title: "Have Your Property", text: "A small river named Duden flows by their place and supplies it with the necessary regelialia."}].each do |item| %>
-            <div class="col-md-12 col-lg-6 d-flex align-self-stretch ftco-animate">
-              <div class="media block-6 services services-2">
-                <div class="media-body py-md-4 text-center">
-                  <div class="icon mb-3 d-flex align-items-center justify-content-center"><span><%= item[:number] %></span></div>
-                  <h3><%= item[:title] %></h3>
-                  <p><%= item[:text] %></p>
-                </div>
-              </div>
-            </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% @featured_properties.each do |property| %>
+        <article class="glass-card rounded-3xl overflow-hidden">
+          <% if property.property_images.first&.image&.attached? %>
+            <%= image_tag property.property_images.first.image, class: "h-64 w-full object-cover" %>
+          <% else %>
+            <div class="h-64 w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
           <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="ftco-section ftco-no-pb">
-  <div class="container">
-    <div class="row no-gutters">
-      <div class="col-md-6 p-md-5 img img-2 d-flex justify-content-center align-items-center" style="background-image: url('/uptown/images/about.jpg');">
-      </div>
-      <div class="col-md-6 wrap-about py-md-5 ftco-animate">
-        <div class="heading-section p-md-5">
-          <h2 class="mb-4">We Put People First.</h2>
-          <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
-          <p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="ftco-counter img" id="section-counter">
-  <div class="container">
-    <div class="row">
-      <% [{number: 305, line1: "Area", line2: "Population"}, {number: 1090, line1: "Total", line2: "Properties"}, {number: 209, line1: "Average", line2: "House"}, {number: 67, line1: "Total", line2: "Branches"}].each do |item| %>
-        <div class="col-md-6 col-lg-3 justify-content-center counter-wrap ftco-animate">
-          <div class="block-18 py-4 mb-4">
-            <div class="text text-border d-flex align-items-center">
-              <strong class="number" data-number="<%= item[:number] %>">0</strong>
-              <span><%= item[:line1] %><br><%= item[:line2] %></span>
+          <div class="p-7">
+            <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-gray-400 mb-4">
+              <span><%= property.property_type %></span>
+              <span><%= property.listing_type %></span>
+            </div>
+            <h3 class="font-serif text-2xl text-white mb-3"><%= property.title %></h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-5"><%= truncate(property.description, length: 120) %></p>
+            <div class="flex items-center justify-between">
+              <p class="text-gold-400 font-semibold">$<%= number_with_delimiter(property.price.to_i) %></p>
+              <%= link_to "View Details", property_path(property), class: "text-sm text-gold-400 hover:text-gold-300" %>
             </div>
           </div>
-        </div>
+        </article>
       <% end %>
     </div>
   </div>
-</section>
 
-<section class="ftco-section testimony-section">
-  <div class="container">
-    <div class="row justify-content-center mb-5">
-      <div class="col-md-7 text-center heading-section ftco-animate">
-        <span class="subheading">Testimonial</span>
-        <h2 class="mb-3">Happy Clients</h2>
-      </div>
+  <div class="bg-obsidian-900 border-y border-gold-500/10 py-24 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute -top-40 -left-40 w-96 h-96 bg-gold-500/30 rounded-full filter blur-[100px]"></div>
+      <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-gold-500/30 rounded-full filter blur-[100px]"></div>
     </div>
-    <div class="row ftco-animate">
-      <div class="col-md-12">
-        <div class="carousel-testimony owl-carousel ftco-owl">
-          <% [{name: "Roger Scott", role: "Marketing Manager", image: "person_1.jpg"}, {name: "Roger Scott", role: "Marketing Manager", image: "person_2.jpg"}, {name: "Roger Scott", role: "Marketing Manager", image: "person_3.jpg"}].each do |person| %>
-            <div class="item">
-              <div class="testimony-wrap py-4">
-                <div class="text">
-                  <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                  <div class="d-flex align-items-center">
-                    <div class="user-img" style="background-image: url('/uptown/images/<%= person[:image] %>')"></div>
-                    <div class="pl-3">
-                      <p class="name"><%= person[:name] %></p>
-                      <span class="position"><%= person[:role] %></span>
-                    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-5 text-left">
+          <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Finance Management Advisory</span>
+          <h2 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight mb-6">Interactive Investment Calculator</h2>
+          <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-8">Acquire premium properties and instantly estimate loans with clarity and precision.</p>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3">
+              <div class="mt-1 flex-shrink-0 text-gold-500"><i class="fa-solid fa-circle-check"></i></div>
+              <p class="text-gray-400 text-sm">Flexible down payment configuration.</p>
+            </div>
+            <div class="flex items-start space-x-3">
+              <div class="mt-1 flex-shrink-0 text-gold-500"><i class="fa-solid fa-circle-check"></i></div>
+              <p class="text-gray-400 text-sm">Instant monthly repayment insights.</p>
+            </div>
+            <div class="flex items-start space-x-3">
+              <div class="mt-1 flex-shrink-0 text-gold-500"><i class="fa-solid fa-circle-check"></i></div>
+              <p class="text-gray-400 text-sm">Clear principal and interest summaries.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="glass-card p-8 md:p-10 rounded-2xl border border-white/10 shadow-2xl">
+            <h3 class="text-white font-semibold text-lg uppercase tracking-wider mb-8 flex items-center space-x-3">
+              <i class="fa-solid fa-calculator text-gold-500"></i>
+              <span>Plan Your Wealth Allocation</span>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div class="space-y-6">
+                <div>
+                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
+                    <span>Property Value</span>
+                    <span class="text-gold-400 font-semibold" id="standalone-calc-val-label">$3,500,000</span>
                   </div>
+                  <input type="range" id="standalone-calc-val" min="500000" max="25000000" step="100000" value="3500000" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
+                    <span>Down Payment (20%)</span>
+                    <span class="text-gold-400 font-semibold" id="standalone-calc-down-label">$700,000</span>
+                  </div>
+                  <input type="range" id="standalone-calc-down" min="10" max="80" step="5" value="20" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                </div>
+              </div>
+
+              <div class="space-y-6">
+                <div>
+                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
+                    <span>Annual Interest Rate</span>
+                    <span class="text-gold-400 font-semibold" id="standalone-calc-rate-label">5.5%</span>
+                  </div>
+                  <input type="range" id="standalone-calc-rate" min="2.0" max="12.0" step="0.1" value="5.5" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
+                    <span>Amortization Term</span>
+                    <span class="text-gold-400 font-semibold" id="standalone-calc-term-label">30 Years</span>
+                  </div>
+                  <input type="range" id="standalone-calc-term" min="5" max="30" step="5" value="30" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
                 </div>
               </div>
             </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="ftco-section ftco-agent ftco-no-pt home-agents">
-  <div class="container">
-    <div class="row justify-content-center pb-5">
-      <div class="col-md-12 heading-section text-center ftco-animate">
-        <span class="subheading">Agents</span>
-        <h2 class="mb-4">Our Agents</h2>
-      </div>
-    </div>
-    <div class="row">
-      <% @agents.each_with_index do |agent, index| %>
-        <% image_url = agent.profile_image.presence || "/uptown/images/team-#{(index % 4) + 1}.jpg" %>
-        <div class="col-md-3 ftco-animate">
-          <div class="agent">
-            <div class="img">
-              <img src="<%= image_url %>" class="img-fluid" alt="<%= [agent.first_name, agent.last_name].compact_blank.join(" ") %>">
-            </div>
-            <div class="desc">
-              <h3><a href="<%= properties_path %>"><%= [agent.first_name, agent.last_name].compact_blank.join(" ").presence || agent.email %></a></h3>
-              <p class="h-info"><span class="location"><%= agent.city.presence || "Location not specified" %></span> <span class="details">&mdash; <%= pluralize(agent.listed_properties.size, "Property") %></span></p>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
-
-<section class="ftco-section ftco-no-pt">
-  <div class="container">
-    <div class="row justify-content-center mb-5">
-      <div class="col-md-7 heading-section text-center ftco-animate">
-        <span class="subheading">Blog</span>
-        <h2>Recent Blog</h2>
-      </div>
-    </div>
-    <div class="row d-flex">
-      <% [{title: "Why Lead Generation is Key for Business Growth", image: "image_1.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_2.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_3.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}, {title: "Why Lead Generation is Key for Business Growth", image: "image_4.jpg", date: "July. 24, 2019", author: "Admin", comments: "3"}].each do |post| %>
-        <div class="col-md-3 d-flex ftco-animate">
-          <div class="blog-entry justify-content-end">
-            <div class="text">
-              <h3 class="heading"><a href="<%= blog_post_path %>"><%= post[:title] %></a></h3>
-              <div class="meta mb-3">
-                <div><a href="<%= blog_post_path %>"><%= post[:date] %></a></div>
-                <div><a href="<%= blog_post_path %>"><%= post[:author] %></a></div>
-                <div><a href="<%= blog_post_path %>" class="meta-chat"><span class="icon-chat"></span> <%= post[:comments] %></a></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="rounded-2xl border border-gold-500/20 bg-gold-500/10 p-4">
+                <div class="text-gray-400 uppercase tracking-[0.2em] text-[10px] mb-2">Loan Amount</div>
+                <div id="standalone-calc-loan" class="text-xl font-semibold text-white">$2,800,000</div>
               </div>
-              <a href="<%= blog_post_path %>" class="block-20 img" style="background-image: url('/uptown/images/<%= post[:image] %>');"></a>
-              <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+              <div class="rounded-2xl border border-gold-500/20 bg-gold-500/10 p-4">
+                <div class="text-gray-400 uppercase tracking-[0.2em] text-[10px] mb-2">Monthly Payment</div>
+                <div id="standalone-calc-payment" class="text-xl font-semibold text-white">$15,927</div>
+              </div>
+              <div class="rounded-2xl border border-gold-500/20 bg-gold-500/10 p-4">
+                <div class="text-gray-400 uppercase tracking-[0.2em] text-[10px] mb-2">Total Interest</div>
+                <div id="standalone-calc-interest" class="text-xl font-semibold text-white">$3,733,720</div>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      <div>
+        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Advisory Team</span>
+        <h2 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight">Meet the Experts</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% @agents.each do |agent| %>
+        <div class="glass-card rounded-3xl p-7 text-center">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold-500/40 to-obsidian-900 mx-auto mb-5 flex items-center justify-center text-2xl text-gold-400">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <h3 class="font-serif text-2xl text-white mb-2"><%= agent.first_name %> <%= agent.last_name %></h3>
+          <p class="text-gold-400 text-sm uppercase tracking-[0.2em] mb-4">Real Estate Advisor</p>
+          <p class="text-gray-400 text-sm leading-relaxed">Specializing in premium placements, investment strategy, and bespoke acquisitions.</p>
         </div>
       <% end %>
     </div>
   </div>
 </section>
 
-<footer class="ftco-footer ftco-section">
-  <div class="container">
-    <div class="row mb-5">
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Uptown</h2>
-          <p>Far far away, behind the word mountains, far from the countries.</p>
-          <ul class="ftco-footer-social list-unstyled mt-5">
-            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">Community</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Search Properties</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>For Agents</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Reviews</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>FAQs</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">About Us</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Our Story</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Meet the team</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Company</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>About Us</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Press</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Contact</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Have a Questions?</h2>
-          <div class="block-23 mb-3">
-            <ul>
-              <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-              <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-              <li><a href="#"><span class="icon icon-envelope pr-4"></span><span class="text">info@yourdomain.com</span></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
+<script>
+  function formatCurrency(value) {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+  }
+
+  function calculateLoan() {
+    const propertyValue = Number(document.getElementById("standalone-calc-val")?.value || 0);
+    const downPercent = Number(document.getElementById("standalone-calc-down")?.value || 0) / 100;
+    const annualRate = Number(document.getElementById("standalone-calc-rate")?.value || 0) / 100;
+    const years = Number(document.getElementById("standalone-calc-term")?.value || 0);
+    const downPayment = propertyValue * downPercent;
+    const loanAmount = propertyValue - downPayment;
+    const monthlyRate = annualRate / 12;
+    const months = years * 12;
+    const payment = monthlyRate > 0 ? (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)) : loanAmount / months;
+    const totalPaid = payment * months;
+    const totalInterest = totalPaid - loanAmount;
+
+    document.getElementById("standalone-calc-val-label").textContent = formatCurrency(propertyValue);
+    document.getElementById("standalone-calc-down-label").textContent = formatCurrency(downPayment);
+    document.getElementById("standalone-calc-rate-label").textContent = `${annualRate * 100}%`;
+    document.getElementById("standalone-calc-term-label").textContent = `${years} Years`;
+    document.getElementById("standalone-calc-loan").textContent = formatCurrency(loanAmount);
+    document.getElementById("standalone-calc-payment").textContent = formatCurrency(payment);
+    document.getElementById("standalone-calc-interest").textContent = formatCurrency(totalInterest);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    ["standalone-calc-val", "standalone-calc-down", "standalone-calc-rate", "standalone-calc-term"].forEach(function (id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener("input", calculateLoan);
+      }
+    });
+    calculateLoan();
+  });
+</script>
