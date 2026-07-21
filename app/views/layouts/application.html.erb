@@ -58,6 +58,9 @@
       <div class="text-center">
         <h2 class="font-serif text-5xl md:text-6xl text-gold-500 tracking-wider gold-glow loader-span mb-4">DUA</h2>
         <p class="text-gray-400 tracking-[0.25em] text-xs uppercase">Curating Infinite Elegance</p>
+        <div class="w-48 h-[2px] bg-gray-800 mx-auto mt-8 relative overflow-hidden rounded">
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500 to-transparent w-full h-full progress-shimmer"></div>
+        </div>
       </div>
     </div>
 
@@ -68,6 +71,146 @@
     </main>
 
     <%= render "shared/footer" %>
+
+    <div id="property-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div id="property-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="relative inline-block w-full max-w-5xl align-bottom overflow-hidden rounded-2xl border border-gold-500/20 bg-obsidian-900 text-left shadow-2xl sm:my-8 sm:align-middle">
+          <div class="relative h-64 bg-black md:h-[350px]">
+            <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent"></div>
+            <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <span id="property-modal-badge" class="absolute bottom-6 left-6 rounded-full bg-gold-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-obsidian-950"></span>
+          </div>
+
+          <div class="space-y-10 p-6 md:p-10">
+            <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+              <div class="space-y-6 lg:col-span-7">
+                <div>
+                  <h2 id="property-modal-title" class="font-serif text-3xl font-bold leading-tight text-white md:text-4xl"></h2>
+                  <p id="property-modal-location" class="mt-1 text-sm font-medium uppercase tracking-[0.25em] text-gold-400"></p>
+                </div>
+                <p id="property-modal-description" class="text-sm font-light leading-relaxed text-gray-300 md:text-base"></p>
+
+                <div class="grid grid-cols-3 gap-4 border-y border-white/5 py-6">
+                  <div class="text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Asset Area</span>
+                    <span id="property-modal-area" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                  <div class="border-x border-white/5 text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Config/Bed</span>
+                    <span id="property-modal-bedrooms" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                  <div class="text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Bathrooms</span>
+                    <span id="property-modal-bathrooms" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-white">Elite Amenities Provided</h3>
+                  <div id="property-modal-amenities" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Private concierge</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Ocean views</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Smart security</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Valet parking</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Spa access</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Rooftop lounge</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 lg:col-span-5">
+                <div>
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Offering Valuation</span>
+                  <span id="property-modal-price" class="font-serif text-3xl font-bold text-gold-500 gold-glow"></span>
+                </div>
+
+                <div class="space-y-3 border-t border-white/5 pt-4">
+                  <%= link_to "Private Inquiry Advisory", contact_path, class: "block w-full rounded bg-gold-500 px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.25em] text-obsidian-950 transition hover:bg-gold-600" %>
+                  <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-3 text-xs font-medium uppercase tracking-[0.25em] text-white transition hover:border-gold-500/50">Analyze Investment Loans</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="property-modal-calculator" class="space-y-6 border-t border-white/5 pt-8">
+              <h3 class="flex items-center space-x-3 font-serif text-2xl font-bold uppercase tracking-[0.25em] text-white">
+                <i class="fa-solid fa-chart-pie text-gold-500"></i>
+                <span>Mortgage Investment Calculator</span>
+              </h3>
+              <p class="text-xs font-light leading-relaxed text-gray-400 md:text-sm">
+                Instantly analyze variables to evaluate debt requirements for purchasing <strong id="property-modal-calc-name" class="font-normal text-white"></strong>. Price index auto-aligned.
+              </p>
+
+              <div class="mb-4 grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div class="space-y-6">
+                  <div>
+                    <div class="mb-1 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Target Price Index (Fixed)</span>
+                    </div>
+                    <input type="text" id="property-modal-calc-price" readonly class="w-full rounded border border-white/10 bg-obsidian-950 px-4 py-2.5 text-sm font-semibold text-gold-400 outline-none select-none">
+                  </div>
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Initial Down Payment</span>
+                      <span id="property-modal-calc-down-label" class="font-semibold text-gold-400">$400,000 (20%)</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-down" min="10" max="80" step="5" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>10% Min</span>
+                      <span>80% Max</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Loan Interest Rate</span>
+                      <span id="property-modal-calc-rate-label" class="font-semibold text-gold-400">5.5%</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-rate" min="2.0" max="12.0" step="0.1" value="5.5" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>2% Interest</span>
+                      <span>12% Max Cap</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Loan Repayment Duration</span>
+                      <span id="property-modal-calc-term-label" class="font-semibold text-gold-400">30 Years</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-term" min="5" max="30" step="5" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>5 Years</span>
+                      <span>30 Years</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 sm:grid-cols-3">
+                <div class="text-center">
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Financed Principal</span>
+                  <span id="property-modal-financed" class="text-sm font-medium text-white md:text-base"></span>
+                </div>
+                <div class="border-y border-white/5 py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0">
+                  <span class="mb-1 block text-center text-[10px] uppercase tracking-[0.25em] text-gray-500">Cumulative Interest</span>
+                  <span id="property-modal-interest" class="block text-center text-sm font-medium text-white md:text-base"></span>
+                </div>
+                <div class="text-center">
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gold-400">Monthly Repayments</span>
+                  <span id="property-modal-monthly" class="text-lg font-bold text-gold-500 gold-glow md:text-2xl"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       function hideLoader() {
@@ -87,14 +230,119 @@
         }
       }
 
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value || 0);
+      }
+
+      let activePropertyModalData = null;
+
+      function openPropertyModalFromCard(card) {
+        if (!card) return;
+
+        const data = card.dataset || {};
+        activePropertyModalData = data;
+        document.getElementById("property-modal-title").textContent = data.title || "Luxury Property";
+        document.getElementById("property-modal-badge").textContent = data.propertyType || "Luxury";
+        document.getElementById("property-modal-price").textContent = formatCurrency(Number(data.price || 0));
+        document.getElementById("property-modal-location").textContent = data.address || data.city || "Premier Location";
+        document.getElementById("property-modal-description").textContent = data.description || "An exceptional property curated for refined living.";
+        document.getElementById("property-modal-area").textContent = data.area ? `${Number(data.area).toLocaleString()} sq ft` : "N/A";
+        document.getElementById("property-modal-bedrooms").textContent = data.bedrooms || "N/A";
+        document.getElementById("property-modal-bathrooms").textContent = data.bathrooms || "N/A";
+        const cityElement = document.getElementById("property-modal-city");
+        if (cityElement) {
+          cityElement.textContent = data.city || "N/A";
+        }
+        document.getElementById("property-modal-calc-name").textContent = data.title || "this property";
+        document.getElementById("property-modal-calc-price").value = formatCurrency(Number(data.price || 0));
+
+        const imageElement = document.getElementById("property-modal-image");
+        imageElement.src = data.imageUrl || "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1000&q=80";
+        imageElement.alt = data.title || "Luxury Property";
+
+        runPropertyModalCalculator();
+        const modal = document.getElementById("property-modal");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.style.display = "block";
+          modal.classList.add("opacity-100");
+        }
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function bindPropertyCardModalTriggers() {
+        document.querySelectorAll("[data-property-modal-trigger]").forEach(function (card) {
+          if (card.dataset.modalBound === "true") return;
+          card.dataset.modalBound = "true";
+          card.addEventListener("click", function (event) {
+            if (event.target && event.target.closest("a, button, input, select, textarea")) {
+              event.preventDefault();
+            }
+            openPropertyModalFromCard(card);
+          });
+        });
+      }
+
+      function closePropertyModal() {
+        const modal = document.getElementById("property-modal");
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.style.display = "none";
+          modal.classList.remove("opacity-100");
+        }
+        document.body.classList.remove("overflow-hidden");
+        activePropertyModalData = null;
+      }
+
+      function runPropertyModalCalculator() {
+        const price = Number(activePropertyModalData?.price || 0);
+        const downPct = Number(document.getElementById("property-modal-calc-down")?.value || 20) / 100;
+        const annualRate = Number(document.getElementById("property-modal-calc-rate")?.value || 5.5) / 100;
+        const years = Number(document.getElementById("property-modal-calc-term")?.value || 30);
+        const downPayment = price * downPct;
+        const loanAmount = price - downPayment;
+        const monthlyRate = annualRate / 12;
+        const months = years * 12;
+        const payment = monthlyRate > 0 ? (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)) : loanAmount / months;
+        const totalInterest = payment * months - loanAmount;
+
+        document.getElementById("property-modal-calc-down-label").textContent = `${formatCurrency(downPayment)} (${Math.round(downPct * 100)}%)`;
+        document.getElementById("property-modal-calc-rate-label").textContent = `${(annualRate * 100).toFixed(1)}%`;
+        document.getElementById("property-modal-calc-term-label").textContent = `${years} Years`;
+        document.getElementById("property-modal-financed").textContent = formatCurrency(loanAmount);
+        document.getElementById("property-modal-interest").textContent = formatCurrency(totalInterest);
+        document.getElementById("property-modal-monthly").textContent = `${formatCurrency(payment)}/mo`;
+      }
+
+      function scrollPropertyModalToCalculator() {
+        const target = document.getElementById("property-modal-calculator");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         window.setTimeout(hideLoader, 700);
         bindMobileMenu();
+        bindPropertyCardModalTriggers();
       });
 
       document.addEventListener("turbo:load", function () {
         window.setTimeout(hideLoader, 300);
         bindMobileMenu();
+        bindPropertyCardModalTriggers();
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closePropertyModal();
+        }
+      });
+
+      document.addEventListener("click", function (event) {
+        if (event.target && event.target.id === "property-modal-backdrop") {
+          closePropertyModal();
+        }
       });
     </script>
   </body>

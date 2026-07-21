@@ -99,22 +99,48 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <% @featured_properties.each do |property| %>
-        <article class="glass-card rounded-3xl overflow-hidden">
-          <% if property.property_images.first&.image&.attached? %>
-            <%= image_tag property.property_images.first.image, class: "h-64 w-full object-cover" %>
-          <% else %>
-            <div class="h-64 w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
-          <% end %>
-          <div class="p-7">
-            <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-gray-400 mb-4">
-              <span><%= property.property_type %></span>
-              <span><%= property.listing_type %></span>
+        <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full" data-property-modal-trigger="true" data-title="<%= j(property.title) %>" data-description="<%= j(property.description.to_s) %>" data-price="<%= property.price.to_i %>" data-city="<%= j(property.city.to_s) %>" data-address="<%= j(property.address.to_s) %>" data-property-type="<%= j(property.property_type.to_s) %>" data-bedrooms="<%= property.bedrooms %>" data-bathrooms="<%= property.bathrooms %>" data-area="<%= property.area %>" data-image-url="<%= property.property_images.first&.image&.attached? ? url_for(property.property_images.first.image) : '' %>">
+          <div class="relative h-64 overflow-hidden bg-black">
+            <% if property.property_images.first&.image&.attached? %>
+              <%= image_tag property.property_images.first.image, class: "h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" %>
+            <% else %>
+              <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
+            <% end %>
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
+            <div class="absolute bottom-4 left-4 flex items-center gap-2">
+              <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
+              <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
             </div>
-            <h3 class="font-serif text-2xl text-white mb-3"><%= property.title %></h3>
-            <p class="text-gray-400 text-sm leading-relaxed mb-5"><%= truncate(property.description, length: 120) %></p>
-            <div class="flex items-center justify-between">
-              <p class="text-gold-400 font-semibold">$<%= number_with_delimiter(property.price.to_i) %></p>
-              <%= link_to "View Details", property_path(property), class: "text-sm text-gold-400 hover:text-gold-300" %>
+          </div>
+          <div class="p-7 flex-grow flex flex-col justify-between space-y-4">
+            <div>
+              <p class="text-gold-400 text-[10px] tracking-widest uppercase font-medium mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <%= [property.city, property.country].compact_blank.join(', ') %></p>
+              <h3 class="font-serif text-2xl text-white mb-3 group-hover:text-gold-400 transition-colors"><%= property.title %></h3>
+              <p class="text-gray-400 text-sm leading-relaxed"><%= truncate(property.description, length: 120) %></p>
+            </div>
+            <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4 text-center">
+              <div>
+                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Est. Area</span>
+                <span class="text-xs text-white font-medium"><%= number_with_delimiter(property.area) %> <%= property.area_unit.presence || 'sq ft' %></span>
+              </div>
+              <div class="border-x border-white/5">
+                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Configuration</span>
+                <span class="text-xs text-white font-medium"><%= property.bedrooms %> Bed</span>
+              </div>
+              <div>
+                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Bathrooms</span>
+                <span class="text-xs text-white font-medium"><%= property.bathrooms %> Bath</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between border-t border-white/5 pt-4">
+              <div>
+                <span class="text-[9px] text-gray-500 uppercase tracking-widest block"><%= property.listing_type %></span>
+                <p class="text-gold-400 text-lg font-serif font-semibold">$<%= number_with_delimiter(property.price.to_i) %></p>
+              </div>
+              <button type="button" class="text-xs text-gold-400 uppercase tracking-widest font-bold group-hover:translate-x-1.5 transition-transform flex items-center space-x-1">
+                <span>View Details</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              </button>
             </div>
           </div>
         </article>
