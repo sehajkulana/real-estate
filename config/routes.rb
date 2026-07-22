@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "agent" => "pages#agent", as: :agent
   get "services" => "pages#services", as: :services
   get "properties" => "pages#properties", as: :properties
+  get "properties/autocomplete" => "pages#autocomplete_properties", as: :autocomplete_properties
   get "property/:id" => "pages#property", as: :property
   get "blog" => "pages#blog", as: :blog
   get "admin" => "pages#admin", as: :admin

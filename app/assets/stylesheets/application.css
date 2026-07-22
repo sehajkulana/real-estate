@@ -98,3 +98,12 @@ input[type="range"]::-moz-range-track {
   border-radius: 9999px;
   background: #1f2937;
 }
+
+/* Hide scrollbar for horizontal swipe container */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

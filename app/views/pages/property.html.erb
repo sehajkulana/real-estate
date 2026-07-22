@@ -1,23 +1,161 @@
 <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-    <div class="glass-card rounded-3xl overflow-hidden">
-      <% if @property.property_images.first&.image&.attached? %>
-        <%= image_tag @property.property_images.first.image, class: "h-[420px] w-full object-cover" %>
-      <% else %>
-        <div class="h-[420px] w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
+  <% images = @property.property_images.map { |pi| pi.image.attached? ? url_for(pi.image) : pi.image_url }.compact_blank %>
+
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.listing_type %></span>
+      <span class="bg-obsidian-950 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.property_type %></span>
+    </div>
+    <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight"><%= @property.title %></h1>
+    <p class="text-gold-400 text-sm font-medium uppercase tracking-widest mt-2 flex items-center gap-2">
+      <i class="fa-solid fa-location-dot"></i>
+      <%= [@property.address, @property.city, @property.state, @property.country].compact_blank.join(', ') %>
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <%# ===== Photo Gallery Column ===== %>
+    <div class="lg:col-span-7 space-y-4">
+      <div class="glass-card rounded-3xl overflow-hidden relative h-[420px] bg-black select-none group" id="property-gallery-container">
+        <% if images.any? %>
+          <img id="main-property-image" src="<%= images.first %>" alt="<%= @property.title %>" class="h-full w-full object-cover transition-opacity duration-300">
+        <% else %>
+          <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex items-center justify-center text-gray-500">
+            <i class="fa-solid fa-image text-4xl"></i>
+          </div>
+        <% end %>
+
+        <% if images.length > 1 %>
+          <!-- Arrows -->
+          <button type="button" onclick="prevDetailImage()" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl">
+            <i class="fa-solid fa-chevron-left text-sm"></i>
+          </button>
+          <button type="button" onclick="nextDetailImage()" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl">
+            <i class="fa-solid fa-chevron-right text-sm"></i>
+          </button>
+
+          <!-- Counter Badge -->
+          <div class="absolute top-4 left-4 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md">
+            <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="detail-img-current">1</span> / <%= images.length %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Thumbnails Strip %>
+      <% if images.length > 1 %>
+        <div class="flex gap-3 overflow-x-auto pb-2">
+          <% images.each_with_index do |img_url, idx| %>
+            <img src="<%= img_url %>"
+                 onclick="setDetailImageIndex(<%= idx %>)"
+                 class="detail-thumb h-20 w-28 object-cover rounded-2xl border-2 cursor-pointer transition-all opacity-60 hover:opacity-100 <%= 'border-gold-500 opacity-100 scale-105' if idx.zero? %>"
+                 data-idx="<%= idx %>">
+          <% end %>
+        </div>
       <% end %>
     </div>
-    <div>
-      <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3"><%= @property.property_type %></span>
-      <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight"><%= @property.title %></h1>
-      <p class="text-gray-400 mt-6 text-lg leading-relaxed"><%= @property.description %></p>
-      <div class="mt-8 grid grid-cols-2 gap-4 text-sm text-gray-300">
-        <div class="glass-card rounded-2xl p-4"><strong class="text-white">Price:</strong> $<%= number_with_delimiter(@property.price.to_i) %></div>
-        <div class="glass-card rounded-2xl p-4"><strong class="text-white">City:</strong> <%= @property.city %></div>
-        <div class="glass-card rounded-2xl p-4"><strong class="text-white">Bedrooms:</strong> <%= @property.bedrooms %></div>
-        <div class="glass-card rounded-2xl p-4"><strong class="text-white">Bathrooms:</strong> <%= @property.bathrooms %></div>
+
+    <%# ===== Specifications & Action Column ===== %>
+    <div class="lg:col-span-5 space-y-6">
+      <div class="glass-card rounded-3xl p-8 space-y-6">
+        <div>
+          <span class="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Asking Price</span>
+          <p class="text-gold-400 font-serif text-4xl font-bold gold-glow">₹<%= number_with_delimiter(@property.price.to_i) %></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Area</span>
+            <span class="text-white font-semibold text-sm"><%= number_with_delimiter(@property.area) %> <%= @property.area_unit.presence || 'sq ft' %></span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Bedrooms</span>
+            <span class="text-white font-semibold text-sm"><%= @property.bedrooms %> Bed</span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Bathrooms</span>
+            <span class="text-white font-semibold text-sm"><%= @property.bathrooms %> Bath</span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Parking</span>
+            <span class="text-white font-semibold text-sm"><%= @property.parking || 0 %> Spaces</span>
+          </div>
+        </div>
+
+        <% if @property.description.present? %>
+          <div>
+            <h3 class="text-xs text-gold-400 uppercase tracking-widest font-semibold mb-2">Description</h3>
+            <p class="text-gray-300 text-sm leading-relaxed"><%= @property.description %></p>
+          </div>
+        <% end %>
+
+        <div class="pt-4 border-t border-white/5 flex gap-4">
+          <%= link_to contact_path, class: "w-full text-center bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3.5 px-6 rounded-full transition-all" do %>
+            <i class="fa-solid fa-calendar-check mr-2"></i> Request Private Tour
+          <% end %>
+        </div>
       </div>
-      <%= link_to "Request Private Tour", contact_path, class: "inline-flex mt-8 bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-semibold uppercase text-xs py-3 px-6 rounded-full transition-all" %>
     </div>
   </div>
 </section>
+
+<script>
+  const detailImages = <%= raw images.to_json %>;
+  let detailImageIdx = 0;
+
+  function updateDetailGallery() {
+    if (!detailImages || detailImages.length === 0) return;
+    const mainImg = document.getElementById("main-property-image");
+    const currentSpan = document.getElementById("detail-img-current");
+    const thumbs = document.querySelectorAll(".detail-thumb");
+
+    if (mainImg) {
+      mainImg.style.opacity = "0.3";
+      setTimeout(() => {
+        mainImg.src = detailImages[detailImageIdx];
+        mainImg.style.opacity = "1";
+      }, 60);
+    }
+    if (currentSpan) currentSpan.textContent = detailImageIdx + 1;
+
+    thumbs.forEach((t, i) => {
+      if (i === detailImageIdx) {
+        t.classList.add("border-gold-500", "opacity-100", "scale-105");
+        t.classList.remove("border-transparent", "opacity-60");
+      } else {
+        t.classList.remove("border-gold-500", "opacity-100", "scale-105");
+        t.classList.add("border-transparent", "opacity-60");
+      }
+    });
+  }
+
+  function prevDetailImage() {
+    if (detailImages.length <= 1) return;
+    detailImageIdx = (detailImageIdx - 1 + detailImages.length) % detailImages.length;
+    updateDetailGallery();
+  }
+
+  function nextDetailImage() {
+    if (detailImages.length <= 1) return;
+    detailImageIdx = (detailImageIdx + 1) % detailImages.length;
+    updateDetailGallery();
+  }
+
+  function setDetailImageIndex(idx) {
+    detailImageIdx = idx;
+    updateDetailGallery();
+  }
+
+  // Swipe gesture support
+  let detailTouchStart = 0;
+  const container = document.getElementById("property-gallery-container");
+  if (container) {
+    container.addEventListener("touchstart", (e) => {
+      detailTouchStart = e.changedTouches[0].screenX;
+    }, { passive: true });
+    container.addEventListener("touchend", (e) => {
+      const end = e.changedTouches[0].screenX;
+      if (detailTouchStart - end > 40) nextDetailImage();
+      else if (end - detailTouchStart > 40) prevDetailImage();
+    }, { passive: true });
+  }
+</script>

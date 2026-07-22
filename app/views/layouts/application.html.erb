@@ -36,8 +36,8 @@
               }
             },
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif']
+              sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+              serif: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
             }
           }
         }
@@ -46,7 +46,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
@@ -77,14 +77,32 @@
         <div id="property-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="relative inline-block w-full max-w-5xl align-bottom overflow-hidden rounded-2xl border border-gold-500/20 bg-obsidian-900 text-left shadow-2xl sm:my-8 sm:align-middle">
-          <div class="relative h-64 bg-black md:h-[350px]">
-            <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent"></div>
-            <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
+          <div class="relative h-72 bg-black md:h-[400px] select-none group/gallery" id="modal-gallery-container">
+            <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-90 transition-opacity duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent pointer-events-none"></div>
+
+            <!-- Left / Right Nav Arrows -->
+            <button type="button" id="modal-prev-img" onclick="prevModalImage(event)" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+              <i class="fa-solid fa-chevron-left text-sm"></i>
+            </button>
+            <button type="button" id="modal-next-img" onclick="nextModalImage(event)" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+              <i class="fa-solid fa-chevron-right text-sm"></i>
+            </button>
+
+            <!-- Counter Badge -->
+            <div id="modal-img-counter" class="absolute top-4 left-4 z-10 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest hidden backdrop-blur-md">
+              <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="modal-img-current">1</span> / <span id="modal-img-total">1</span>
+            </div>
+
+            <!-- Close Button -->
+            <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
               <i class="fa-solid fa-xmark"></i>
             </button>
             <span id="property-modal-badge" class="absolute bottom-6 left-6 rounded-full bg-gold-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-obsidian-950"></span>
           </div>
+
+          <!-- Thumbnail Row for Multiple Photos -->
+          <div id="modal-thumbnails-container" class="flex gap-2.5 p-3.5 bg-obsidian-950 border-b border-white/5 overflow-x-auto hidden"></div>
 
           <div class="space-y-10 p-6 md:p-10">
             <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
@@ -231,10 +249,81 @@
       }
 
       function formatCurrency(value) {
-        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value || 0);
+        return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value || 0);
       }
 
       let activePropertyModalData = null;
+      let currentModalImages = [];
+      let currentModalImageIndex = 0;
+
+      function updateModalImageDisplay() {
+        const imgElem = document.getElementById("property-modal-image");
+        const prevBtn = document.getElementById("modal-prev-img");
+        const nextBtn = document.getElementById("modal-next-img");
+        const counter = document.getElementById("modal-img-counter");
+        const currSpan = document.getElementById("modal-img-current");
+        const totalSpan = document.getElementById("modal-img-total");
+        const thumbsContainer = document.getElementById("modal-thumbnails-container");
+
+        if (!currentModalImages || currentModalImages.length === 0) {
+          if (imgElem) imgElem.src = "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1000&q=80";
+          if (prevBtn) prevBtn.classList.add("hidden");
+          if (nextBtn) nextBtn.classList.add("hidden");
+          if (counter) counter.classList.add("hidden");
+          if (thumbsContainer) thumbsContainer.classList.add("hidden");
+          return;
+        }
+
+        if (imgElem) {
+          imgElem.style.opacity = "0.3";
+          setTimeout(() => {
+            imgElem.src = currentModalImages[currentModalImageIndex];
+            imgElem.style.opacity = "1";
+          }, 60);
+        }
+
+        if (currentModalImages.length > 1) {
+          if (prevBtn) prevBtn.classList.remove("hidden");
+          if (nextBtn) nextBtn.classList.remove("hidden");
+          if (counter) counter.classList.remove("hidden");
+          if (currSpan) currSpan.textContent = currentModalImageIndex + 1;
+          if (totalSpan) totalSpan.textContent = currentModalImages.length;
+
+          if (thumbsContainer) {
+            thumbsContainer.classList.remove("hidden");
+            let html = "";
+            currentModalImages.forEach((url, i) => {
+              const activeClass = i === currentModalImageIndex ? "border-gold-500 opacity-100 scale-105" : "border-white/10 opacity-50 hover:opacity-100";
+              html += `<img src="${url}" onclick="setModalImageIndex(${i})" class="h-14 w-20 object-cover rounded-lg border-2 cursor-pointer transition-all ${activeClass}">`;
+            });
+            thumbsContainer.innerHTML = html;
+          }
+        } else {
+          if (prevBtn) prevBtn.classList.add("hidden");
+          if (nextBtn) nextBtn.classList.add("hidden");
+          if (counter) counter.classList.add("hidden");
+          if (thumbsContainer) thumbsContainer.classList.add("hidden");
+        }
+      }
+
+      function prevModalImage(e) {
+        if (e) e.stopPropagation();
+        if (!currentModalImages || currentModalImages.length <= 1) return;
+        currentModalImageIndex = (currentModalImageIndex - 1 + currentModalImages.length) % currentModalImages.length;
+        updateModalImageDisplay();
+      }
+
+      function nextModalImage(e) {
+        if (e) e.stopPropagation();
+        if (!currentModalImages || currentModalImages.length <= 1) return;
+        currentModalImageIndex = (currentModalImageIndex + 1) % currentModalImages.length;
+        updateModalImageDisplay();
+      }
+
+      function setModalImageIndex(idx) {
+        currentModalImageIndex = idx;
+        updateModalImageDisplay();
+      }
 
       function openPropertyModalFromCard(card) {
         if (!card) return;
@@ -256,9 +345,21 @@
         document.getElementById("property-modal-calc-name").textContent = data.title || "this property";
         document.getElementById("property-modal-calc-price").value = formatCurrency(Number(data.price || 0));
 
-        const imageElement = document.getElementById("property-modal-image");
-        imageElement.src = data.imageUrl || "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1000&q=80";
-        imageElement.alt = data.title || "Luxury Property";
+        let images = [];
+        if (data.images) {
+          try {
+            images = JSON.parse(data.images);
+          } catch(e) {
+            images = [];
+          }
+        }
+        if ((!images || images.length === 0) && data.imageUrl) {
+          images = [data.imageUrl];
+        }
+
+        currentModalImages = images;
+        currentModalImageIndex = 0;
+        updateModalImageDisplay();
 
         runPropertyModalCalculator();
         const modal = document.getElementById("property-modal");
@@ -368,6 +469,130 @@
       function resetCardTilt(card) {
         card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
       }
+
+      /* ====================================
+         PROPERTY SEARCH & AUTOCOMPLETE LOGIC
+         Multiowner.in style live search, suggestions,
+         and rotating placeholder.
+         ==================================== */
+      let autocompleteDebounceTimer = null;
+
+      function initPropertySearchAutocomplete() {
+        const searchInput = document.getElementById('keyword-search');
+        const dropdown = document.getElementById('autocomplete-dropdown');
+        const resultsContainer = document.getElementById('autocomplete-results');
+
+        if (!searchInput || !dropdown || !resultsContainer) return;
+
+        // Dynamic rotating placeholder animation using real properties/cities
+        const rawPlaceholders = searchInput.getAttribute("data-placeholders");
+        let placeholders = [];
+        if (rawPlaceholders) {
+          try {
+            placeholders = JSON.parse(rawPlaceholders);
+          } catch (e) {
+            placeholders = [];
+          }
+        }
+        if (!placeholders || placeholders.length === 0) {
+          placeholders = ["Search by title, city, or property type..."];
+        }
+
+        let placeholderIdx = 0;
+        setInterval(() => {
+          if (document.activeElement !== searchInput && searchInput.value === "") {
+            placeholderIdx = (placeholderIdx + 1) % placeholders.length;
+            searchInput.setAttribute("placeholder", placeholders[placeholderIdx]);
+          }
+        }, 3500);
+
+        // Autocomplete input listener
+        searchInput.addEventListener('input', function() {
+          const query = this.value.trim();
+
+          clearTimeout(autocompleteDebounceTimer);
+          if (query.length < 2) {
+            dropdown.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+            return;
+          }
+
+          autocompleteDebounceTimer = setTimeout(() => {
+            fetch(`/properties/autocomplete?q=${encodeURIComponent(query)}`)
+              .then(res => res.json())
+              .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                  resultsContainer.innerHTML = `
+                    <div class="px-5 py-4 text-xs text-gray-400 italic text-center">
+                      No matching properties found for "<span class="text-gold-400 font-semibold">${escapeHtml(query)}</span>"
+                    </div>
+                  `;
+                  dropdown.classList.remove('hidden');
+                  return;
+                }
+
+                let html = '<div class="divide-y divide-white/5">';
+                data.forEach(item => {
+                  const priceFormatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price);
+                  html += `
+                    <a href="/property/${item.id}" class="flex items-center justify-between px-5 py-3.5 hover:bg-gold-500/10 transition-colors group">
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 text-xs">
+                          <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                          <div class="text-sm text-white font-medium group-hover:text-gold-400 transition-colors">${escapeHtml(item.title)}</div>
+                          <div class="text-[10px] text-gray-400 flex items-center gap-2">
+                            <span><i class="fa-solid fa-location-dot text-gold-500/70 mr-1"></i>${escapeHtml(item.city || 'Exclusive')}</span>
+                            <span>•</span>
+                            <span class="text-gold-400/80">${escapeHtml(item.property_type || 'Property')}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <span class="text-xs font-serif text-gold-400 font-semibold block">${priceFormatted}</span>
+                        <span class="text-[9px] uppercase tracking-widest text-gray-500">${escapeHtml(item.listing_type || 'Sale')}</span>
+                      </div>
+                    </a>
+                  `;
+                });
+                html += '</div>';
+
+                resultsContainer.innerHTML = html;
+                dropdown.classList.remove('hidden');
+              })
+              .catch(err => {
+                console.error("Autocomplete error:", err);
+                dropdown.classList.add('hidden');
+              });
+          }, 250);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initPropertySearchAutocomplete();
+      });
+
+      document.addEventListener("turbo:load", function () {
+        initPropertySearchAutocomplete();
+      });
     </script>
   </body>
 </html>
