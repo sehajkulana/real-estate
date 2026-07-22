@@ -344,6 +344,30 @@
           closePropertyModal();
         }
       });
+      /* ====================================
+         3D TILT MOTION EFFECT FOR PROPERTY CARDS
+         Tracks mouse position relative to card center
+         and applies rotateX/Y transforms for a premium
+         perspective-shift feel on hover.
+         ==================================== */
+      function handleCardTilt(event, card) {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const midX = rect.width / 2;
+        const midY = rect.height / 2;
+
+        // Calculate rotational values — up to 10 degrees tilt
+        const rotateY = ((x - midX) / midX) * 10;
+        const rotateX = -((y - midY) / midY) * 10;
+
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      }
+
+      function resetCardTilt(card) {
+        card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+      }
     </script>
   </body>
 </html>

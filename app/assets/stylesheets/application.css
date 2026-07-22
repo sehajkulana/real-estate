@@ -29,17 +29,24 @@ body.overflow-hidden {
   border-bottom: 1px solid rgba(197, 155, 39, 0.15);
 }
 
+/* 3D perspective wrapper for card tilts */
+.tilt-wrapper {
+  perspective: 1000px;
+}
+
 .glass-card {
   background: rgba(20, 20, 22, 0.6);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .glass-card:hover {
   border: 1px solid rgba(197, 155, 39, 0.35);
   box-shadow: 0 16px 40px rgba(197, 155, 39, 0.16);
-  transform: translateY(-4px);
 }
 
 .loader-span {
@@ -77,4 +84,17 @@ input[type="range"]::-moz-range-thumb {
   background: #c59b27;
   border: 2px solid #fff;
   cursor: pointer;
+}
+
+/* Wealth allocation calculator slider tracks */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: #1f2937;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: #1f2937;
 }
