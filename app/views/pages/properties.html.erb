@@ -143,7 +143,7 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     <% @properties.each do |property| %>
       <div class="tilt-wrapper">
-        <% img_urls = property.property_images.map { |pi| pi.image.attached? ? url_for(pi.image) : pi.image_url }.compact_blank %>
+        <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
         <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
                  data-property-modal-trigger="true"
                  data-title="<%= j(property.title) %>"
@@ -160,10 +160,13 @@
                  onmousemove="handleCardTilt(event, this)"
                  onmouseleave="resetCardTilt(this)">
           <div class="relative h-64 overflow-hidden bg-black">
-            <% if property.property_images.first&.image&.attached? %>
-              <%= image_tag property.property_images.first.image, class: "h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" %>
+            <% if img_urls.first.present? %>
+              <img src="<%= img_urls.first %>" alt="<%= property.title %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
             <% else %>
-              <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
+              <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex flex-col items-center justify-center text-gold-400 p-4">
+                <i class="fa-solid fa-building text-3xl mb-2 opacity-50"></i>
+                <span class="text-[10px] tracking-widest uppercase font-semibold text-gray-400">DUA Real Estate</span>
+              </div>
             <% end %>
             <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
             <div class="absolute bottom-4 left-4 flex items-center gap-2">

@@ -245,7 +245,11 @@ class PagesController < ApplicationController
 
       uploaded_images.each_with_index do |uploaded_image, index|
         property_image = @property.property_images.build(is_cover: index.zero?)
-        property_image.image.attach(uploaded_image)
+        if uploaded_image.respond_to?(:read) || uploaded_image.is_a?(ActionDispatch::Http::UploadedFile)
+          property_image.image.attach(uploaded_image)
+        elsif uploaded_image.is_a?(String) && uploaded_image.start_with?("http", "/", "data:")
+          property_image.image_url = uploaded_image
+        end
         property_image.save!
       end
     end
@@ -253,6 +257,7 @@ class PagesController < ApplicationController
     true
   rescue ActiveRecord::RecordInvalid => e
     Rails.logger.error("Property creation invalid: #{e.message}")
+    @property.errors.add(:base, e.message)
     false
   rescue StandardError => e
     Rails.logger.error("Property creation error: #{e.message}")

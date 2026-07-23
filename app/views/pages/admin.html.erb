@@ -27,7 +27,7 @@
   <% end %>
 
   <div class="glass-card rounded-3xl p-8">
-    <%= form_with model: @property, url: create_property_path, local: true, class: "space-y-10" do |f| %>
+    <%= form_with model: @property, url: create_property_path, local: true, html: { multipart: true }, class: "space-y-10" do |f| %>
 
       <%# ===== SECTION 1: BASIC INFO ===== %>
       <div>
@@ -195,7 +195,7 @@
         </h2>
         <div>
           <label class="block text-sm text-gray-300 mb-2">Upload Images <span class="text-gray-500 text-xs">(first image becomes cover)</span></label>
-          <%= file_field_tag "property[images][]", multiple: true, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white file:mr-4 file:rounded-full file:border-0 file:bg-gold-500 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-obsidian-950 file:uppercase file:tracking-widest hover:file:bg-gold-600 file:cursor-pointer file:transition-all" %>
+          <%= f.file_field :images, multiple: true, name: "property[images][]", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white file:mr-4 file:rounded-full file:border-0 file:bg-gold-500 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-obsidian-950 file:uppercase file:tracking-widest hover:file:bg-gold-600 file:cursor-pointer file:transition-all" %>
         </div>
       </div>
 

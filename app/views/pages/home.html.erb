@@ -162,63 +162,6 @@
     </div>
   </div>
 
-  <%# ===== BROWSE BY PROPERTY TYPE CATEGORIES ===== %>
-  <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
-      <div>
-        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Portfolio Categories</span>
-        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property Type</h2>
-      </div>
-      <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Click any property type below to view curated listings in that category.</p>
-    </div>
-
-    <!-- Single horizontal row with overlay move buttons -->
-    <div class="relative group/categories">
-      <button type="button"
-              onclick="scrollCategoriesLeft()"
-              aria-label="Scroll left"
-              class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
-      <div id="categories-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
-        <% (@property_type_categories || []).each do |cat| %>
-          <a href="<%= properties_path(property_type: cat[:name]) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
-            <img src="<%= cat[:image_url] %>" alt="<%= cat[:name] %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
-            <div class="relative z-10">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
-                <%= cat[:count] %> <%= 'Listing'.pluralize(cat[:count]) %>
-              </span>
-              <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
-                <span><%= cat[:name] %></span>
-                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
-              </h3>
-            </div>
-          </a>
-        <% end %>
-      </div>
-
-      <button type="button"
-              onclick="scrollCategoriesRight()"
-              aria-label="Scroll right"
-              class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-    </div>
-  </div>
-
-  <script>
-    function scrollCategoriesLeft() {
-      const container = document.getElementById("categories-scroll-container");
-      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-    function scrollCategoriesRight() {
-      const container = document.getElementById("categories-scroll-container");
-      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  </script>
-
   <%# ===== 4 SHOWCASE SECTIONS (FEATURED, OWNER, LATEST PROJECTS, BUSINESS FOR SALE) ===== %>
   <% showcase_sections = [
        { key: "featured", title: "Featured Properties", subtitle: "Handpicked Luxury Assets", properties: @featured_properties, path: properties_path(featured: 'true') },
@@ -255,7 +198,7 @@
           <div id="prop-section-scroll-<%= sec[:key] %>" class="flex gap-6 overflow-x-auto pb-6 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
             <% sec[:properties].take(10).each do |property| %>
               <div class="snap-start flex-none w-[300px] sm:w-[340px] tilt-wrapper">
-                <% img_urls = property.property_images.map { |pi| pi.image.attached? ? url_for(pi.image) : pi.image_url }.compact_blank %>
+                <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
                 <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
                          data-property-modal-trigger="true"
                          data-title="<%= j(property.title) %>"
@@ -272,12 +215,13 @@
                          onmousemove="handleCardTilt(event, this)"
                          onmouseleave="resetCardTilt(this)">
                   <div class="relative h-60 overflow-hidden bg-black">
-                    <% if property.property_images.first&.image&.attached? %>
-                      <%= image_tag property.property_images.first.image, class: "h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" %>
-                    <% elsif img_urls.first.present? %>
-                      <img src="<%= img_urls.first %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <% if img_urls.first.present? %>
+                      <img src="<%= img_urls.first %>" alt="<%= property.title %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <% else %>
-                      <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900"></div>
+                      <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex flex-col items-center justify-center text-gold-400 p-4">
+                        <i class="fa-solid fa-building text-3xl mb-2 opacity-50"></i>
+                        <span class="text-[10px] tracking-widest uppercase font-semibold text-gray-400">DUA Real Estate</span>
+                      </div>
                     <% end %>
                     <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
                     <div class="absolute bottom-4 left-4 flex items-center gap-2">
@@ -340,6 +284,63 @@
     function scrollPropSectionRight(key) {
       const container = document.getElementById(`prop-section-scroll-${key}`);
       if (container) container.scrollBy({ left: 360, behavior: 'smooth' });
+    }
+  </script>
+
+  <%# ===== BROWSE BY PROPERTY TYPE CATEGORIES ===== %>
+  <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+      <div>
+        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Portfolio Categories</span>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property Type</h2>
+      </div>
+      <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Click any property type below to view curated listings in that category.</p>
+    </div>
+
+    <!-- Single horizontal row with overlay move buttons -->
+    <div class="relative group/categories">
+      <button type="button"
+              onclick="scrollCategoriesLeft()"
+              aria-label="Scroll left"
+              class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div id="categories-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
+        <% (@property_type_categories || []).each do |cat| %>
+          <a href="<%= properties_path(property_type: cat[:name]) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
+            <img src="<%= cat[:image_url] %>" alt="<%= cat[:name] %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
+            <div class="relative z-10">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
+                <%= cat[:count] %> <%= 'Listing'.pluralize(cat[:count]) %>
+              </span>
+              <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
+                <span><%= cat[:name] %></span>
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
+              </h3>
+            </div>
+          </a>
+        <% end %>
+      </div>
+
+      <button type="button"
+              onclick="scrollCategoriesRight()"
+              aria-label="Scroll right"
+              class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function scrollCategoriesLeft() {
+      const container = document.getElementById("categories-scroll-container");
+      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+    function scrollCategoriesRight() {
+      const container = document.getElementById("categories-scroll-container");
+      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
     }
   </script>
 

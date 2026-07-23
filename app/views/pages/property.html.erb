@@ -1,5 +1,5 @@
 <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <% images = @property.property_images.map { |pi| pi.image.attached? ? url_for(pi.image) : pi.image_url }.compact_blank %>
+  <% images = @property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
 
   <div class="mb-8">
     <div class="flex items-center gap-3 mb-2">
