@@ -2,31 +2,33 @@ class PagesController < ApplicationController
   before_action :ensure_valid_cities, only: [:home, :properties]
 
   def home
-    @featured_properties = Property.where(featured: true)
-                                   .includes(property_images: { image_attachment: :blob })
-                                   .order(created_at: :desc)
-                                   .limit(10)
+    base_properties = Property.active_listings
+
+    @featured_properties = base_properties.where(featured: true)
+                                          .includes(property_images: { image_attachment: :blob })
+                                          .order(created_at: :desc)
+                                          .limit(10)
     if @featured_properties.empty?
-      @featured_properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc).limit(10)
+      @featured_properties = base_properties.includes(property_images: { image_attachment: :blob }).order(created_at: :desc).limit(10)
     end
 
     owner_user_ids = User.where(role: ["owner", "seller", "user"]).pluck(:id)
-    @owner_properties = Property.where(seller_id: owner_user_ids)
-                                .or(Property.where("ownership ILIKE ?", "%owner%"))
-                                .includes(property_images: { image_attachment: :blob })
-                                .order(created_at: :desc)
-                                .limit(10)
+    @owner_properties = base_properties.where(seller_id: owner_user_ids)
+                                       .or(base_properties.where("ownership ILIKE ?", "%owner%"))
+                                       .includes(property_images: { image_attachment: :blob })
+                                       .order(created_at: :desc)
+                                       .limit(10)
 
-    @latest_projects = Property.where("construction_status ILIKE ? OR construction_status ILIKE ?", "%under construction%", "%new%")
-                               .or(Property.where("created_at >= ?", 90.days.ago))
-                               .includes(property_images: { image_attachment: :blob })
-                               .order(created_at: :desc)
-                               .limit(10)
+    @latest_projects = base_properties.where("construction_status ILIKE ? OR construction_status ILIKE ?", "%under construction%", "%new%")
+                                      .or(base_properties.where("created_at >= ?", 90.days.ago))
+                                      .includes(property_images: { image_attachment: :blob })
+                                      .order(created_at: :desc)
+                                      .limit(10)
 
-    @business_properties = Property.where("property_type ILIKE ? OR property_type ILIKE ? OR property_type ILIKE ? OR property_type ILIKE ?", "%Commercial%", "%Shop%", "%Office%", "%Industrial%")
-                                   .includes(property_images: { image_attachment: :blob })
-                                   .order(created_at: :desc)
-                                   .limit(10)
+    @business_properties = base_properties.where("property_type ILIKE ? OR property_type ILIKE ? OR property_type ILIKE ? OR property_type ILIKE ?", "%Commercial%", "%Shop%", "%Office%", "%Industrial%")
+                                          .includes(property_images: { image_attachment: :blob })
+                                          .order(created_at: :desc)
+                                          .limit(10)
 
     @agents = User.where(role: "agent")
                   .left_joins(:listed_properties)
@@ -41,7 +43,7 @@ class PagesController < ApplicationController
     if @is_filtered
       @search_city = @filters["city"].to_s.strip
       @keyword = @filters["keyword"].to_s.strip
-      @filtered_properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+      @filtered_properties = base_properties.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
 
       if @keyword.present?
         keyword_pattern = "%#{@keyword}%"
@@ -76,8 +78,8 @@ class PagesController < ApplicationController
 
     @cities = City.active.includes(image_attachment: :blob).order(:name) if defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities)
     @cities ||= []
-    @available_cities = @cities.map(&:name).presence || Property.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
-    @placeholders = Property.where.not(city: [nil, ""]).pluck(:title, :city, :property_type).map do |title, city, ptype|
+    @available_cities = @cities.map(&:name).presence || Property.active_listings.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
+    @placeholders = Property.active_listings.where.not(city: [nil, ""]).pluck(:title, :city, :property_type).map do |title, city, ptype|
       if title.present?
         "#{title} in #{city}"
       else
@@ -102,9 +104,9 @@ class PagesController < ApplicationController
       query_scope = if parts.size > 1
                       clause = parts.map { "property_type ILIKE ?" }.join(" OR ")
                       values = parts.map { |p| "%#{p}%" }
-                      Property.where(clause, *values)
+                      Property.active_listings.where(clause, *values)
                     else
-                      Property.where("property_type ILIKE ?", "%#{type_name}%")
+                      Property.active_listings.where("property_type ILIKE ?", "%#{type_name}%")
                     end
 
       prop = query_scope.includes(property_images: { image_attachment: :blob }).first
@@ -141,7 +143,7 @@ class PagesController < ApplicationController
     @filters = property_filter_params.to_h
     @search_city = @filters["city"].to_s.strip
     @keyword = @filters["keyword"].to_s.strip
-    @properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+    @properties = Property.active_listings.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
 
     if params[:featured] == "true"
       @properties = @properties.where(featured: true).or(@properties.where("views > 0"))
@@ -187,8 +189,8 @@ class PagesController < ApplicationController
       lt = @filters["listing_type"].to_s.strip
       @properties = @properties.where("properties.listing_type ILIKE ?", "%#{lt}%")
     end
-    @available_cities = Property.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
-    @placeholders = Property.where.not(city: [nil, ""]).pluck(:title, :city, :property_type).map do |title, city, ptype|
+    @available_cities = Property.active_listings.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
+    @placeholders = Property.active_listings.where.not(city: [nil, ""]).pluck(:title, :city, :property_type).map do |title, city, ptype|
       if title.present?
         "#{title} in #{city}"
       else
@@ -205,7 +207,7 @@ class PagesController < ApplicationController
 
     if query.length >= 2
       keyword_pattern = "%#{query}%"
-      properties = Property.where(
+      properties = Property.active_listings.where(
         "properties.title ILIKE :q OR properties.city ILIKE :q OR properties.address ILIKE :q OR properties.state ILIKE :q OR properties.property_type ILIKE :q",
         q: keyword_pattern
       ).select(:id, :title, :city, :property_type, :price, :listing_type).limit(8)
@@ -226,7 +228,8 @@ class PagesController < ApplicationController
   end
 
   def property
-    @property = Property.includes(property_images: { image_attachment: :blob }).find(params[:id])
+    @property = Property.active_listings.includes(property_images: { image_attachment: :blob }).find_by(id: params[:id])
+    redirect_to properties_path, alert: "Property not found or is currently inactive." unless @property
   end
 
   def blog; end
@@ -234,6 +237,73 @@ class PagesController < ApplicationController
   def blog_post; end
 
   def contact; end
+
+  def create_inquiry
+    name = params[:name].to_s.strip
+    email = params[:email].to_s.strip
+    phone = params[:phone].to_s.strip
+    message = params[:message].to_s.strip
+
+    prop_id = params[:property_id].presence ||
+              params.dig(:property_inquiry, :property_id).presence ||
+              params.dig(:inquiry, :property_id).presence
+
+    property = Property.find_by(id: prop_id) if prop_id.present?
+    property ||= Property.first
+
+    seller = property&.seller || User.find_by(role: ["agent", "admin"]) || User.first
+    buyer = (defined?(current_user) && current_user) ? current_user : User.first
+
+    if name.blank? || email.blank?
+      redirect_back fallback_location: contact_path, alert: "Please provide your Name and Email to submit an inquiry."
+      return
+    end
+
+    inquiry = PropertyInquiry.new(
+      name: name,
+      email: email,
+      phone: phone,
+      message: message,
+      property: property,
+      seller: seller,
+      buyer: buyer
+    )
+
+    if inquiry.save
+      prop_title = property ? "'#{property.title}'" : "the property"
+      redirect_back fallback_location: contact_path, notice: "Thank you! Your inquiry for #{prop_title} has been submitted successfully."
+    else
+      redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(', ')}"
+    end
+  end
+
+  def create_report
+    prop_id = params[:property_id].presence
+    reason = params[:reason].to_s.strip
+    description = params[:description].to_s.strip
+
+    property = Property.find_by(id: prop_id)
+    user = (defined?(current_user) && current_user) ? current_user : User.first
+
+    if property.nil?
+      redirect_back fallback_location: root_path, alert: "Could not submit report: Property not found."
+      return
+    end
+
+    report = Report.new(
+      property: property,
+      reported_by: user,
+      reason: reason.presence || "Inaccurate Information",
+      description: description.presence || "User reported an issue with this property listing.",
+      status: "pending"
+    )
+
+    if report.save
+      redirect_back fallback_location: root_path, notice: "Thank you! The property listing has been flagged and submitted to administrators for review."
+    else
+      redirect_back fallback_location: root_path, alert: "Could not submit report: #{report.errors.full_messages.join(', ')}"
+    end
+  end
 
   def admin
     @property = Property.new

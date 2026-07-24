@@ -11,21 +11,25 @@
       </div>
     </div>
     <div class="glass-card rounded-3xl p-8">
-      <form class="space-y-5">
+      <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-5" do |f| %>
         <div>
-          <label class="block text-sm text-gray-300 mb-2">Name</label>
-          <input class="w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" placeholder="Your name">
+          <label class="block text-sm text-gray-300 mb-2">Name <span class="text-red-400">*</span></label>
+          <%= f.text_field :name, required: true, placeholder: "Your name", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
         </div>
         <div>
-          <label class="block text-sm text-gray-300 mb-2">Email</label>
-          <input class="w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" placeholder="Your email">
+          <label class="block text-sm text-gray-300 mb-2">Email <span class="text-red-400">*</span></label>
+          <%= f.email_field :email, required: true, placeholder: "Your email", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
         </div>
         <div>
-          <label class="block text-sm text-gray-300 mb-2">Message</label>
-          <textarea class="w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" rows="5" placeholder="Tell us about your ideal property"></textarea>
+          <label class="block text-sm text-gray-300 mb-2">Phone</label>
+          <%= f.telephone_field :phone, placeholder: "Your phone number", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
         </div>
-        <button class="w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-semibold uppercase text-xs py-3 px-4 rounded-full transition-all">Send Inquiry</button>
-      </form>
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Message <span class="text-red-400">*</span></label>
+          <%= f.text_area :message, required: true, rows: 4, placeholder: "Tell us about your ideal property...", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+        </div>
+        <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-semibold uppercase text-xs py-3 px-4 rounded-full transition-all cursor-pointer" %>
+      <% end %>
     </div>
   </div>
 </section>

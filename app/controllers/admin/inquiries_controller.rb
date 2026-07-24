@@ -9,4 +9,11 @@ class Admin::InquiriesController < Admin::BaseController
       "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%"
     ) if params[:q].present?
   end
+
+  def destroy
+    @inquiry = PropertyInquiry.find(params[:id])
+    name = @inquiry.name.presence || "Inquiry ##{@inquiry.id}"
+    @inquiry.destroy
+    redirect_to admin_inquiries_path, notice: "Inquiry from '#{name}' deleted successfully."
+  end
 end

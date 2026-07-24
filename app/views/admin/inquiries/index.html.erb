@@ -35,6 +35,7 @@
           <th>Contact</th>
           <th>Message</th>
           <th>Date</th>
+          <th style="text-align:right;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -72,10 +73,18 @@
               <td style="font-size:11px;color:#6b7280;white-space:nowrap;">
                 <%= inq.created_at.strftime("%d %b %Y") rescue "—" %>
               </td>
+              <td style="text-align:right;white-space:nowrap;">
+                <%= button_to admin_inquiry_path(inq), method: :delete,
+                  data: { confirm: "Delete inquiry from #{inq.name.presence || 'this buyer'}?" },
+                  class: "a-btn a-btn-danger a-btn-sm",
+                  form: { style: "display:inline;" } do %>
+                  <i class="fa-solid fa-trash"></i>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         <% else %>
-          <tr><td colspan="6">
+          <tr><td colspan="7">
             <div class="a-empty">
               <i class="fa-solid fa-envelope"></i>
               <p>No inquiries yet</p>

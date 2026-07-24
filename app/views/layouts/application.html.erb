@@ -67,6 +67,22 @@
     <%= render "shared/navbar" %>
 
     <main class="pt-24 md:pt-28 min-h-[calc(100vh-100px)]">
+      <% if flash[:notice] %>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-gold-500/40 bg-gold-500/10 px-5 py-4 text-gold-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
+            <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+            <span><%= flash[:notice] %></span>
+          </div>
+        </div>
+      <% end %>
+      <% if flash[:alert] %>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-red-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
+            <i class="fa-solid fa-circle-exclamation text-red-400 text-lg"></i>
+            <span><%= flash[:alert] %></span>
+          </div>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
 
@@ -147,9 +163,50 @@
                   <span id="property-modal-price" class="font-serif text-3xl font-bold text-gold-500 gold-glow"></span>
                 </div>
 
-                <div class="space-y-3 border-t border-white/5 pt-4">
-                  <%= link_to "Private Inquiry Advisory", contact_path, class: "block w-full rounded bg-gold-500 px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.25em] text-obsidian-950 transition hover:bg-gold-600" %>
-                  <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-3 text-xs font-medium uppercase tracking-[0.25em] text-white transition hover:border-gold-500/50">Analyze Investment Loans</button>
+                <div class="space-y-4 border-t border-white/5 pt-4">
+                  <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-white flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
+                  </h3>
+                  <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                    <input type="hidden" name="property_id" id="modal-inquiry-property-id" value="">
+                    <div>
+                      <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.text_area :message, required: true, rows: 2, placeholder: "I'm interested in this property. Please contact me...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-4 rounded-xl transition-all cursor-pointer shadow-lg" %>
+                  <% end %>
+                  <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.25em] text-gray-400 transition hover:text-white hover:border-gold-500/50">Analyze Investment Loans</button>
+                </div>
+
+                <div class="border-t border-white/5 pt-4">
+                  <details class="group">
+                    <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
+                      <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-flag"></i> Report this listing to Admin
+                      </span>
+                      <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <div class="pt-3">
+                      <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                        <input type="hidden" name="property_id" id="modal-report-property-id" value="">
+                        <div>
+                          <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                        </div>
+                        <div>
+                          <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                        </div>
+                        <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
+                      <% end %>
+                    </div>
+                  </details>
                 </div>
               </div>
             </div>
@@ -344,6 +401,15 @@
         }
         document.getElementById("property-modal-calc-name").textContent = data.title || "this property";
         document.getElementById("property-modal-calc-price").value = formatCurrency(Number(data.price || 0));
+        const propId = data.id || card.getAttribute("data-id") || "";
+        const modalReportIdElem = document.getElementById("modal-report-property-id");
+        if (modalReportIdElem) {
+          modalReportIdElem.value = propId;
+        }
+        const modalInquiryIdElem = document.getElementById("modal-inquiry-property-id");
+        if (modalInquiryIdElem) {
+          modalInquiryIdElem.value = propId;
+        }
 
         let images = [];
         if (data.images) {

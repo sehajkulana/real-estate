@@ -71,7 +71,13 @@
           </div>
           <div>
             <label class="block text-sm text-gray-300 mb-2">City</label>
-            <%= f.text_field :city, placeholder: "e.g. Malibu", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+            <% city_list = defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities) ? City.order(:name).pluck(:name) : [] %>
+            <% city_list = (city_list + [f.object&.city]).compact_blank.uniq.sort if f.object&.city.present? %>
+            <% if city_list.any? %>
+              <%= f.select :city, options_for_select(city_list, f.object&.city), { include_blank: "-- Select City --" }, { class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" } %>
+            <% else %>
+              <%= f.text_field :city, placeholder: "e.g. Malibu", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+            <% end %>
           </div>
           <div>
             <label class="block text-sm text-gray-300 mb-2">State</label>

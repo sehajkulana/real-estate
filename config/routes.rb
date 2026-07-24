@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   get "blog" => "pages#blog", as: :blog
   get "blog_post" => "pages#blog_post", as: :blog_post
   get "contact" => "pages#contact", as: :contact
+  post "contact" => "pages#create_inquiry"
+  post "inquiries" => "pages#create_inquiry", as: :create_inquiry
+  post "reports" => "pages#create_report", as: :create_report
 
   # ─── Admin Namespace ─────────────────────────────────────────────
   namespace :admin do
@@ -30,8 +33,8 @@ Rails.application.routes.draw do
     # Cities — full CRUD
     resources :cities, only: [:index, :new, :create, :edit, :update, :destroy]
 
-    # Inquiries — read-only list
-    resources :inquiries, only: [:index]
+    # Inquiries — list + destroy
+    resources :inquiries, only: [:index, :destroy]
 
     # Appointments — list + status update
     resources :appointments, only: [:index, :update]

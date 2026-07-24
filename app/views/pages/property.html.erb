@@ -5,6 +5,15 @@
     <div class="flex items-center gap-3 mb-2">
       <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.listing_type %></span>
       <span class="bg-obsidian-950 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.property_type %></span>
+      <% p_status = @property.status.presence || 'Active' %>
+      <% status_style = case p_status.to_s.downcase
+         when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
+         when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
+         when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
+         when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
+         else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
+         end %>
+      <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= p_status %></span>
     </div>
     <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight"><%= @property.title %></h1>
     <p class="text-gold-400 text-sm font-medium uppercase tracking-widest mt-2 flex items-center gap-2">
@@ -88,10 +97,49 @@
           </div>
         <% end %>
 
-        <div class="pt-4 border-t border-white/5 flex gap-4">
-          <%= link_to contact_path, class: "w-full text-center bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3.5 px-6 rounded-full transition-all" do %>
-            <i class="fa-solid fa-calendar-check mr-2"></i> Request Private Tour
+        <div class="pt-6 border-t border-white/5 space-y-4">
+          <h3 class="text-sm text-white uppercase tracking-widest font-bold flex items-center gap-2">
+            <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
+          </h3>
+          <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+            <%= f.hidden_field :property_id, value: @property.id %>
+            <div>
+              <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.text_area :message, required: true, rows: 3, placeholder: "I'm interested in #{@property.title}. Please provide more details...", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-6 rounded-full transition-all cursor-pointer" %>
           <% end %>
+        </div>
+
+        <div class="pt-4 border-t border-white/5">
+          <details class="group">
+            <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-flag"></i> Report this listing to Admin
+              </span>
+              <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+            </summary>
+            <div class="pt-3">
+              <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                <%= f.hidden_field :property_id, value: @property.id %>
+                <div>
+                  <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-950/90 px-3 py-2 text-xs text-white" %>
+                </div>
+                <div>
+                  <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/90 px-3 py-2 text-xs text-white" %>
+                </div>
+                <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
+              <% end %>
+            </div>
+          </details>
         </div>
       </div>
     </div>

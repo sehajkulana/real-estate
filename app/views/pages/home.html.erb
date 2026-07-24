@@ -191,7 +191,7 @@
         <% cities_to_display = @cities.presence || (@available_cities || []).map { |c| City.find_by(name: c) || City.new(name: c) } %>
         <% cities_to_display.each do |c_obj| %>
           <% city_name = c_obj.name %>
-          <% city_count = Property.where("city ILIKE ?", city_name).count %>
+          <% city_count = Property.active_listings.where("city ILIKE ?", city_name).count %>
           <% next if city_count == 0 %>
           <% img_src = c_obj.respond_to?(:display_image_url) ? c_obj.display_image_url : 'https://images.unsplash.com/photo-1571210983196-17b1ff4473de?auto=format&fit=crop&w=800&q=80' %>
           <a href="<%= properties_path(city: city_name) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
@@ -267,6 +267,7 @@
                 <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
                 <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
                          data-property-modal-trigger="true"
+                         data-id="<%= property.id %>"
                          data-title="<%= j(property.title) %>"
                          data-description="<%= j(property.description.to_s) %>"
                          data-price="<%= property.price.to_i %>"
@@ -290,6 +291,19 @@
                       </div>
                     <% end %>
                     <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
+                    <% p_status = property.status.presence || 'Active' %>
+                    <% status_style = case p_status.to_s.downcase
+                       when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
+                       when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
+                       when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
+                       when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
+                       else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
+                       end %>
+                    <div class="absolute top-4 right-4 z-10">
+                      <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur-md">
+                        <%= p_status %>
+                      </span>
+                    </div>
                     <div class="absolute bottom-4 left-4 flex items-center gap-2">
                       <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
                       <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
@@ -346,6 +360,7 @@
                   <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
                   <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
                            data-property-modal-trigger="true"
+                           data-id="<%= property.id %>"
                            data-title="<%= j(property.title) %>"
                            data-description="<%= j(property.description.to_s) %>"
                            data-price="<%= property.price.to_i %>"
@@ -369,6 +384,19 @@
                         </div>
                       <% end %>
                       <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
+                      <% p_status = property.status.presence || 'Active' %>
+                      <% status_style = case p_status.to_s.downcase
+                         when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
+                         when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
+                         when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
+                         when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
+                         else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
+                         end %>
+                      <div class="absolute top-4 right-4 z-10">
+                        <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur-md">
+                          <%= p_status %>
+                        </span>
+                      </div>
                       <div class="absolute bottom-4 left-4 flex items-center gap-2">
                         <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
                         <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
