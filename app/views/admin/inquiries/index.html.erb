@@ -1,0 +1,88 @@
+<% content_for :page_title, "Inquiries" %>
+<% content_for :breadcrumb, "Inquiries" %>
+
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Property Inquiries</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @inquiries.size %> total</p>
+  </div>
+</div>
+
+<!-- Search -->
+<%= form_with url: admin_inquiries_path, method: :get, local: true do |f| %>
+  <div style="display:flex;gap:10px;margin-bottom:20px;">
+    <div class="a-search" style="flex:1;max-width:380px;">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <%= f.text_field :q, value: params[:q], placeholder: "Search by buyer name, email…", class: "a-input", style: "padding-left:33px;" %>
+    </div>
+    <%= f.submit "Search", class: "a-btn a-btn-outline" %>
+    <% if params[:q].present? %>
+      <%= link_to "Clear", admin_inquiries_path, class: "a-btn a-btn-outline" %>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Table -->
+<div class="a-card">
+  <div class="a-table-wrap">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Property</th>
+          <th>Buyer</th>
+          <th>Contact</th>
+          <th>Message</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @inquiries.any? %>
+          <% @inquiries.each_with_index do |inq, idx| %>
+            <tr>
+              <td style="color:#6b7280;font-size:12px;"><%= idx + 1 %></td>
+              <td>
+                <div style="font-weight:600;color:#f3f4f6;font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= inq.property&.title&.truncate(35) || "(Deleted)" %>
+                </div>
+                <div style="font-size:11px;color:#6b7280;"><%= inq.property&.city %></div>
+              </td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="a-avatar" style="background:rgba(197,155,39,0.1);color:var(--gold-400);font-size:11px;">
+                    <%= inq.name.to_s.first.upcase.presence || inq.buyer&.first_name&.first&.upcase || "?" %>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;color:#e5e7eb;font-weight:500;">
+                      <%= inq.name.presence || "#{inq.buyer&.first_name} #{inq.buyer&.last_name}" %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div style="font-size:12px;color:#9ca3af;"><%= inq.email %></div>
+                <div style="font-size:11px;color:#6b7280;"><%= inq.phone %></div>
+              </td>
+              <td style="max-width:220px;">
+                <div style="font-size:12px;color:#9ca3af;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= inq.message&.truncate(60) || "—" %>
+                </div>
+              </td>
+              <td style="font-size:11px;color:#6b7280;white-space:nowrap;">
+                <%= inq.created_at.strftime("%d %b %Y") rescue "—" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="6">
+            <div class="a-empty">
+              <i class="fa-solid fa-envelope"></i>
+              <p>No inquiries yet</p>
+            </div>
+          </td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

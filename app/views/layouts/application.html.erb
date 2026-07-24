@@ -176,7 +176,7 @@
                       <span>Initial Down Payment</span>
                       <span id="property-modal-calc-down-label" class="font-semibold text-gold-400">$400,000 (20%)</span>
                     </div>
-                    <input type="range" id="property-modal-calc-down" min="10" max="80" step="5" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <input type="range" id="property-modal-calc-down" min="10" max="80" step="1" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
                     <div class="mt-1 flex justify-between text-[10px] text-gray-600">
                       <span>10% Min</span>
                       <span>80% Max</span>
@@ -201,7 +201,7 @@
                       <span>Loan Repayment Duration</span>
                       <span id="property-modal-calc-term-label" class="font-semibold text-gold-400">30 Years</span>
                     </div>
-                    <input type="range" id="property-modal-calc-term" min="5" max="30" step="5" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <input type="range" id="property-modal-calc-term" min="5" max="30" step="1" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
                     <div class="mt-1 flex justify-between text-[10px] text-gray-600">
                       <span>5 Years</span>
                       <span>30 Years</span>
@@ -397,9 +397,12 @@
 
       function runPropertyModalCalculator() {
         const price = Number(activePropertyModalData?.price || 0);
-        const downPct = Number(document.getElementById("property-modal-calc-down")?.value || 20) / 100;
-        const annualRate = Number(document.getElementById("property-modal-calc-rate")?.value || 5.5) / 100;
+        const downVal = Number(document.getElementById("property-modal-calc-down")?.value || 20);
+        const rateVal = Number(document.getElementById("property-modal-calc-rate")?.value || 5.5);
         const years = Number(document.getElementById("property-modal-calc-term")?.value || 30);
+
+        const downPct = downVal / 100;
+        const annualRate = rateVal / 100;
         const downPayment = price * downPct;
         const loanAmount = price - downPayment;
         const monthlyRate = annualRate / 12;
@@ -407,9 +410,9 @@
         const payment = monthlyRate > 0 ? (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)) : loanAmount / months;
         const totalInterest = payment * months - loanAmount;
 
-        document.getElementById("property-modal-calc-down-label").textContent = `${formatCurrency(downPayment)} (${Math.round(downPct * 100)}%)`;
-        document.getElementById("property-modal-calc-rate-label").textContent = `${(annualRate * 100).toFixed(1)}%`;
-        document.getElementById("property-modal-calc-term-label").textContent = `${years} Years`;
+        document.getElementById("property-modal-calc-down-label").textContent = `${formatCurrency(downPayment)} (${Math.round(downVal)}%)`;
+        document.getElementById("property-modal-calc-rate-label").textContent = `${Number(rateVal.toFixed(2))}%`;
+        document.getElementById("property-modal-calc-term-label").textContent = `${Math.round(years)} Years`;
         document.getElementById("property-modal-financed").textContent = formatCurrency(loanAmount);
         document.getElementById("property-modal-interest").textContent = formatCurrency(totalInterest);
         document.getElementById("property-modal-monthly").textContent = `${formatCurrency(payment)}/mo`;

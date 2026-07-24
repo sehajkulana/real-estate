@@ -21,25 +21,25 @@
       </p>      <div class="max-w-4xl mx-auto glass-card p-6 md:p-8 rounded-3xl border border-white/10 shadow-2xl text-left">
         <%# ===== Buy / Rent / All Tabs ===== %>
         <div class="flex gap-2 mb-5">
-          <a href="<%= properties_path(@filters.except('listing_type').merge(listing_type: 'Sale')) %>"
+          <a href="<%= root_path(@filters.except('listing_type', 'filter').merge(listing_type: 'Sale')) %>"
              class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border
-                    <%= @filters['listing_type'].to_s.downcase.include?('sale') ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
+                    <%= (@filters['listing_type'].to_s.downcase.include?('sale') && @filters['filter'] != 'all') ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
             Buy
           </a>
-          <a href="<%= properties_path(@filters.except('listing_type').merge(listing_type: 'Rent')) %>"
+          <a href="<%= root_path(@filters.except('listing_type', 'filter').merge(listing_type: 'Rent')) %>"
              class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border
-                    <%= @filters['listing_type'].to_s.downcase.include?('rent') ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
+                    <%= (@filters['listing_type'].to_s.downcase.include?('rent') && @filters['filter'] != 'all') ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
             Rent
           </a>
-          <a href="<%= properties_path(@filters.except('listing_type')) %>"
+          <a href="<%= root_path(@filters.except('listing_type').merge(filter: 'all')) %>"
              class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border
-                    <%= @filters['listing_type'].blank? ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
+                    <%= @filters['filter'] == 'all' ? 'bg-gold-500 text-obsidian-950 border-gold-500' : 'border-white/10 text-gray-300 hover:border-gold-500/50 hover:text-gold-400' %>">
             All
           </a>
         </div>
 
         <%# ===== Search Form ===== %>
-        <%= form_with url: properties_path, method: :get, local: true, id: "home-property-search-form" do %>
+        <%= form_with url: root_path, method: :get, local: true, id: "home-property-search-form" do %>
           <% if @filters['listing_type'].present? %>
             <input type="hidden" name="listing_type" value="<%= @filters['listing_type'] %>">
           <% end %>
@@ -79,7 +79,7 @@
               <% quick_types.each do |type| %>
                 <% is_selected = @filters['property_type'].to_s.downcase == type.downcase %>
                 <% tag_params = is_selected ? @filters.except('property_type') : @filters.merge(property_type: type) %>
-                <a href="<%= properties_path(tag_params) %>"
+                <a href="<%= root_path(tag_params) %>"
                    class="px-4 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-widest transition-all border
                           <%= is_selected ? 'bg-gold-500/20 text-gold-400 border-gold-500/50' : 'border-white/10 text-gray-400 hover:border-gold-500/30 hover:text-gold-400' %>">
                   <%= type %>
@@ -135,6 +135,24 @@
             </div>
           </details>
         <% end %>
+
+        <%# ===== Active Filters Display ===== %>
+        <% active_filters = @filters.select { |k, v| v.present? && !['filter'].include?(k) } %>
+        <% if active_filters.any? %>
+          <div class="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-white/10">
+            <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Active:</span>
+            <% active_filters.each do |key, value| %>
+              <span class="inline-flex items-center gap-1.5 bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full">
+                <%= key.humanize %>: <%= value %>
+                <a href="<%= root_path(active_filters.except(key)) %>" class="text-gold-500 hover:text-white ml-1"><i class="fa-solid fa-xmark text-[8px]"></i></a>
+              </span>
+            <% end %>
+            <a href="<%= root_path %>" class="text-[10px] text-gray-400 hover:text-gold-400 uppercase tracking-widest font-semibold ml-2 flex items-center gap-1">
+              <i class="fa-solid fa-rotate-left text-[9px]"></i>
+              <span>Clear All</span>
+            </a>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -150,13 +168,80 @@
     </div>
   </div>
 
-  <%# ===== 4 SHOWCASE SECTIONS (FEATURED, OWNER, LATEST PROJECTS, BUSINESS FOR SALE) ===== %>
-  <% showcase_sections = [
-       { key: "featured", title: "Featured Properties", subtitle: "Handpicked Luxury Assets", properties: @featured_properties, path: properties_path(featured: 'true') },
-       { key: "owner", title: "Properties by Owner", subtitle: "Direct Owner Listings", properties: @owner_properties, path: properties_path(owner: 'true') },
-       { key: "latest", title: "Latest Projects", subtitle: "New Launches & Developments", properties: @latest_projects, path: properties_path(section: 'latest_projects') },
-       { key: "business", title: "Business for Sale", subtitle: "Commercial & Business Assets", properties: @business_properties, path: properties_path(section: 'business_for_sale') }
-     ] %>
+  <%# ===== BROWSE BY PROPERTY CITY ===== %>
+  <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+      <div>
+        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Popular Locations</span>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property City</h2>
+      </div>
+      <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Explore premium real estate in top cities across the country.</p>
+    </div>
+
+    <!-- Single horizontal row with overlay move buttons -->
+    <div class="relative group/cities">
+      <button type="button"
+              onclick="scrollCitiesLeft()"
+              aria-label="Scroll left"
+              class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div id="cities-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
+        <% cities_to_display = @cities.presence || (@available_cities || []).map { |c| City.find_by(name: c) || City.new(name: c) } %>
+        <% cities_to_display.each do |c_obj| %>
+          <% city_name = c_obj.name %>
+          <% city_count = Property.where("city ILIKE ?", city_name).count %>
+          <% next if city_count == 0 %>
+          <% img_src = c_obj.respond_to?(:display_image_url) ? c_obj.display_image_url : 'https://images.unsplash.com/photo-1571210983196-17b1ff4473de?auto=format&fit=crop&w=800&q=80' %>
+          <a href="<%= properties_path(city: city_name) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
+            <img src="<%= img_src %>" alt="<%= city_name %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
+            <div class="relative z-10">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
+                <%= city_count %> <%= 'Listing'.pluralize(city_count) %>
+              </span>
+              <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
+                <span><%= city_name %></span>
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
+              </h3>
+            </div>
+          </a>
+        <% end %>
+      </div>
+
+      <button type="button"
+              onclick="scrollCitiesRight()"
+              aria-label="Scroll right"
+              class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function scrollCitiesLeft() {
+      const container = document.getElementById("cities-scroll-container");
+      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+    function scrollCitiesRight() {
+      const container = document.getElementById("cities-scroll-container");
+      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  </script>
+
+  <%# ===== SHOWCASE SECTIONS (LATEST PROJECTS OR SEARCH RESULTS) ===== %>
+  <% if @is_filtered %>
+    <% section_title = @filters['filter'] == 'all' ? "All Properties" : "Search Results" %>
+    <% section_subtitle = @filters['filter'] == 'all' ? "All Available Listings" : "Filtered Properties" %>
+    <% showcase_sections = [
+         { key: "search_results", title: section_title, subtitle: section_subtitle, properties: @filtered_properties, path: properties_path(@filters), is_grid: false }
+       ] %>
+  <% else %>
+    <% showcase_sections = [
+         { key: "latest", title: "Latest Projects", subtitle: "New Launches & Developments", properties: @latest_projects, path: properties_path(section: 'latest_projects'), is_grid: false }
+       ] %>
+  <% end %>
 
   <% showcase_sections.each do |sec| %>
     <% if sec[:properties].present? && sec[:properties].any? %>
@@ -174,18 +259,11 @@
           </div>
         </div>
 
-        <!-- Property Cards Carousel Container with Hover-Only Transparent Move Buttons -->
-        <div class="relative group/carousel">
-          <button type="button"
-                  onclick="scrollPropSectionLeft('<%= sec[:key] %>')"
-                  aria-label="Scroll left"
-                  class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/carousel:opacity-100 pointer-events-none group-hover/carousel:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-
-          <div id="prop-section-scroll-<%= sec[:key] %>" class="flex gap-6 overflow-x-auto pb-6 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
-            <% sec[:properties].take(10).each do |property| %>
-              <div class="snap-start flex-none w-[300px] sm:w-[340px] tilt-wrapper">
+        <% if sec[:is_grid] %>
+          <%# ===== GRID LAYOUT FOR FILTER RESULTS (MULTIPLE ROWS) ===== %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% sec[:properties].each do |property| %>
+              <div class="w-full tilt-wrapper">
                 <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
                 <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
                          data-property-modal-trigger="true"
@@ -252,14 +330,94 @@
               </div>
             <% end %>
           </div>
+        <% else %>
+          <%# ===== CAROUSEL LAYOUT (SINGLE ROW HORIZONTAL SCROLL) ===== %>
+          <div class="relative group/carousel">
+            <button type="button"
+                    onclick="scrollPropSectionLeft('<%= sec[:key] %>')"
+                    aria-label="Scroll left"
+                    class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/carousel:opacity-100 pointer-events-none group-hover/carousel:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
 
-          <button type="button"
-                  onclick="scrollPropSectionRight('<%= sec[:key] %>')"
-                  aria-label="Scroll right"
-                  class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/carousel:opacity-100 pointer-events-none group-hover/carousel:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
+            <div id="prop-section-scroll-<%= sec[:key] %>" class="flex gap-6 overflow-x-auto pb-6 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
+              <% sec[:properties].take(10).each do |property| %>
+                <div class="snap-start flex-none w-[300px] sm:w-[340px] tilt-wrapper">
+                  <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
+                  <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
+                           data-property-modal-trigger="true"
+                           data-title="<%= j(property.title) %>"
+                           data-description="<%= j(property.description.to_s) %>"
+                           data-price="<%= property.price.to_i %>"
+                           data-city="<%= j(property.city.to_s) %>"
+                           data-address="<%= j(property.address.to_s) %>"
+                           data-property-type="<%= j(property.property_type.to_s) %>"
+                           data-bedrooms="<%= property.bedrooms %>"
+                           data-bathrooms="<%= property.bathrooms %>"
+                           data-area="<%= property.area %>"
+                           data-image-url="<%= img_urls.first.to_s %>"
+                           data-images="<%= img_urls.to_json %>"
+                           onmousemove="handleCardTilt(event, this)"
+                           onmouseleave="resetCardTilt(this)">
+                    <div class="relative h-60 overflow-hidden bg-black">
+                      <% if img_urls.first.present? %>
+                        <img src="<%= img_urls.first %>" alt="<%= property.title %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+                      <% else %>
+                        <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex flex-col items-center justify-center text-gold-400 p-4">
+                          <i class="fa-solid fa-building text-3xl mb-2 opacity-50"></i>
+                          <span class="text-[10px] tracking-widest uppercase font-semibold text-gray-400">DUA Real Estate</span>
+                        </div>
+                      <% end %>
+                      <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
+                      <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                        <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
+                        <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
+                      </div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                      <div>
+                        <p class="text-gold-400 text-[10px] tracking-widest uppercase font-medium mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <%= [property.city, property.country].compact_blank.join(', ') %></p>
+                        <h3 class="font-serif text-xl text-white mb-2 group-hover:text-gold-400 transition-colors line-clamp-1"><%= property.title %></h3>
+                        <p class="text-gray-400 text-xs leading-relaxed line-clamp-2"><%= truncate(property.description, length: 100) %></p>
+                      </div>
+                      <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4 text-center">
+                        <div>
+                          <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Est. Area</span>
+                          <span class="text-xs text-white font-medium"><%= number_with_delimiter(property.area) %> <%= property.area_unit.presence || 'sq ft' %></span>
+                        </div>
+                        <div class="border-x border-white/5">
+                          <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Configuration</span>
+                          <span class="text-xs text-white font-medium"><%= property.bedrooms %> Bed</span>
+                        </div>
+                        <div>
+                          <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Bathrooms</span>
+                          <span class="text-xs text-white font-medium"><%= property.bathrooms %> Bath</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between border-t border-white/5 pt-4">
+                        <div>
+                          <span class="text-[9px] text-gray-500 uppercase tracking-widest block"><%= property.listing_type %></span>
+                          <p class="text-gold-400 text-lg font-serif font-semibold">₹<%= number_with_delimiter(property.price.to_i) %></p>
+                        </div>
+                        <button type="button" class="text-xs text-gold-400 uppercase tracking-widest font-bold group-hover:translate-x-1.5 transition-transform flex items-center space-x-1">
+                          <span>View Details</span>
+                          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              <% end %>
+            </div>
+
+            <button type="button"
+                    onclick="scrollPropSectionRight('<%= sec[:key] %>')"
+                    aria-label="Scroll right"
+                    class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/carousel:opacity-100 pointer-events-none group-hover/carousel:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        <% end %>
       </div>
     <% end %>
   <% end %>
@@ -376,50 +534,64 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div class="space-y-6">
                 <div>
-                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
-                    <span>Property Value</span>
-                    <span class="text-gold-400 font-semibold" id="standalone-calc-val-label">₹3,50,00,000</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs tracking-wider uppercase text-gray-400">Property Value</span>
+                    <div class="flex items-center space-x-1 bg-obsidian-950 border border-gold-500/30 rounded-lg px-2.5 py-1 focus-within:border-gold-500 transition-colors">
+                      <span class="text-gold-400 text-xs font-bold">₹</span>
+                      <input type="number" id="standalone-calc-val-input" min="5000000" max="250000000" step="100000" value="35000000" class="bg-transparent text-gold-400 font-semibold text-xs text-right w-28 outline-none">
+                    </div>
                   </div>
-                  <input type="range" id="standalone-calc-val" min="5000000" max="250000000" step="1000000" value="35000000" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                  <input type="range" id="standalone-calc-val" min="5000000" max="250000000" step="100000" value="35000000" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
                   <div class="flex justify-between text-[10px] text-gray-600 mt-1">
-                    <span>₹50L</span>
-                    <span>₹25Cr</span>
+                    <span>₹50L Min</span>
+                    <span id="standalone-calc-val-formatted" class="text-gold-500 font-medium">₹3,50,00,000</span>
+                    <span>₹25Cr Max</span>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
-                    <span>Down Payment (20%)</span>
-                    <span class="text-gold-400 font-semibold" id="standalone-calc-down-label">₹70,00,000</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs tracking-wider uppercase text-gray-400">Down Payment</span>
+                    <div class="flex items-center space-x-1 bg-obsidian-950 border border-gold-500/30 rounded-lg px-2.5 py-1 focus-within:border-gold-500 transition-colors">
+                      <input type="number" id="standalone-calc-down-input" min="10" max="80" step="1" value="20" class="bg-transparent text-gold-400 font-semibold text-xs text-right w-12 outline-none">
+                      <span class="text-gold-400 text-xs font-bold">%</span>
+                    </div>
                   </div>
-                  <input type="range" id="standalone-calc-down" min="10" max="80" step="5" value="20" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                  <input type="range" id="standalone-calc-down" min="10" max="80" step="1" value="20" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
                   <div class="flex justify-between text-[10px] text-gray-600 mt-1">
-                    <span>10%</span>
-                    <span>80%</span>
+                    <span>10% Min</span>
+                    <span id="standalone-calc-down-amount" class="text-gold-500 font-medium">₹70,00,000</span>
+                    <span>80% Max</span>
                   </div>
                 </div>
               </div>
 
               <div class="space-y-6">
                 <div>
-                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
-                    <span>Annual Interest Rate</span>
-                    <span class="text-gold-400 font-semibold" id="standalone-calc-rate-label">8.5%</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs tracking-wider uppercase text-gray-400">Annual Interest Rate</span>
+                    <div class="flex items-center space-x-1 bg-obsidian-950 border border-gold-500/30 rounded-lg px-2.5 py-1 focus-within:border-gold-500 transition-colors">
+                      <input type="number" id="standalone-calc-rate-input" min="2.0" max="15.0" step="0.1" value="8.5" class="bg-transparent text-gold-400 font-semibold text-xs text-right w-14 outline-none">
+                      <span class="text-gold-400 text-xs font-bold">%</span>
+                    </div>
                   </div>
                   <input type="range" id="standalone-calc-rate" min="2.0" max="15.0" step="0.1" value="8.5" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
                   <div class="flex justify-between text-[10px] text-gray-600 mt-1">
-                    <span>2%</span>
-                    <span>15%</span>
+                    <span>2% Min</span>
+                    <span>15% Max</span>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between text-xs tracking-wider uppercase text-gray-400 mb-2">
-                    <span>Amortization Term</span>
-                    <span class="text-gold-400 font-semibold" id="standalone-calc-term-label">20 Years</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs tracking-wider uppercase text-gray-400">Amortization Term</span>
+                    <div class="flex items-center space-x-1 bg-obsidian-950 border border-gold-500/30 rounded-lg px-2.5 py-1 focus-within:border-gold-500 transition-colors">
+                      <input type="number" id="standalone-calc-term-input" min="5" max="30" step="1" value="20" class="bg-transparent text-gold-400 font-semibold text-xs text-right w-12 outline-none">
+                      <span class="text-gold-400 text-xs font-bold">Yrs</span>
+                    </div>
                   </div>
-                  <input type="range" id="standalone-calc-term" min="5" max="30" step="5" value="20" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                  <input type="range" id="standalone-calc-term" min="5" max="30" step="1" value="20" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
                   <div class="flex justify-between text-[10px] text-gray-600 mt-1">
-                    <span>5 Years</span>
-                    <span>30 Years</span>
+                    <span>5 Yrs Min</span>
+                    <span>30 Yrs Max</span>
                   </div>
                 </div>
               </div>
@@ -445,52 +617,6 @@
     </div>
   </div>
 
-  <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
-      <div>
-        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Advisory Team</span>
-        <h2 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight">Meet the Experts</h2>
-      </div>
-      <div class="mt-6 md:mt-0">
-        <%= link_to agent_path, class: "group text-gold-400 hover:text-gold-500 text-sm tracking-widest font-semibold uppercase flex items-center space-x-2 transition-all" do %>
-          <span>View All Advisors</span>
-          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <% @agents.each do |agent| %>
-        <div class="glass-card rounded-3xl overflow-hidden p-6 flex flex-col items-center text-center space-y-4 group">
-          <div class="w-28 h-28 rounded-full overflow-hidden border-2 border-gold-500/30 group-hover:border-gold-500 transition-all duration-300">
-            <% if agent.respond_to?(:profile_picture) && agent.profile_picture&.attached? %>
-              <%= image_tag agent.profile_picture, class: "w-full h-full object-cover" %>
-            <% elsif agent.respond_to?(:profile_image) && agent.profile_image.present? %>
-              <%= image_tag agent.profile_image, class: "w-full h-full object-cover" %>
-            <% else %>
-              <div class="w-full h-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex items-center justify-center text-gold-400 font-serif text-2xl font-bold">
-                <%= agent.first_name.to_s[0] %><%= agent.last_name.to_s[0] %>
-              </div>
-            <% end %>
-          </div>
-          <div>
-            <h3 class="font-serif text-xl text-white font-semibold group-hover:text-gold-400 transition-colors"><%= agent.first_name %> <%= agent.last_name %></h3>
-            <p class="text-gold-500 text-xs tracking-widest uppercase font-medium mt-1">Senior Property Advisor</p>
-          </div>
-          <p class="text-gray-400 text-xs leading-relaxed"><%= (agent.respond_to?(:bio) && agent.bio.presence) || "Specialist in luxury residential properties and strategic real estate investments." %></p>
-          <div class="pt-4 border-t border-white/5 w-full flex justify-center space-x-4 text-gray-400 text-sm">
-            <% if agent.email.present? %>
-              <a href="mailto:<%= agent.email %>" class="hover:text-gold-400 transition-colors" title="Email Advisor"><i class="fa-solid fa-envelope"></i></a>
-            <% end %>
-            <% phone_val = agent.try(:phone) || agent.try(:phone_number) %>
-            <% if phone_val.present? %>
-              <a href="tel:<%= phone_val %>" class="hover:text-gold-400 transition-colors" title="Call Advisor"><i class="fa-solid fa-phone"></i></a>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
 </section>
 
 <script>
@@ -499,10 +625,25 @@
   }
 
   function calculateLoan() {
-    const propertyValue = Number(document.getElementById("standalone-calc-val")?.value || 0);
-    const downPercent = Number(document.getElementById("standalone-calc-down")?.value || 0) / 100;
-    const annualRate = Number(document.getElementById("standalone-calc-rate")?.value || 0) / 100;
-    const years = Number(document.getElementById("standalone-calc-term")?.value || 0);
+    const valInput = document.getElementById("standalone-calc-val-input");
+    const valSlider = document.getElementById("standalone-calc-val");
+
+    const downInput = document.getElementById("standalone-calc-down-input");
+    const downSlider = document.getElementById("standalone-calc-down");
+
+    const rateInput = document.getElementById("standalone-calc-rate-input");
+    const rateSlider = document.getElementById("standalone-calc-rate");
+
+    const termInput = document.getElementById("standalone-calc-term-input");
+    const termSlider = document.getElementById("standalone-calc-term");
+
+    const propertyValue = Number(valSlider?.value || 0);
+    const downVal = Number(downSlider?.value || 20);
+    const rateVal = Number(rateSlider?.value || 8.5);
+    const years = Number(termSlider?.value || 20);
+
+    const downPercent = downVal / 100;
+    const annualRate = rateVal / 100;
     const downPayment = propertyValue * downPercent;
     const loanAmount = propertyValue - downPayment;
     const monthlyRate = annualRate / 12;
@@ -511,23 +652,63 @@
     const totalPaid = payment * months;
     const totalInterest = totalPaid - loanAmount;
 
-    document.getElementById("standalone-calc-val-label").textContent = formatCurrency(propertyValue);
-    document.getElementById("standalone-calc-down-label").textContent = `${formatCurrency(downPayment)} (${downPercent * 100}%)`;
-    document.getElementById("standalone-calc-rate-label").textContent = `${annualRate * 100}%`;
-    document.getElementById("standalone-calc-term-label").textContent = `${years} Years`;
+    const formattedValEl = document.getElementById("standalone-calc-val-formatted");
+    if (formattedValEl) formattedValEl.textContent = formatCurrency(propertyValue);
+
+    const downAmtEl = document.getElementById("standalone-calc-down-amount");
+    if (downAmtEl) downAmtEl.textContent = formatCurrency(downPayment);
+
     document.getElementById("standalone-val-financed").textContent = formatCurrency(loanAmount);
     document.getElementById("standalone-val-interest").textContent = formatCurrency(totalInterest);
     document.getElementById("standalone-val-monthly").textContent = `${formatCurrency(payment)}/mo`;
   }
 
-  function initializeStandaloneCalculator() {
-    ["standalone-calc-val", "standalone-calc-down", "standalone-calc-rate", "standalone-calc-term"].forEach(function (id) {
-      const element = document.getElementById(id);
-      if (element && element.dataset.calculatorListener !== "true") {
-        element.addEventListener("input", calculateLoan);
-        element.dataset.calculatorListener = "true";
+  function bindTwoWayCalculatorInput(inputId, sliderId, min, max, isFloat = false) {
+    const inputEl = document.getElementById(inputId);
+    const sliderEl = document.getElementById(sliderId);
+
+    if (!inputEl || !sliderEl) return;
+
+    // When slider changes -> update text input
+    sliderEl.addEventListener("input", function () {
+      inputEl.value = sliderEl.value;
+      calculateLoan();
+    });
+
+    // When user types manually -> auto-clamp to max on input
+    inputEl.addEventListener("input", function () {
+      let val = isFloat ? parseFloat(inputEl.value) : parseInt(inputEl.value, 10);
+      if (!isNaN(val) && val > max) {
+        val = max;
+        inputEl.value = max;
+      }
+      if (!isNaN(val) && val >= min && val <= max) {
+        sliderEl.value = val;
+        calculateLoan();
       }
     });
+
+    // When user finishes typing (blur/change) -> auto-clamp to min if too small
+    inputEl.addEventListener("change", function () {
+      let val = isFloat ? parseFloat(inputEl.value) : parseInt(inputEl.value, 10);
+      if (isNaN(val) || val < min) {
+        val = min;
+        inputEl.value = min;
+      } else if (val > max) {
+        val = max;
+        inputEl.value = max;
+      }
+      sliderEl.value = val;
+      calculateLoan();
+    });
+  }
+
+  function initializeStandaloneCalculator() {
+    bindTwoWayCalculatorInput("standalone-calc-val-input", "standalone-calc-val", 5000000, 250000000, false);
+    bindTwoWayCalculatorInput("standalone-calc-down-input", "standalone-calc-down", 10, 80, false);
+    bindTwoWayCalculatorInput("standalone-calc-rate-input", "standalone-calc-rate", 2.0, 15.0, true);
+    bindTwoWayCalculatorInput("standalone-calc-term-input", "standalone-calc-term", 5, 30, false);
+
     calculateLoan();
   }
 

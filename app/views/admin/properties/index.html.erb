@@ -1,0 +1,172 @@
+<% content_for :page_title, "Properties" %>
+<% content_for :breadcrumb, "Properties" %>
+
+<!-- Header row -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">All Properties</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @properties.size %> total</p>
+  </div>
+  <%= link_to new_admin_property_path, class: "a-btn a-btn-gold" do %>
+    <i class="fa-solid fa-plus"></i> Add Property
+  <% end %>
+</div>
+
+<!-- Filter Bar -->
+<%= form_with url: admin_properties_path, method: :get, local: true do |f| %>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;background:rgba(18,18,20,0.85);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;">
+    <!-- Search -->
+    <div class="a-search" style="flex:1;min-width:220px;">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <%= f.text_field :q, value: params[:q], placeholder: "Search by title, city, address…", class: "a-input", style: "padding-left:33px;" %>
+    </div>
+    <!-- Status -->
+    <%= f.select :status,
+      options_for_select([['All Status',''],['Active','Active'],['Pending','Pending'],['Sold','Sold'],['Inactive','Inactive']], params[:status]),
+      {}, class: "a-input a-select", style: "width:140px;flex-shrink:0;" %>
+    <!-- Type -->
+    <%= f.select :property_type,
+      options_for_select([['All Types',''],['Residential','Residential'],['Commercial','Commercial'],['Apartment','Apartment'],['Villa','Villa'],['Penthouse','Penthouse'],['Farmhouse','Farmhouse'],['Plot / Land','Plot / Land'],['Office Space','Office Space']], params[:property_type]),
+      {}, class: "a-input a-select", style: "width:150px;flex-shrink:0;" %>
+    <!-- Listing Type -->
+    <%= f.select :listing_type,
+      options_for_select([['All',''],['Sale','Sale'],['Rent','Rent']], params[:listing_type]),
+      {}, class: "a-input a-select", style: "width:120px;flex-shrink:0;" %>
+    <%= f.submit "Filter", class: "a-btn a-btn-gold", style: "flex-shrink:0;" %>
+    <% if params[:q].present? || params[:status].present? || params[:property_type].present? || params[:listing_type].present? %>
+      <%= link_to "Clear", admin_properties_path, class: "a-btn a-btn-outline", style: "flex-shrink:0;" %>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Table -->
+<div class="a-card">
+  <div class="a-table-wrap">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Listing</th>
+          <th>Status</th>
+          <th>Featured</th>
+          <th>Agent</th>
+          <th>Created</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @properties.any? %>
+          <% @properties.each do |prop| %>
+            <tr id="prop-row-<%= prop.id %>">
+              <!-- Property + thumb -->
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <% cover = prop.property_images.find { |pi| pi.is_cover } || prop.property_images.first %>
+                  <% img_src = cover&.image&.attached? ? url_for(cover.image) : (cover&.image_url.presence || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=80&q=60") %>
+                  <img src="<%= img_src %>" class="a-thumb" alt="">
+                  <div>
+                    <div style="font-weight:600;color:#f3f4f6;font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                      <%= prop.title.presence || "(No title)" %>
+                    </div>
+                    <div style="font-size:11px;color:#6b7280;"><%= [prop.city, prop.state].compact.join(", ") %></div>
+                  </div>
+                </div>
+              </td>
+              <!-- Type -->
+              <td style="font-size:12px;color:#9ca3af;white-space:nowrap;"><%= prop.property_type %></td>
+              <!-- Price -->
+              <td style="font-weight:600;color:var(--gold-400);white-space:nowrap;">
+                ₹<%= number_with_delimiter(prop.price.to_i) rescue prop.price %>
+              </td>
+              <!-- Listing type -->
+              <td>
+                <span class="a-badge <%= prop.listing_type == 'Rent' ? 'b-blue' : 'b-gold' %>">
+                  <%= prop.listing_type %>
+                </span>
+              </td>
+              <!-- Status -->
+              <td>
+                <select class="a-input a-select" style="width:100px;padding:4px 28px 4px 8px;font-size:11px;"
+                        onchange="updateStatus(<%= prop.id %>, this.value)"
+                        data-prop-id="<%= prop.id %>">
+                  <% ['Active','Pending','Sold','Inactive'].each do |s| %>
+                    <option value="<%= s %>" <%= 'selected' if prop.status == s %>><%= s %></option>
+                  <% end %>
+                </select>
+              </td>
+              <!-- Featured toggle -->
+              <td>
+                <label class="a-toggle" title="Toggle Featured">
+                  <input type="checkbox" <%= 'checked' if prop.featured %> onchange="toggleFeatured(<%= prop.id %>, this)">
+                  <span class="a-toggle-slider"></span>
+                </label>
+              </td>
+              <!-- Agent -->
+              <td style="font-size:12px;color:#9ca3af;">
+                <%= prop.seller ? "#{prop.seller.first_name} #{prop.seller.last_name}" : "—" %>
+              </td>
+              <!-- Date -->
+              <td style="font-size:11px;color:#6b7280;white-space:nowrap;">
+                <%= prop.created_at.strftime("%d %b %Y") rescue "—" %>
+              </td>
+              <!-- Actions -->
+              <td style="text-align:right;white-space:nowrap;">
+                <%= link_to property_path(prop), target: "_blank", class: "a-btn a-btn-outline a-btn-sm", style: "margin-right:4px;" do %>
+                  <i class="fa-solid fa-eye"></i>
+                <% end %>
+                <%= link_to edit_admin_property_path(prop), class: "a-btn a-btn-outline a-btn-sm", style: "margin-right:4px;" do %>
+                  <i class="fa-solid fa-pen"></i>
+                <% end %>
+                <%= button_to admin_property_path(prop), method: :delete,
+                  data: { confirm: "Delete \"#{prop.title}\"? This cannot be undone." },
+                  class: "a-btn a-btn-danger a-btn-sm",
+                  form: { style: "display:inline;" } do %>
+                  <i class="fa-solid fa-trash"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="9">
+            <div class="a-empty">
+              <i class="fa-solid fa-building"></i>
+              <p>No properties found.<br>
+                <%= link_to "Add your first property →", new_admin_property_path, style: "color:var(--gold-400);" %>
+              </p>
+            </div>
+          </td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+  function toggleFeatured(id, checkbox) {
+    fetch('/admin/properties/' + id + '/toggle_featured', {
+      method: 'PATCH',
+      headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { alert(data.error); checkbox.checked = !checkbox.checked; }
+    })
+    .catch(() => { checkbox.checked = !checkbox.checked; });
+  }
+
+  function updateStatus(id, status) {
+    fetch('/admin/properties/' + id + '/toggle_status', {
+      method: 'PATCH',
+      headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: status })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) alert(data.error);
+    });
+  }
+</script>

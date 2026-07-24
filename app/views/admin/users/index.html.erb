@@ -1,0 +1,152 @@
+<% content_for :page_title, "Users & Agents" %>
+<% content_for :breadcrumb, "Users" %>
+
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Users & Agents</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @users.size %> shown</p>
+  </div>
+</div>
+
+<!-- Role Tabs -->
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
+  <% roles = [['All', nil], ['Admin', 'admin'], ['Agent', 'agent'], ['Seller', 'seller'], ['User', 'user']] %>
+  <% roles.each do |label, role| %>
+    <%= link_to admin_users_path(role: role, q: params[:q]),
+      class: "a-btn #{params[:role] == role ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+      <%= label %>
+      <% count_key = label.downcase.to_sym %>
+      <% count = @total_counts[label == 'All' ? :all : label.downcase.to_sym] %>
+      <span style="opacity:0.6;font-size:10px;margin-left:2px;">(<%= count || 0 %>)</span>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Search -->
+<%= form_with url: admin_users_path, method: :get, local: true do |f| %>
+  <%= f.hidden_field :role, value: params[:role] %>
+  <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
+    <div class="a-search" style="flex:1;max-width:360px;">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <%= f.text_field :q, value: params[:q], placeholder: "Search by name or email…", class: "a-input", style: "padding-left:33px;" %>
+    </div>
+    <%= f.submit "Search", class: "a-btn a-btn-outline" %>
+    <% if params[:q].present? %>
+      <%= link_to "Clear", admin_users_path(role: params[:role]), class: "a-btn a-btn-outline" %>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Table -->
+<div class="a-card">
+  <div class="a-table-wrap">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Verified</th>
+          <th>Joined</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @users.any? %>
+          <% @users.each do |user| %>
+            <tr id="user-row-<%= user.id %>">
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="a-avatar" style="background:rgba(197,155,39,0.1);color:var(--gold-400);">
+                    <%= user.first_name.to_s.first.upcase.presence || "?" %>
+                  </div>
+                  <div>
+                    <div style="font-weight:600;color:#f3f4f6;font-size:13px;">
+                      <%= "#{user.first_name} #{user.last_name}".strip.presence || "(No name)" %>
+                    </div>
+                    <div style="font-size:11px;color:#6b7280;"><%= user.city %></div>
+                  </div>
+                </div>
+              </td>
+              <td style="font-size:12px;color:#9ca3af;"><%= user.email %></td>
+              <td style="font-size:12px;color:#9ca3af;"><%= user.phone || "—" %></td>
+              <td>
+                <% role_class = case user.role
+                  when 'admin'  then 'b-red'
+                  when 'agent'  then 'b-gold'
+                  when 'seller' then 'b-blue'
+                  else 'b-gray'
+                end %>
+                <span class="a-badge <%= role_class %>"><%= user.role || "user" %></span>
+              </td>
+              <td>
+                <% status_class = user.status == 'active' || user.status.nil? ? 'b-green' : 'b-red' %>
+                <span class="a-badge <%= status_class %>"><%= user.status || "active" %></span>
+              </td>
+              <td>
+                <% if user.is_verified %>
+                  <span class="a-badge b-green"><i class="fa-solid fa-check"></i> Verified</span>
+                <% else %>
+                  <span class="a-badge b-gray">Unverified</span>
+                <% end %>
+              </td>
+              <td style="font-size:11px;color:#6b7280;white-space:nowrap;">
+                <%= user.created_at.strftime("%d %b %Y") rescue "—" %>
+              </td>
+              <td style="text-align:right;">
+                <div style="display:flex;gap:4px;justify-content:flex-end;">
+                  <!-- Verify / Unverify -->
+                  <button onclick="updateUser(<%= user.id %>, { is_verified: <%= !user.is_verified %> })"
+                    class="a-btn a-btn-outline a-btn-sm"
+                    title="<%= user.is_verified ? 'Unverify' : 'Verify' %>">
+                    <i class="fa-solid fa-<%= user.is_verified ? 'user-xmark' : 'user-check' %>"></i>
+                  </button>
+                  <!-- Suspend / Activate -->
+                  <button onclick="updateUser(<%= user.id %>, { status: '<%= user.status == 'suspended' ? 'active' : 'suspended' %>' })"
+                    class="a-btn a-btn-outline a-btn-sm"
+                    title="<%= user.status == 'suspended' ? 'Activate' : 'Suspend' %>">
+                    <i class="fa-solid fa-<%= user.status == 'suspended' ? 'lock-open' : 'lock' %>"></i>
+                  </button>
+                  <!-- Make Agent -->
+                  <% unless user.role == 'agent' %>
+                    <button onclick="updateUser(<%= user.id %>, { role: 'agent' })"
+                      class="a-btn a-btn-outline a-btn-sm" title="Make Agent">
+                      <i class="fa-solid fa-user-tie"></i>
+                    </button>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="8">
+            <div class="a-empty"><i class="fa-solid fa-users"></i><p>No users found</p></div>
+          </td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+  function updateUser(id, data) {
+    fetch('/admin/users/' + id, {
+      method: 'PATCH',
+      headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user: data })
+    })
+    .then(r => r.json())
+    .then(result => {
+      if (result.success) {
+        location.reload();
+      } else {
+        alert('Error: ' + (result.errors || []).join(', '));
+      }
+    });
+  }
+</script>

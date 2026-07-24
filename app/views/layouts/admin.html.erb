@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= content_for(:title) || "Admin Panel | DUA Real Estate" %></title>
+    <meta name="description" content="DUA Real Estate Admin Panel">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --gold-400: #CFA957;
+        --gold-500: #C59B27;
+        --gold-600: #A47D1C;
+        --obsidian-900: #141416;
+        --obsidian-950: #0A0A0C;
+        --sidebar-width: 256px;
+        --sidebar-collapsed: 68px;
+        --topbar-height: 60px;
+      }
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: var(--obsidian-950); }
+      ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 6px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--gold-600); }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--obsidian-950);
+        color: #d1d5db;
+        min-height: 100vh;
+        display: flex;
+        overflow-x: hidden;
+      }
+
+      /* ── Sidebar ── */
+      .a-sidebar {
+        width: var(--sidebar-width);
+        min-height: 100vh;
+        background: #0d0d0f;
+        border-right: 1px solid rgba(197,155,39,0.1);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0; left: 0;
+        z-index: 50;
+        transition: width 0.3s cubic-bezier(.4,0,.2,1);
+      }
+      .a-sidebar.is-collapsed { width: var(--sidebar-collapsed); }
+
+      .a-logo {
+        padding: 18px 18px 18px 20px;
+        border-bottom: 1px solid rgba(197,155,39,0.08);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 66px;
+      }
+      .a-logo-icon {
+        width: 34px; height: 34px;
+        background: rgba(197,155,39,0.12);
+        border: 1px solid rgba(197,155,39,0.25);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--gold-500);
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .a-logo-text { overflow: hidden; transition: opacity 0.2s, width 0.3s; white-space: nowrap; }
+      .a-logo-text strong { display: block; font-size: 14px; font-weight: 800; letter-spacing: 2px; color: var(--gold-500); }
+      .a-logo-text span { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #4b5563; }
+      .a-sidebar.is-collapsed .a-logo-text { opacity: 0; width: 0; }
+
+      .a-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+      .a-nav-section { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #374151; padding: 12px 10px 4px; white-space: nowrap; overflow: hidden; transition: opacity 0.2s; }
+      .a-sidebar.is-collapsed .a-nav-section { opacity: 0; height: 0; padding: 0; }
+
+      .a-nav-link {
+        display: flex; align-items: center; gap: 10px;
+        padding: 9px 10px;
+        border-radius: 10px;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.18s;
+        margin-bottom: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+        position: relative;
+      }
+      .a-nav-link:hover { background: rgba(197,155,39,0.07); color: var(--gold-400); }
+      .a-nav-link.current { background: rgba(197,155,39,0.1); color: var(--gold-400); border: 1px solid rgba(197,155,39,0.15); }
+      .a-nav-link.current::before {
+        content: ''; position: absolute; left: 0; top: 25%; height: 50%;
+        width: 3px; background: var(--gold-500); border-radius: 0 3px 3px 0;
+      }
+      .a-nav-icon { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+      .a-nav-label { transition: opacity 0.2s, width 0.3s; overflow: hidden; flex: 1; }
+      .a-nav-badge {
+        background: rgba(239,68,68,0.15); color: #f87171;
+        border: 1px solid rgba(239,68,68,0.25);
+        font-size: 10px; font-weight: 700;
+        padding: 1px 6px; border-radius: 999px;
+        flex-shrink: 0; transition: opacity 0.2s;
+      }
+      .a-sidebar.is-collapsed .a-nav-label,
+      .a-sidebar.is-collapsed .a-nav-badge { opacity: 0; width: 0; overflow: hidden; }
+
+      .a-sidebar-foot {
+        padding: 12px 8px;
+        border-top: 1px solid rgba(255,255,255,0.03);
+      }
+
+      .a-toggle-btn {
+        position: absolute;
+        right: -13px;
+        top: 78px;
+        width: 26px; height: 26px;
+        background: #141416;
+        border: 1px solid rgba(197,155,39,0.25);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--gold-400);
+        cursor: pointer;
+        font-size: 10px;
+        z-index: 10;
+        transition: all 0.2s;
+      }
+      .a-toggle-btn:hover { background: var(--gold-500); color: #0A0A0C; border-color: var(--gold-500); }
+
+      /* ── Content ── */
+      .a-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+      }
+      .a-content.is-collapsed { margin-left: var(--sidebar-collapsed); }
+
+      /* ── Topbar ── */
+      .a-topbar {
+        height: var(--topbar-height);
+        background: rgba(10,10,12,0.92);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        backdrop-filter: blur(16px);
+        position: sticky; top: 0; z-index: 40;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 24px;
+        gap: 12px;
+      }
+      .a-topbar-left { display: flex; align-items: center; gap: 14px; }
+      .a-topbar-title { font-size: 15px; font-weight: 600; color: #f3f4f6; }
+      .a-topbar-crumb { font-size: 11px; color: #6b7280; }
+      .a-topbar-crumb a { color: #6b7280; text-decoration: none; }
+      .a-topbar-crumb a:hover { color: var(--gold-400); }
+      .a-topbar-crumb span { margin: 0 4px; }
+      .a-topbar-right { display: flex; align-items: center; gap: 10px; }
+
+      /* ── Main page area ── */
+      .a-main { flex: 1; padding: 24px 28px; }
+
+      /* ── Buttons ── */
+      .a-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.18s;
+        text-decoration: none;
+        border: none;
+      }
+      .a-btn-gold { background: var(--gold-500); color: #0A0A0C; }
+      .a-btn-gold:hover { background: var(--gold-400); color: #0A0A0C; box-shadow: 0 4px 12px rgba(197,155,39,0.3); }
+      .a-btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #9ca3af; }
+      .a-btn-outline:hover { border-color: rgba(197,155,39,0.35); color: var(--gold-400); }
+      .a-btn-sm { padding: 5px 10px; font-size: 11px; border-radius: 6px; }
+      .a-btn-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+      .a-btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+      /* ── Flash ── */
+      .a-flash { padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+      .a-flash-notice { background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.18); color: #4ade80; }
+      .a-flash-alert  { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.18);  color: #f87171; }
+
+      /* ── Cards ── */
+      .a-card { background: rgba(18,18,20,0.85); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; overflow: hidden; }
+      .a-card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+      .a-card-title { font-size: 12px; font-weight: 600; color: #e5e7eb; display: flex; align-items: center; gap: 8px; }
+      .a-card-title i { color: var(--gold-500); }
+      .a-card-body { padding: 20px; }
+
+      /* ── Stat Cards ── */
+      .a-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+      .a-stat {
+        background: rgba(18,18,20,0.85);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 14px;
+        padding: 18px 20px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .a-stat:hover { border-color: rgba(197,155,39,0.2); transform: translateY(-2px); }
+      .a-stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 12px; }
+      .ico-gold   { background: rgba(197,155,39,0.12); color: var(--gold-400); }
+      .ico-blue   { background: rgba(59,130,246,0.12); color: #60a5fa; }
+      .ico-green  { background: rgba(34,197,94,0.12);  color: #4ade80; }
+      .ico-red    { background: rgba(239,68,68,0.12);  color: #f87171; }
+      .ico-purple { background: rgba(168,85,247,0.12); color: #c084fc; }
+      .ico-cyan   { background: rgba(6,182,212,0.12);  color: #22d3ee; }
+      .ico-orange { background: rgba(249,115,22,0.12); color: #fb923c; }
+      .a-stat-val { font-size: 26px; font-weight: 700; color: #f9fafb; line-height: 1; margin-bottom: 4px; }
+      .a-stat-lbl { font-size: 11px; color: #6b7280; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+      /* ── Table ── */
+      .a-table-wrap { overflow-x: auto; }
+      .a-table { width: 100%; border-collapse: collapse; }
+      .a-table th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid rgba(255,255,255,0.04); white-space: nowrap; }
+      .a-table td { padding: 12px 16px; font-size: 13px; color: #d1d5db; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+      .a-table tr:hover td { background: rgba(197,155,39,0.025); }
+      .a-table tr:last-child td { border-bottom: none; }
+
+      /* ── Badges ── */
+      .a-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+      .b-green  { background: rgba(34,197,94,0.1);   color: #4ade80;  border: 1px solid rgba(34,197,94,0.18); }
+      .b-yellow { background: rgba(234,179,8,0.1);   color: #facc15;  border: 1px solid rgba(234,179,8,0.18); }
+      .b-red    { background: rgba(239,68,68,0.1);   color: #f87171;  border: 1px solid rgba(239,68,68,0.18); }
+      .b-gray   { background: rgba(107,114,128,0.1); color: #9ca3af;  border: 1px solid rgba(107,114,128,0.18); }
+      .b-blue   { background: rgba(59,130,246,0.1);  color: #60a5fa;  border: 1px solid rgba(59,130,246,0.18); }
+      .b-gold   { background: rgba(197,155,39,0.1);  color: var(--gold-400); border: 1px solid rgba(197,155,39,0.2); }
+      .b-purple { background: rgba(168,85,247,0.1);  color: #c084fc;  border: 1px solid rgba(168,85,247,0.18); }
+
+      /* ── Input ── */
+      .a-input {
+        background: rgba(10,10,12,0.7);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 9px;
+        padding: 9px 13px;
+        font-size: 13px;
+        color: #f3f4f6;
+        transition: border-color 0.2s;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+        width: 100%;
+      }
+      .a-input:focus { border-color: rgba(197,155,39,0.4); box-shadow: 0 0 0 3px rgba(197,155,39,0.07); }
+      .a-input::placeholder { color: #374151; }
+      .a-label { display: block; font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+      .a-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236b7280' d='M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 34px; }
+
+      /* ── Toggle ── */
+      .a-toggle { position: relative; display: inline-flex; width: 38px; height: 20px; }
+      .a-toggle input { opacity: 0; width: 0; height: 0; }
+      .a-toggle-slider { position: absolute; inset: 0; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; cursor: pointer; transition: all 0.2s; }
+      .a-toggle-slider::before { content: ''; position: absolute; height: 12px; width: 12px; left: 3px; top: 50%; transform: translateY(-50%); background: #6b7280; border-radius: 50%; transition: all 0.2s; }
+      .a-toggle input:checked + .a-toggle-slider { background: rgba(197,155,39,0.15); border-color: rgba(197,155,39,0.4); }
+      .a-toggle input:checked + .a-toggle-slider::before { transform: translate(18px, -50%); background: var(--gold-500); }
+
+      /* ── Search bar ── */
+      .a-search { position: relative; }
+      .a-search i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #4b5563; font-size: 12px; pointer-events: none; }
+      .a-search input { padding-left: 33px; }
+
+      /* ── Grid helpers ── */
+      .a-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .a-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      .a-grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+      .a-col2 { grid-column: span 2; }
+
+      /* ── Section heading ── */
+      .a-section-title {
+        font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--gold-500); display: flex; align-items: center; gap: 8px;
+        margin-bottom: 14px; padding-bottom: 10px;
+        border-bottom: 1px solid rgba(197,155,39,0.08);
+      }
+
+      /* ── Empty State ── */
+      .a-empty { text-align: center; padding: 56px 20px; }
+      .a-empty i { font-size: 40px; color: #1f2937; margin-bottom: 14px; }
+      .a-empty p { color: #6b7280; font-size: 13px; }
+
+      /* ── Image thumb ── */
+      .a-thumb { width: 50px; height: 38px; border-radius: 7px; object-fit: cover; background: rgba(255,255,255,0.04); }
+      .a-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+      /* ── Animations ── */
+      @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+      .a-main > * { animation: fadeUp 0.3s ease both; }
+      .a-main > *:nth-child(1) { animation-delay:0s; }
+      .a-main > *:nth-child(2) { animation-delay:.04s; }
+      .a-main > *:nth-child(3) { animation-delay:.08s; }
+      .a-main > *:nth-child(4) { animation-delay:.12s; }
+
+      /* ── Responsive ── */
+      @media (max-width:768px) {
+        .a-sidebar { width: var(--sidebar-collapsed); }
+        .a-content { margin-left: var(--sidebar-collapsed); }
+        .a-logo-text, .a-nav-label, .a-nav-badge, .a-nav-section { opacity:0; width:0; overflow:hidden; }
+        .a-main { padding: 16px; }
+        .a-grid-2, .a-grid-3, .a-grid-4 { grid-template-columns: 1fr; }
+        .a-col2 { grid-column: span 1; }
+        .a-stat-grid { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ═══ SIDEBAR ═══════════════════════════════════════════════ -->
+    <aside class="a-sidebar" id="adminSidebar">
+      <!-- Toggle button -->
+      <button class="a-toggle-btn" id="sidebarToggle" title="Toggle Sidebar">
+        <i class="fa-solid fa-chevron-left" id="toggleIcon"></i>
+      </button>
+
+      <!-- Logo -->
+      <div class="a-logo">
+        <div class="a-logo-icon"><i class="fa-solid fa-crown"></i></div>
+        <div class="a-logo-text">
+          <strong>DUA</strong>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="a-nav">
+        <div class="a-nav-section">Overview</div>
+        <%= link_to admin_root_path, class: "a-nav-link #{controller_name == 'dashboard' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-chart-pie a-nav-icon"></i>
+          <span class="a-nav-label">Dashboard</span>
+        <% end %>
+
+        <div class="a-nav-section" style="margin-top:8px;">Listings</div>
+        <%= link_to admin_properties_path, class: "a-nav-link #{controller_name == 'properties' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-building a-nav-icon"></i>
+          <span class="a-nav-label">Properties</span>
+          <% prop_count = Property.count rescue 0 %>
+          <% if prop_count > 0 %>
+            <span class="a-nav-badge"><%= prop_count %></span>
+          <% end %>
+        <% end %>
+
+        <%= link_to admin_cities_path, class: "a-nav-link #{controller_name == 'cities' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-city a-nav-icon"></i>
+          <span class="a-nav-label">Cities</span>
+        <% end %>
+
+        <div class="a-nav-section" style="margin-top:8px;">People</div>
+        <%= link_to admin_users_path, class: "a-nav-link #{controller_name == 'users' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-users a-nav-icon"></i>
+          <span class="a-nav-label">Users & Agents</span>
+        <% end %>
+
+        <div class="a-nav-section" style="margin-top:8px;">Activity</div>
+        <%= link_to admin_inquiries_path, class: "a-nav-link #{controller_name == 'inquiries' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-envelope a-nav-icon"></i>
+          <span class="a-nav-label">Inquiries</span>
+          <% inq_count = PropertyInquiry.count rescue 0 %>
+          <% if inq_count > 0 %>
+            <span class="a-nav-badge"><%= inq_count %></span>
+          <% end %>
+        <% end %>
+
+        <%= link_to admin_appointments_path, class: "a-nav-link #{controller_name == 'appointments' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-calendar-check a-nav-icon"></i>
+          <span class="a-nav-label">Appointments</span>
+        <% end %>
+
+        <div class="a-nav-section" style="margin-top:8px;">Moderation</div>
+        <%= link_to admin_reports_path, class: "a-nav-link #{controller_name == 'reports' ? 'current' : ''}" do %>
+          <i class="fa-solid fa-flag a-nav-icon"></i>
+          <span class="a-nav-label">Reports</span>
+          <% report_count = Report.where(status: [nil, 'pending']).count rescue 0 %>
+          <% if report_count > 0 %>
+            <span class="a-nav-badge"><%= report_count %></span>
+          <% end %>
+        <% end %>
+      </nav>
+
+      <!-- Footer links -->
+      <div class="a-sidebar-foot">
+        <%= link_to root_path, class: "a-nav-link" do %>
+          <i class="fa-solid fa-arrow-left a-nav-icon"></i>
+          <span class="a-nav-label">Back to Site</span>
+        <% end %>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN CONTENT ══════════════════════════════════════════ -->
+    <div class="a-content" id="adminContent">
+      <!-- Topbar -->
+      <header class="a-topbar">
+        <div class="a-topbar-left">
+          <div>
+            <div class="a-topbar-crumb">
+              <%= link_to "Admin", admin_root_path %>
+              <span>/</span>
+              <%= content_for(:breadcrumb) || controller_name.humanize %>
+            </div>
+            <div class="a-topbar-title"><%= content_for(:page_title) || controller_name.humanize.titleize %></div>
+          </div>
+        </div>
+        <div class="a-topbar-right">
+          <%= link_to root_path, class: "a-btn a-btn-outline a-btn-sm" do %>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span>View Site</span>
+          <% end %>
+          <%= link_to admin_properties_path(new: true), class: "a-btn a-btn-gold a-btn-sm" do %>
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Property</span>
+          <% end %>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="a-main">
+        <% if flash[:notice] %>
+          <div class="a-flash a-flash-notice">
+            <i class="fa-solid fa-circle-check"></i>
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+        <% if flash[:alert] %>
+          <div class="a-flash a-flash-alert">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <%= flash[:alert] %>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+    </div>
+
+    <!-- Sidebar toggle script -->
+    <script>
+      (function() {
+        var sidebar  = document.getElementById('adminSidebar');
+        var content  = document.getElementById('adminContent');
+        var toggleBtn = document.getElementById('sidebarToggle');
+        var icon     = document.getElementById('toggleIcon');
+        var collapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+
+        function apply() {
+          if (collapsed) {
+            sidebar.classList.add('is-collapsed');
+            content.classList.add('is-collapsed');
+            icon.classList.replace('fa-chevron-left','fa-chevron-right');
+          } else {
+            sidebar.classList.remove('is-collapsed');
+            content.classList.remove('is-collapsed');
+            icon.classList.replace('fa-chevron-right','fa-chevron-left');
+          }
+        }
+
+        apply();
+        toggleBtn.addEventListener('click', function() {
+          collapsed = !collapsed;
+          localStorage.setItem('adminSidebarCollapsed', collapsed);
+          apply();
+        });
+      })();
+    </script>
+  </body>
+</html>

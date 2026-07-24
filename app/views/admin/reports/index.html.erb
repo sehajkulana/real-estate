@@ -1,0 +1,117 @@
+<% content_for :page_title, "Reports" %>
+<% content_for :breadcrumb, "Reports" %>
+
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Flagged Reports</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @reports.size %> reports</p>
+  </div>
+</div>
+
+<!-- Filter Tabs -->
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
+  <%= link_to admin_reports_path,
+    class: "a-btn #{!params[:status] && !params[:all] ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+    <i class="fa-solid fa-clock"></i> Pending
+  <% end %>
+  <%= link_to admin_reports_path(all: true),
+    class: "a-btn #{params[:all] ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+    All Reports
+  <% end %>
+  <%= link_to admin_reports_path(status: 'reviewed'),
+    class: "a-btn #{params[:status] == 'reviewed' ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+    Reviewed
+  <% end %>
+  <%= link_to admin_reports_path(status: 'dismissed'),
+    class: "a-btn #{params[:status] == 'dismissed' ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+    Dismissed
+  <% end %>
+</div>
+
+<!-- Table -->
+<div class="a-card">
+  <div class="a-table-wrap">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Reported By</th>
+          <th>Reason</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Filed</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @reports.any? %>
+          <% @reports.each do |report| %>
+            <tr id="report-<%= report.id %>">
+              <td>
+                <div style="font-weight:600;color:#f3f4f6;font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= report.property&.title&.truncate(30) || "(Deleted)" %>
+                </div>
+                <div style="font-size:11px;color:#6b7280;">
+                  <%= report.property&.city %>
+                </div>
+              </td>
+              <td>
+                <div style="font-size:13px;color:#e5e7eb;">
+                  <%= report.reported_by ? "#{report.reported_by.first_name} #{report.reported_by.last_name}" : "—" %>
+                </div>
+                <div style="font-size:11px;color:#6b7280;"><%= report.reported_by&.email %></div>
+              </td>
+              <td>
+                <span class="a-badge b-red"><%= report.reason %></span>
+              </td>
+              <td style="max-width:200px;font-size:12px;color:#9ca3af;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                <%= report.description&.truncate(60) || "—" %>
+              </td>
+              <td>
+                <% status_class = case report.status
+                  when 'pending', nil then 'b-yellow'
+                  when 'reviewed'     then 'b-blue'
+                  when 'dismissed'    then 'b-gray'
+                  when 'resolved'     then 'b-green'
+                  else 'b-gray'
+                end %>
+                <span class="a-badge <%= status_class %>"><%= report.status || "pending" %></span>
+              </td>
+              <td style="font-size:11px;color:#6b7280;white-space:nowrap;">
+                <%= report.created_at.strftime("%d %b %Y") rescue "—" %>
+              </td>
+              <td style="text-align:right;white-space:nowrap;">
+                <!-- Mark reviewed -->
+                <%= button_to admin_report_path(report),
+                  method: :patch,
+                  params: { report: { status: 'reviewed' } },
+                  class: "a-btn a-btn-outline a-btn-sm",
+                  style: "margin-right:4px;",
+                  title: "Mark Reviewed",
+                  form: { style: "display:inline;" } do %>
+                  <i class="fa-solid fa-check"></i>
+                <% end %>
+                <!-- Dismiss + delete -->
+                <%= button_to admin_report_path(report),
+                  method: :delete,
+                  data: { confirm: "Dismiss and delete this report?" },
+                  class: "a-btn a-btn-danger a-btn-sm",
+                  form: { style: "display:inline;" } do %>
+                  <i class="fa-solid fa-xmark"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="7">
+            <div class="a-empty">
+              <i class="fa-solid fa-shield-check"></i>
+              <p>No reports in this filter</p>
+            </div>
+          </td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

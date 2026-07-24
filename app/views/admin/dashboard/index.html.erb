@@ -1,0 +1,219 @@
+<% content_for :page_title, "Dashboard" %>
+<% content_for :breadcrumb, "Dashboard" %>
+
+<!-- ═══ STAT CARDS ════════════════════════════════════════════ -->
+<div class="a-stat-grid">
+  <div class="a-stat">
+    <div class="a-stat-icon ico-gold"><i class="fa-solid fa-building"></i></div>
+    <div class="a-stat-val"><%= @stats[:total_properties] %></div>
+    <div class="a-stat-lbl">Total Properties</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-green"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="a-stat-val"><%= @stats[:active_properties] %></div>
+    <div class="a-stat-lbl">Active Listings</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-yellow" style="background:rgba(234,179,8,.12);color:#facc15;"><i class="fa-solid fa-clock"></i></div>
+    <div class="a-stat-val"><%= @stats[:pending_properties] %></div>
+    <div class="a-stat-lbl">Pending Approval</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-gold"><i class="fa-solid fa-star"></i></div>
+    <div class="a-stat-val"><%= @stats[:featured_properties] %></div>
+    <div class="a-stat-lbl">Featured</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-blue"><i class="fa-solid fa-users"></i></div>
+    <div class="a-stat-val"><%= @stats[:total_users] %></div>
+    <div class="a-stat-lbl">Total Users</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-purple"><i class="fa-solid fa-user-tie"></i></div>
+    <div class="a-stat-val"><%= @stats[:total_agents] %></div>
+    <div class="a-stat-lbl">Agents</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-cyan"><i class="fa-solid fa-envelope"></i></div>
+    <div class="a-stat-val"><%= @stats[:total_inquiries] %></div>
+    <div class="a-stat-lbl">Inquiries</div>
+  </div>
+  <div class="a-stat">
+    <div class="a-stat-icon ico-red"><i class="fa-solid fa-flag"></i></div>
+    <div class="a-stat-val"><%= @stats[:pending_reports] %></div>
+    <div class="a-stat-lbl">Pending Reports</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN GRID ════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;">
+
+  <!-- Recent Properties -->
+  <div class="a-card">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-building"></i> Recent Properties</div>
+      <%= link_to admin_properties_path, class: "a-btn a-btn-outline a-btn-sm" do %>
+        View All <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+      <% end %>
+    </div>
+    <div class="a-table-wrap">
+      <table class="a-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @recent_properties.any? %>
+            <% @recent_properties.each do |prop| %>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <% cover = prop.property_images.find { |pi| pi.is_cover } || prop.property_images.first %>
+                    <% img_src = cover&.image&.attached? ? url_for(cover.image) : (cover&.image_url.presence || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=120&q=60") %>
+                    <img src="<%= img_src %>" class="a-thumb" alt="property" style="flex-shrink:0;">
+                    <div>
+                      <div style="font-weight:600;color:#f3f4f6;font-size:13px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= prop.title.presence || "Untitled" %></div>
+                      <div style="font-size:11px;color:#6b7280;"><%= prop.city %></div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-size:12px;color:#9ca3af;"><%= prop.property_type %></td>
+                <td style="font-weight:600;color:var(--gold-400);">
+                  ₹<%= number_with_delimiter(prop.price.to_i) rescue prop.price %>
+                </td>
+                <td>
+                  <% status_class = case prop.status
+                    when "Active"   then "b-green"
+                    when "Pending"  then "b-yellow"
+                    when "Sold"     then "b-blue"
+                    when "Inactive" then "b-gray"
+                    else "b-gray"
+                  end %>
+                  <span class="a-badge <%= status_class %>"><%= prop.status || "—" %></span>
+                </td>
+                <td>
+                  <%= link_to edit_admin_property_path(prop), class: "a-btn a-btn-outline a-btn-sm" do %>
+                    <i class="fa-solid fa-pen"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr><td colspan="5"><div class="a-empty"><i class="fa-solid fa-building"></i><p>No properties yet</p></div></td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div style="display:flex;flex-direction:column;gap:18px;">
+
+    <!-- Quick Stats -->
+    <div class="a-card">
+      <div class="a-card-hdr">
+        <div class="a-card-title"><i class="fa-solid fa-city"></i> Cities & Agents</div>
+      </div>
+      <div style="padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-city" style="color:var(--gold-500);margin-right:8px;"></i>Active Cities</span>
+          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:active_cities] %></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-user-check" style="color:#4ade80;margin-right:8px;"></i>Verified Agents</span>
+          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:verified_agents] %></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-calendar" style="color:#60a5fa;margin-right:8px;"></i>Appointments</span>
+          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:total_appointments] %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Reports -->
+    <div class="a-card">
+      <div class="a-card-hdr">
+        <div class="a-card-title"><i class="fa-solid fa-flag" style="color:#f87171;"></i> Pending Reports</div>
+        <%= link_to admin_reports_path, class: "a-btn a-btn-outline a-btn-sm" do %>
+          View All
+        <% end %>
+      </div>
+      <div style="padding:0;">
+        <% if @recent_reports.any? %>
+          <% @recent_reports.each do |report| %>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.03);">
+              <div style="width:32px;height:32px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fa-solid fa-flag" style="color:#f87171;font-size:12px;"></i>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;font-weight:600;color:#e5e7eb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= report.property&.title&.truncate(32) || "Unknown Property" %>
+                </div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;"><%= report.reason %></div>
+              </div>
+              <span class="a-badge b-yellow">Pending</span>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="a-empty" style="padding:28px 20px;">
+            <i class="fa-solid fa-shield-check" style="font-size:28px;color:#1f2937;margin-bottom:8px;"></i>
+            <p style="font-size:12px;">No pending reports</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Inquiries -->
+    <div class="a-card">
+      <div class="a-card-hdr">
+        <div class="a-card-title"><i class="fa-solid fa-envelope"></i> Recent Inquiries</div>
+        <%= link_to admin_inquiries_path, class: "a-btn a-btn-outline a-btn-sm" do %>View All<% end %>
+      </div>
+      <div style="padding:0;">
+        <% if @recent_inquiries.any? %>
+          <% @recent_inquiries.each do |inq| %>
+            <div style="padding:11px 20px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;gap:10px;align-items:flex-start;">
+              <div class="a-avatar" style="background:rgba(197,155,39,0.1);color:var(--gold-400);">
+                <%= inq.name.to_s.first.upcase.presence || inq.buyer&.first_name&.first&.upcase || "?" %>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;font-weight:600;color:#e5e7eb;"><%= (inq.name.presence || inq.buyer&.first_name) %></div>
+                <div style="font-size:11px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= inq.property&.title&.truncate(30) %>
+                </div>
+              </div>
+              <div style="font-size:10px;color:#4b5563;white-space:nowrap;"><%= inq.created_at.strftime("%d %b") rescue "" %></div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="a-empty" style="padding:24px;"><p style="font-size:12px;">No inquiries yet</p></div>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ QUICK ACTIONS ════════════════════════════════════════ -->
+<div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+  <%= link_to new_admin_property_path, class: "a-btn a-btn-gold" do %>
+    <i class="fa-solid fa-plus"></i> Add Property
+  <% end %>
+  <%= link_to new_admin_city_path, class: "a-btn a-btn-outline" do %>
+    <i class="fa-solid fa-city"></i> Add City
+  <% end %>
+  <%= link_to admin_users_path, class: "a-btn a-btn-outline" do %>
+    <i class="fa-solid fa-users"></i> Manage Users
+  <% end %>
+  <%= link_to admin_reports_path, class: "a-btn a-btn-outline" do %>
+    <i class="fa-solid fa-flag"></i> View Reports
+    <% if @stats[:pending_reports] > 0 %>
+      <span class="a-badge b-red" style="font-size:9px;padding:1px 5px;"><%= @stats[:pending_reports] %></span>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,64 @@
+<%# Shared city form partial %>
+<div style="max-width:600px;">
+  <%= form_with model: [:admin, city], local: true, html: { multipart: true } do |f| %>
+
+    <div class="a-card" style="margin-bottom:16px;">
+      <div class="a-card-hdr">
+        <div class="a-card-title"><i class="fa-solid fa-city"></i> City Details</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label class="a-label">City Name <span style="color:#f87171;">*</span></label>
+          <%= f.text_field :name, placeholder: "e.g. Mohali", class: "a-input" %>
+          <% if city.errors[:name].any? %>
+            <p style="font-size:11px;color:#f87171;margin-top:4px;"><%= city.errors[:name].join(", ") %></p>
+          <% end %>
+        </div>
+        <div>
+          <label class="a-label">State</label>
+          <%= f.text_field :state, placeholder: "e.g. Punjab", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Description</label>
+          <%= f.text_area :description, rows: 3, placeholder: "Brief description of the city…", class: "a-input", style: "resize:vertical;" %>
+        </div>
+        <div>
+          <label class="a-label">Image URL <span style="color:#6b7280;font-weight:400;text-transform:none;letter-spacing:0;">(fallback if no upload)</span></label>
+          <%= f.text_field :image_url, placeholder: "https://…", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Upload Image</label>
+          <%= f.file_field :image, accept: "image/*", class: "a-input", style: "cursor:pointer;" %>
+          <% if city.persisted? && city.image.attached? %>
+            <div style="margin-top:10px;">
+              <img src="<%= url_for(city.image) %>" style="height:80px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);">
+            </div>
+          <% end %>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="a-toggle">
+            <%= f.check_box :active %>
+            <span class="a-toggle-slider"></span>
+          </label>
+          <label class="a-label" style="margin-bottom:0;">Active (visible on site)</label>
+        </div>
+      </div>
+    </div>
+
+    <% if city.errors.any? %>
+      <div class="a-flash a-flash-alert" style="margin-bottom:14px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <ul style="padding-left:14px;font-size:12px;">
+          <% city.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div style="display:flex;gap:10px;">
+      <%= f.submit city.persisted? ? "Update City" : "Add City", class: "a-btn a-btn-gold" %>
+      <%= link_to "Cancel", admin_cities_path, class: "a-btn a-btn-outline" %>
+    </div>
+  <% end %>
+</div>

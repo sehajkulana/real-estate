@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  before_action :ensure_valid_cities, only: [:home, :properties]
+
   def home
     @featured_properties = Property.where(featured: true)
                                    .includes(property_images: { image_attachment: :blob })
@@ -33,8 +35,48 @@ class PagesController < ApplicationController
                   .limit(3)
                   .preload(:listed_properties)
 
-    @filters = property_filter_params.to_h
-    @available_cities = Property.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
+    @filters = property_filter_params.to_h.reject { |_k, v| v.blank? }
+    @is_filtered = @filters.any? || params.key?(:keyword) || params[:commit].present? || params[:filter].present?
+
+    if @is_filtered
+      @search_city = @filters["city"].to_s.strip
+      @keyword = @filters["keyword"].to_s.strip
+      @filtered_properties = Property.includes(property_images: { image_attachment: :blob }).order(created_at: :desc)
+
+      if @keyword.present?
+        keyword_pattern = "%#{@keyword}%"
+        @filtered_properties = @filtered_properties.where(
+          "properties.title ILIKE :q OR properties.description ILIKE :q OR properties.city ILIKE :q OR properties.address ILIKE :q OR properties.state ILIKE :q OR properties.country ILIKE :q OR properties.property_type ILIKE :q",
+          q: keyword_pattern
+        )
+      end
+      @filtered_properties = @filtered_properties.where("properties.city ILIKE ?", "%#{@search_city}%") if @search_city.present?
+      @filtered_properties = @filtered_properties.where("properties.bathrooms >= ?", @filters["bathrooms"].to_i) if @filters["bathrooms"].present?
+      @filtered_properties = apply_range_filter(@filtered_properties, :price, @filters["budget"])
+      @filtered_properties = @filtered_properties.where(facing: @filters["facing"]) if @filters["facing"].present?
+      if @filters["property_type"].present?
+        pt = @filters["property_type"].to_s.strip
+        parts = pt.split("/").map(&:strip).reject(&:blank?)
+        if parts.size > 1
+          clause = parts.map { "properties.property_type ILIKE ?" }.join(" OR ")
+          values = parts.map { |p| "%#{p}%" }
+          @filtered_properties = @filtered_properties.where(clause, *values)
+        else
+          @filtered_properties = @filtered_properties.where("properties.property_type ILIKE ?", "%#{pt}%")
+        end
+      end
+      @filtered_properties = @filtered_properties.where("properties.parking >= ?", @filters["parking"].to_i) if @filters["parking"].present?
+      @filtered_properties = apply_range_filter(@filtered_properties, :area, @filters["area"])
+      if @filters["listing_type"].present?
+        lt = @filters["listing_type"].to_s.strip
+        @filtered_properties = @filtered_properties.where("properties.listing_type ILIKE ?", "%#{lt}%")
+      end
+      @filtered_properties = @filtered_properties.limit(10)
+    end
+
+    @cities = City.active.includes(image_attachment: :blob).order(:name) if defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities)
+    @cities ||= []
+    @available_cities = @cities.map(&:name).presence || Property.where.not(city: [nil, ""]).order(:city).pluck(:city).map(&:strip).uniq
     @placeholders = Property.where.not(city: [nil, ""]).pluck(:title, :city, :property_type).map do |title, city, ptype|
       if title.present?
         "#{title} in #{city}"
@@ -217,8 +259,36 @@ class PagesController < ApplicationController
 
   private
 
+  def ensure_valid_cities
+    return unless defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities)
+
+    default_cities = [
+      { name: "Mohali", state: "Punjab", image_url: "https://images.unsplash.com/photo-1571210983196-17b1ff4473de?auto=format&fit=crop&w=800&q=80" },
+      { name: "Zirakpur", state: "Punjab", image_url: "https://images.unsplash.com/photo-1627883391295-8833f4a9b2b2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Chandigarh", state: "Chandigarh", image_url: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Panchkula", state: "Haryana", image_url: "https://images.unsplash.com/photo-1542361345-89ce58f625d9?auto=format&fit=crop&w=800&q=80" },
+      { name: "Patiala", state: "Punjab", image_url: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80" }
+    ]
+
+    default_cities.each do |cd|
+      c = City.find_or_initialize_by(name: cd[:name])
+      c.state ||= cd[:state]
+      c.image_url ||= cd[:image_url]
+      c.active = true
+      c.save if c.new_record? || c.changed?
+    end
+
+    valid_cities = City.active.pluck(:name)
+    invalid_props = Property.where.not(city: valid_cities).or(Property.where(city: nil))
+    if invalid_props.exists? && valid_cities.any?
+      invalid_props.each_with_index do |prop, idx|
+        prop.update_columns(city: valid_cities[idx % valid_cities.length])
+      end
+    end
+  end
+
   def property_filter_params
-    params.permit(:city, :bathrooms, :budget, :facing, :property_type, :parking, :area, :listing_type, :keyword)
+    params.permit(:city, :bathrooms, :budget, :facing, :property_type, :parking, :area, :listing_type, :keyword, :filter)
   end
 
   def apply_range_filter(scope, column, range)

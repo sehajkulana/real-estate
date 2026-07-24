@@ -1,0 +1,64 @@
+<% content_for :page_title, "Cities" %>
+<% content_for :breadcrumb, "Cities" %>
+
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Manage Cities</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @cities.size %> cities</p>
+  </div>
+  <%= link_to new_admin_city_path, class: "a-btn a-btn-gold" do %>
+    <i class="fa-solid fa-plus"></i> Add City
+  <% end %>
+</div>
+
+<!-- City Cards Grid -->
+<% if @cities.any? %>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+    <% @cities.each do |city| %>
+      <div class="a-card" style="position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(197,155,39,0.3)';this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';this.style.transform='none';">
+        <!-- Image -->
+        <div style="height:110px;overflow:hidden;position:relative;">
+          <img src="<%= city.display_image_url %>"
+            alt="<%= city.name %>"
+            style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.src='https://images.unsplash.com/photo-1571210983196-17b1ff4473de?w=400&q=60'">
+          <!-- Active badge -->
+          <div style="position:absolute;top:8px;right:8px;">
+            <span class="a-badge <%= city.active ? 'b-green' : 'b-gray' %>">
+              <%= city.active ? 'Active' : 'Inactive' %>
+            </span>
+          </div>
+        </div>
+        <!-- Body -->
+        <div style="padding:14px 16px;">
+          <div style="font-weight:700;color:#f3f4f6;font-size:14px;margin-bottom:2px;"><%= city.name %></div>
+          <div style="font-size:11px;color:#6b7280;margin-bottom:10px;"><%= city.state %></div>
+          <% if city.description.present? %>
+            <div style="font-size:11px;color:#9ca3af;margin-bottom:10px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+              <%= city.description %>
+            </div>
+          <% end %>
+          <div style="display:flex;gap:6px;">
+            <%= link_to edit_admin_city_path(city), class: "a-btn a-btn-outline a-btn-sm" do %>
+              <i class="fa-solid fa-pen"></i> Edit
+            <% end %>
+            <%= button_to admin_city_path(city), method: :delete,
+              data: { confirm: "Delete #{city.name}? This cannot be undone." },
+              class: "a-btn a-btn-danger a-btn-sm",
+              form: { style: "display:inline;" } do %>
+              <i class="fa-solid fa-trash"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="a-card">
+    <div class="a-empty">
+      <i class="fa-solid fa-city"></i>
+      <p>No cities yet.<br><%= link_to "Add the first city →", new_admin_city_path, style: "color:var(--gold-400);" %></p>
+    </div>
+  </div>
+<% end %>
