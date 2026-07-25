@@ -1,0 +1,14 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">Our Agents</h1>
+  <% if @agents.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% @agents.each do |agent| %>
+        <div class="bg-white rounded shadow p-4">
+          <h2 class="text-xl font-bold"><%= agent.first_name %> <%= agent.last_name %></h2>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No agents found.</p>
+  <% end %>
+</div>

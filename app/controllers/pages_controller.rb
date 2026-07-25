@@ -102,12 +102,12 @@ class PagesController < ApplicationController
     @property_type_categories = category_names.map do |type_name|
       parts = type_name.split("/").map(&:strip).reject(&:blank?)
       query_scope = if parts.size > 1
-                      clause = parts.map { "property_type ILIKE ?" }.join(" OR ")
-                      values = parts.map { |p| "%#{p}%" }
-                      Property.active_listings.where(clause, *values)
-                    else
-                      Property.active_listings.where("property_type ILIKE ?", "%#{type_name}%")
-                    end
+        clause = parts.map { "property_type ILIKE ?" }.join(" OR ")
+        values = parts.map { |p| "%#{p}%" }
+        Property.active_listings.where(clause, *values)
+      else
+        Property.active_listings.where("property_type ILIKE ?", "%#{type_name}%")
+      end
 
       prop = query_scope.includes(property_images: { image_attachment: :blob }).first
       img_url = nil
@@ -365,8 +365,10 @@ class PagesController < ApplicationController
     return scope if range.blank?
 
     minimum, maximum = range.split("-", 2).map(&:to_d)
-    scope = scope.where("properties.#{column} >= ?", minimum)
-    maximum.positive? ? scope.where("properties.#{column} <= ?", maximum) : scope
+    arel_column = Property.arel_table[column]
+    
+    scope = scope.where(arel_column.gteq(minimum))
+    maximum.positive? ? scope.where(arel_column.lteq(maximum)) : scope
   end
 
   def property_params

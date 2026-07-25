@@ -16,7 +16,8 @@ class Admin::UsersController < Admin::BaseController
 
   def update
     @user = User.find(params[:id])
-    allowed_params = params.require(:user).permit(:role, :status, :is_verified)
+    allowed_params = params.require(:user).permit(:status, :is_verified)
+    allowed_params[:role] = params[:user][:role] if params[:user].key?(:role)
     if @user.update(allowed_params)
       render json: {
         success: true,

@@ -17,10 +17,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     properties(:one).update!(city: "Mumbai", title: "Mumbai property")
     properties(:two).update!(city: "Pune", title: "Pune property")
 
-    get properties_path, params: { city: "mumbai" }
+    get properties_path, params: { city: "Mumbai" }
 
     assert_response :success
-    assert_select "input[type=hidden][name=city][value=Mumbai]", count: 1
+    assert_select "select[name=city] option[selected]", text: "Mumbai", count: 1
     assert_select "h3", text: properties(:one).title, count: 1
     assert_select "h3", text: properties(:two).title, count: 0
   end
@@ -46,12 +46,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "properties page renders a budget range control" do
-    get properties_path, params: { budget: "500000-1000000" }
+    get properties_path, params: { budget: "0-5000000" }
 
     assert_response :success
-    assert_select "select[name=budget]", count: 0
-    assert_select "input[type=range][data-budget-range-target=minimum][value=500000]", count: 1
-    assert_select "input[type=range][data-budget-range-target=maximum][value=1000000]", count: 1
-    assert_select "input[type=hidden][name=budget][value='500000-1000000']", count: 1
+    assert_select "select[name=budget]", count: 1
+    assert_select "select[name=budget] option[selected]", text: "Under ₹50 Lakh", count: 1
   end
 end
