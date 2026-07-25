@@ -23,9 +23,9 @@ class Admin::PropertiesController < Admin::BaseController
     @property = Property.new(property_params)
 
     if @property.seller_id.blank?
-      default_seller = User.find_by(role: "agent") || User.first ||
+      default_seller = User.find_by(role: "seller") || User.first ||
         User.create!(first_name: "Admin", last_name: "User",
-                     email: "admin@dua.com", password: "password", role: "agent")
+                     email: "admin@dua.com", password: "password", role: "seller")
       @property.seller = default_seller
     end
 
@@ -46,7 +46,8 @@ class Admin::PropertiesController < Admin::BaseController
   end
 
   def update
-    if @property.update(property_params)
+    @property.assign_attributes(property_params)
+    if save_property_with_images
       redirect_to admin_properties_path, notice: "Property updated successfully."
     else
       @sellers = User.where(role: ["agent", "seller"]).order(:first_name, :last_name)
@@ -91,7 +92,7 @@ class Admin::PropertiesController < Admin::BaseController
       :bedrooms, :bathrooms, :balconies, :parking, :age_of_property, :construction_status,
       :facing, :floor, :total_floors, :furnished, :ownership,
       :featured, :status, :views, :description, :address, :city, :state, :country, :pincode,
-      :latitude, :longitude
+      :latitude, :longitude, property_images_attributes: [:id, :_destroy]
     )
   end
 
@@ -99,7 +100,8 @@ class Admin::PropertiesController < Admin::BaseController
     Property.transaction do
       @property.save!
       uploaded_images.each_with_index do |img, idx|
-        pi = @property.property_images.build(is_cover: idx.zero?)
+        is_first = @property.property_images.reject(&:new_record?).none?(&:is_cover?) && idx.zero?
+        pi = @property.property_images.build(is_cover: is_first)
         if img.respond_to?(:read) || img.is_a?(ActionDispatch::Http::UploadedFile)
           pi.image.attach(img)
         elsif img.is_a?(String) && img.start_with?("http", "/", "data:")

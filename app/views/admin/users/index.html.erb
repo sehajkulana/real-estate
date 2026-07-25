@@ -1,17 +1,17 @@
-<% content_for :page_title, "Users & Agents" %>
+<% content_for :page_title, "Users & Sellers" %>
 <% content_for :breadcrumb, "Users" %>
 
 <!-- Header -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
   <div>
-    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Users & Agents</h1>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Users & Sellers</h1>
     <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @users.size %> shown</p>
   </div>
 </div>
 
 <!-- Role Tabs -->
 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
-  <% roles = [['All', nil], ['Admin', 'admin'], ['Agent', 'agent'], ['Seller', 'seller'], ['User', 'user']] %>
+  <% roles = [['All', nil], ['Admin', 'admin'], ['Seller', 'seller'], ['User', 'user']] %>
   <% roles.each do |label, role| %>
     <%= link_to admin_users_path(role: role, q: params[:q]),
       class: "a-btn #{params[:role] == role ? 'a-btn-gold' : 'a-btn-outline'}" do %>
@@ -76,8 +76,7 @@
               <td>
                 <% role_class = case user.role
                   when 'admin'  then 'b-red'
-                  when 'agent'  then 'b-gold'
-                  when 'seller' then 'b-blue'
+                  when 'seller' then 'b-gold'
                   else 'b-gray'
                 end %>
                 <span class="a-badge <%= role_class %>"><%= user.role || "user" %></span>
@@ -110,10 +109,10 @@
                     title="<%= user.status == 'suspended' ? 'Activate' : 'Suspend' %>">
                     <i class="fa-solid fa-<%= user.status == 'suspended' ? 'lock-open' : 'lock' %>"></i>
                   </button>
-                  <!-- Make Agent -->
-                  <% unless user.role == 'agent' %>
-                    <button onclick="updateUser(<%= user.id %>, { role: 'agent' })"
-                      class="a-btn a-btn-outline a-btn-sm" title="Make Agent">
+                  <!-- Make Seller -->
+                  <% unless user.role == 'seller' %>
+                    <button onclick="updateUser(<%= user.id %>, { role: 'seller' })"
+                      class="a-btn a-btn-outline a-btn-sm" title="Make Seller">
                       <i class="fa-solid fa-user-tie"></i>
                     </button>
                   <% end %>

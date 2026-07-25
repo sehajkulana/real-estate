@@ -5,7 +5,7 @@
     <p class="text-gray-400 mt-4 max-w-2xl">Explore luxury residences and commercial spaces selected for sophistication, location, and investment potential.</p>
   </div>
 
-  <div class="glass-card rounded-3xl p-6 md:p-8 mb-10">
+  <div class="glass-card rounded-3xl p-6 md:p-8 mb-10 relative z-[100]">
     <%# ===== Buy / Rent / All Tabs ===== %>
     <div class="flex gap-2 mb-5">
       <a href="<%= properties_path(@filters.except('listing_type').merge(listing_type: 'Sale')) %>"
@@ -34,8 +34,8 @@
         <input type="hidden" name="property_type" value="<%= @filters['property_type'] %>">
       <% end %>
 
-      <div class="relative mb-5">
-        <div class="flex rounded-2xl border border-white/10 bg-obsidian-950/70 overflow-hidden focus-within:border-gold-500/50 transition-colors">
+      <div class="relative mb-5 z-[100]">
+        <div class="flex rounded-2xl border border-white/10 bg-obsidian-950/70 overflow-hidden focus-within:border-gold-500/50 transition-colors relative z-[100]">
           <span class="flex items-center pl-4 text-gold-500"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input type="text"
                  name="keyword"
