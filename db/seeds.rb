@@ -244,7 +244,7 @@ properties_data.each_with_index do |data, index|
     "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd19?auto=format&fit=crop&w=800&q=80"
   ]
-  
+
   if prop.property_images.empty?
     PropertyImage.create!(
       property: prop,
