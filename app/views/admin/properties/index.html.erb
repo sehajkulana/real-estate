@@ -14,28 +14,30 @@
 
 <!-- Filter Bar -->
 <%= form_with url: admin_properties_path, method: :get, local: true do |f| %>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;background:rgba(18,18,20,0.85);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;background:rgba(18,18,20,0.85);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;width:100%;max-width:100%;">
     <!-- Search -->
-    <div class="a-search" style="flex:1;min-width:220px;">
+    <div class="a-search" style="flex:1 1 200px;max-width:100%;">
       <i class="fa-solid fa-magnifying-glass"></i>
       <%= f.text_field :q, value: params[:q], placeholder: "Search by title, city, address…", class: "a-input", style: "padding-left:33px;" %>
     </div>
     <!-- Status -->
     <%= f.select :status,
       options_for_select([['All Status',''],['Active','Active'],['Pending','Pending'],['Sold','Sold'],['Inactive','Inactive']], params[:status]),
-      {}, class: "a-input a-select", style: "width:140px;flex-shrink:0;" %>
+      {}, class: "a-input a-select", style: "width:auto;flex:1 1 120px;max-width:100%;" %>
     <!-- Type -->
     <%= f.select :property_type,
       options_for_select([['All Types',''],['Residential','Residential'],['Commercial','Commercial'],['Apartment','Apartment'],['Villa','Villa'],['Penthouse','Penthouse'],['Farmhouse','Farmhouse'],['Plot / Land','Plot / Land'],['Office Space','Office Space']], params[:property_type]),
-      {}, class: "a-input a-select", style: "width:150px;flex-shrink:0;" %>
+      {}, class: "a-input a-select", style: "width:auto;flex:1 1 130px;max-width:100%;" %>
     <!-- Listing Type -->
     <%= f.select :listing_type,
       options_for_select([['All',''],['Sale','Sale'],['Rent','Rent']], params[:listing_type]),
-      {}, class: "a-input a-select", style: "width:120px;flex-shrink:0;" %>
-    <%= f.submit "Filter", class: "a-btn a-btn-gold", style: "flex-shrink:0;" %>
-    <% if params[:q].present? || params[:status].present? || params[:property_type].present? || params[:listing_type].present? %>
-      <%= link_to "Clear", admin_properties_path, class: "a-btn a-btn-outline", style: "flex-shrink:0;" %>
-    <% end %>
+      {}, class: "a-input a-select", style: "width:auto;flex:1 1 100px;max-width:100%;" %>
+    <div style="display:flex;gap:6px;flex-shrink:0;">
+      <%= f.submit "Filter", class: "a-btn a-btn-gold" %>
+      <% if params[:q].present? || params[:status].present? || params[:property_type].present? || params[:listing_type].present? %>
+        <%= link_to "Clear", admin_properties_path, class: "a-btn a-btn-outline" %>
+      <% end %>
+    </div>
   </div>
 <% end %>
 
