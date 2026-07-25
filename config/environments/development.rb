@@ -15,6 +15,10 @@ Rails.application.configure do
   # Enable server timing.
   config.server_timing = true
 
+  # Allow ngrok domain for local testing
+  config.hosts << "universe-shivering-january.ngrok-free.dev"
+  config.hosts << /.*\.ngrok-free\.dev/
+
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
   # Run rails dev:cache to toggle Action Controller caching.
   if Rails.root.join("tmp/caching-dev.txt").exist?

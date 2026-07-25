@@ -22,7 +22,7 @@ agent = User.find_or_create_by!(email: "agent@example.com") do |u|
   u.password_digest = "secret"
   u.first_name = "Premier"
   u.last_name = "Broker"
-  u.role = "agent"
+  u.role = "seller"
   u.status = "active"
 end
 
