@@ -14,10 +14,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "properties are filtered by the searched city" do
-    properties(:one).update!(city: "Mumbai", title: "Mumbai property")
-    properties(:two).update!(city: "Pune", title: "Pune property")
+    properties(:one).update!(city: "Mohali", title: "Mohali property")
+    properties(:two).update!(city: "Zirakpur", title: "Zirakpur property")
 
-    get properties_path, params: { city: "Mumbai" }
+    get properties_path, params: { city: "Mohali" }
 
     assert_response :success
     assert_select "h3", text: properties(:one).title, count: 1
@@ -26,22 +26,22 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
   test "properties can be filtered by their attributes" do
     properties(:one).update!(
-      title: "Matching property", city: "Mumbai", bathrooms: 2, price: 750_000,
+      title: "Matching property", city: "Mohali", bathrooms: 2, price: 750_000,
       facing: "East", property_type: "Apartment", parking: 1, area: 1_200, listing_type: "For Sale"
     )
     properties(:two).update!(
-      title: "Non-matching property", city: "Pune", bathrooms: 1, price: 100_000,
+      title: "Non-matching property", city: "Zirakpur", bathrooms: 1, price: 100_000,
       facing: "West", property_type: "House", parking: 0, area: 400, listing_type: "For Rent"
     )
 
     get properties_path, params: {
-      city: "mum", bathrooms: "2", budget: "0-5000000", facing: "East",
+      city: "mohali", bathrooms: "2", budget: "0-5000000", facing: "East",
       property_type: "Apartment", parking: "1", area: "1000-2000", listing_type: "For Sale"
     }
 
     assert_response :success
-    assert_match "Matching property", response.body
-    refute_match "Non-matching property", response.body
+    assert_select "h3", text: "Matching property", count: 1
+    assert_select "h3", text: "Non-matching property", count: 0
   end
 
   test "properties page renders a budget range control" do
