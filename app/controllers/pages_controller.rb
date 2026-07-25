@@ -83,7 +83,7 @@ class PagesController < ApplicationController
       if title.present?
         "#{title} in #{city}"
       else
-        "#{ptype.presence || 'Luxury Property'} in #{city}"
+        "#{ptype.presence || "Luxury Property"} in #{city}"
       end
     end.compact_blank.uniq
 
@@ -194,7 +194,7 @@ class PagesController < ApplicationController
       if title.present?
         "#{title} in #{city}"
       else
-        "#{ptype.presence || 'Luxury Property'} in #{city}"
+        "#{ptype.presence || "Luxury Property"} in #{city}"
       end
     end.compact_blank.uniq
 
@@ -281,7 +281,7 @@ class PagesController < ApplicationController
       prop_title = property ? "'#{property.title}'" : "the property"
       redirect_back fallback_location: contact_path, notice: "Thank you! Your inquiry for #{prop_title} has been submitted successfully."
     else
-      redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(', ')}"
+      redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(", ")}"
     end
   end
 
@@ -309,7 +309,7 @@ class PagesController < ApplicationController
     if report.save
       redirect_back fallback_location: root_path, notice: "Thank you! The property listing has been flagged and submitted to administrators for review."
     else
-      redirect_back fallback_location: root_path, alert: "Could not submit report: #{report.errors.full_messages.join(', ')}"
+      redirect_back fallback_location: root_path, alert: "Could not submit report: #{report.errors.full_messages.join(", ")}"
     end
   end
 

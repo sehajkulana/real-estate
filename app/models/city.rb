@@ -6,7 +6,7 @@ class City < ApplicationRecord
   scope :active, -> { where(active: true) }
 
   attr_accessor :remove_image
-  after_save :purge_image, if: -> { remove_image == '1' || remove_image == true }
+  after_save :purge_image, if: -> { remove_image == "1" || remove_image == true }
 
   def display_image_url
     if image.attached?
