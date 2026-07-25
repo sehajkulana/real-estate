@@ -2,18 +2,16 @@ class PropertyImage < ApplicationRecord
   belongs_to :property
   has_one_attached :image
 
-  validate :image_is_supported
+  validate :image_is_supported, if: -> { image.attached? }
 
   private
 
   def image_is_supported
-    unless image.attached?
-      errors.add(:image, "must be attached")
-      return
+    return unless image.attached?
+
+    allowed_types = %w[image/jpeg image/jpg image/pjpeg image/png image/webp image/gif image/avif image/svg+xml]
+    unless image.content_type.to_s.downcase.in?(allowed_types)
+      errors.add(:image, "must be a JPG, PNG, GIF, WebP, or AVIF file")
     end
-
-    return if image.content_type.in?(%w[image/jpeg image/png image/webp])
-
-    errors.add(:image, "must be a JPG, PNG, or WebP file")
   end
 end

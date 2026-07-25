@@ -1,0 +1,250 @@
+<%# Shared form for admin property create/edit %>
+<%= form_with model: [:admin, property], local: true, html: { multipart: true } do |f| %>
+
+  <!-- SECTION 1: Basic Info -->
+  <div class="a-card" style="margin-bottom:16px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-building-columns"></i> Basic Information</div>
+    </div>
+    <div style="padding:20px;">
+      <div class="a-grid-2" style="gap:14px;">
+        <div class="a-col2">
+          <label class="a-label">Title <span style="color:#f87171;">*</span></label>
+          <%= f.text_field :title, placeholder: "e.g. Luxury Villa in Mohali", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Listing Type</label>
+          <%= f.select :listing_type,
+            options_for_select([['Sale','Sale'],['Rent','Rent']], property.listing_type),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Property Type</label>
+          <%= f.select :property_type,
+            options_for_select([['Residential','Residential'],['Commercial','Commercial'],['Apartment','Apartment'],['Villa','Villa'],['Penthouse','Penthouse'],['Farmhouse','Farmhouse'],['Plot / Land','Plot / Land'],['Office Space','Office Space'],['Shop / Retail','Shop / Retail'],['Industrial','Industrial']], property.property_type),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Price (₹)</label>
+          <%= f.number_field :price, step: "0.01", placeholder: "e.g. 25000000", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Status</label>
+          <%= f.select :status,
+            options_for_select([['Active','Active'],['Pending','Pending'],['Sold','Sold'],['Inactive','Inactive']], property.status),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Agent / Seller</label>
+          <%= f.select :seller_id,
+            options_for_select(sellers.map { |u| ["#{u.first_name} #{u.last_name}", u.id] }, property.seller_id),
+            { include_blank: "Select agent…" }, class: "a-input a-select" %>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding-top:22px;">
+          <%= f.check_box :featured, class: "a-toggle", style: "width:18px;height:18px;accent-color:var(--gold-500);cursor:pointer;" %>
+          <label class="a-label" style="margin-bottom:0;">Mark as Featured</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Location -->
+  <div class="a-card" style="margin-bottom:16px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-location-dot"></i> Location Details</div>
+    </div>
+    <div style="padding:20px;">
+      <div class="a-grid-2" style="gap:14px;">
+        <div class="a-col2">
+          <label class="a-label">Full Address</label>
+          <%= f.text_field :address, placeholder: "e.g. Phase 7, Mohali", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">City</label>
+          <% city_list = defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities) ? City.order(:name).pluck(:name) : [] %>
+          <% city_list = (city_list + [f.object.city]).compact_blank.uniq.sort if f.object&.city.present? %>
+          <% if city_list.any? %>
+            <%= f.select :city, options_for_select(city_list, f.object.city), { include_blank: "-- Select City --" }, { class: "a-input" } %>
+          <% else %>
+            <%= f.text_field :city, placeholder: "e.g. Mohali", class: "a-input" %>
+          <% end %>
+        </div>
+        <div>
+          <label class="a-label">State</label>
+          <%= f.text_field :state, placeholder: "e.g. Punjab", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Country</label>
+          <%= f.text_field :country, placeholder: "e.g. India", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Pincode / ZIP</label>
+          <%= f.text_field :pincode, placeholder: "e.g. 160059", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Latitude</label>
+          <%= f.number_field :latitude, step: "0.000001", placeholder: "e.g. 30.7333", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Longitude</label>
+          <%= f.number_field :longitude, step: "0.000001", placeholder: "e.g. 76.7794", class: "a-input" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Specs -->
+  <div class="a-card" style="margin-bottom:16px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-ruler-combined"></i> Property Specifications</div>
+    </div>
+    <div style="padding:20px;">
+      <div class="a-grid-3" style="gap:14px;">
+        <div>
+          <label class="a-label">Area</label>
+          <%= f.number_field :area, step: "0.01", placeholder: "e.g. 2400", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Area Unit</label>
+          <%= f.select :area_unit,
+            options_for_select([['sq ft','sq ft'],['sq m','sq m'],['sq yd','sq yd'],['acres','acres'],['hectares','hectares']], property.area_unit),
+            { include_blank: "Unit…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Bedrooms</label>
+          <%= f.number_field :bedrooms, min: 0, placeholder: "e.g. 3", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Bathrooms</label>
+          <%= f.number_field :bathrooms, min: 0, placeholder: "e.g. 2", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Balconies</label>
+          <%= f.number_field :balconies, min: 0, placeholder: "e.g. 1", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Parking Spaces</label>
+          <%= f.number_field :parking, min: 0, placeholder: "e.g. 2", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Floor</label>
+          <%= f.number_field :floor, min: 0, placeholder: "e.g. 4", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Total Floors</label>
+          <%= f.number_field :total_floors, min: 0, placeholder: "e.g. 10", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Facing</label>
+          <%= f.select :facing,
+            options_for_select([['North','North'],['South','South'],['East','East'],['West','West'],['North-East','North-East'],['North-West','North-West'],['South-East','South-East'],['South-West','South-West']], property.facing),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Construction & Features -->
+  <div class="a-card" style="margin-bottom:16px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-hammer"></i> Construction & Features</div>
+    </div>
+    <div style="padding:20px;">
+      <div class="a-grid-3" style="gap:14px;">
+        <div>
+          <label class="a-label">Construction Status</label>
+          <%= f.select :construction_status,
+            options_for_select([['Ready to Move','Ready to Move'],['Under Construction','Under Construction'],['New Launch','New Launch']], property.construction_status),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Age of Property (years)</label>
+          <%= f.number_field :age_of_property, min: 0, placeholder: "e.g. 3", class: "a-input" %>
+        </div>
+        <div>
+          <label class="a-label">Furnished</label>
+          <%= f.select :furnished,
+            options_for_select([['Furnished','Furnished'],['Semi-Furnished','Semi-Furnished'],['Unfurnished','Unfurnished']], property.furnished),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Ownership</label>
+          <%= f.select :ownership,
+            options_for_select([['Freehold','Freehold'],['Leasehold','Leasehold'],['Co-operative','Co-operative'],['Power of Attorney','Power of Attorney']], property.ownership),
+            { include_blank: "Select…" }, class: "a-input a-select" %>
+        </div>
+        <div>
+          <label class="a-label">Views Count</label>
+          <%= f.number_field :views, min: 0, value: property.views || 0, class: "a-input" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Description -->
+  <div class="a-card" style="margin-bottom:16px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-pen-nib"></i> Description</div>
+    </div>
+    <div style="padding:20px;">
+      <label class="a-label">Property Description</label>
+      <%= f.text_area :description, rows: 5,
+        placeholder: "Describe the property — highlights, features, nearby landmarks…",
+        class: "a-input", style: "resize:vertical;" %>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Images -->
+  <div class="a-card" style="margin-bottom:20px;">
+    <div class="a-card-hdr">
+      <div class="a-card-title"><i class="fa-solid fa-images"></i> Property Images</div>
+    </div>
+    <div style="padding:20px;">
+      <label class="a-label">Upload Images <span style="color:#6b7280;font-weight:400;text-transform:none;letter-spacing:0;">(first image = cover)</span></label>
+      <%= f.file_field :images, multiple: true, name: "property[images][]",
+        accept: "image/*",
+        class: "a-input",
+        style: "cursor:pointer;padding:10px;" %>
+      <% if property.persisted? && property.property_images.any? %>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;">
+          <p style="width:100%;font-size:11px;color:#6b7280;margin-bottom:4px;">Current images:</p>
+          <% property.property_images.each do |pi| %>
+            <div style="position:relative;">
+              <% src = pi.image&.attached? ? url_for(pi.image) : pi.image_url.presence %>
+              <% if src %>
+                <img src="<%= src %>" style="width:72px;height:56px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);">
+                <% if pi.is_cover %>
+                  <span style="position:absolute;top:3px;left:3px;background:var(--gold-500);color:#0a0a0c;font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px;">COVER</span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Error display -->
+  <% if property.errors.any? %>
+    <div class="a-flash a-flash-alert" style="margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Please fix the following errors:</strong>
+        <ul style="margin-top:6px;padding-left:16px;font-size:12px;">
+          <% property.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Submit -->
+  <div style="display:flex;align-items:center;gap:12px;">
+    <%= f.submit property.persisted? ? "Update Property" : "Create Property",
+      class: "a-btn a-btn-gold",
+      style: "padding:10px 24px;font-size:13px;" %>
+    <%= link_to "Cancel", admin_properties_path, class: "a-btn a-btn-outline" %>
+  </div>
+
+<% end %>

@@ -173,27 +173,37 @@
 	};
 
 	var counter = function() {
-		
-		$('#section-counter, .hero-wrap, .ftco-counter').waypoint( function( direction ) {
+		var $counter = $('#section-counter');
 
-			if( direction === 'down' && !$(this.element).hasClass('ftco-animated') ) {
+		if (!$counter.length) return;
 
-				var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
-				$('.number').each(function(){
-					var $this = $(this),
-						num = $this.data('number');
-						console.log(num);
-					$this.animateNumber(
-					  {
-					    number: num,
-					    numberStep: comma_separator_number_step
-					  }, 7000
-					);
-				});
-				
+		var startCounter = function() {
+			if ($counter.hasClass('ftco-animated')) return;
+
+			var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',');
+			$counter.find('.number').each(function(){
+				var $this = $(this),
+					num = $this.data('number');
+
+				$this.animateNumber({
+					number: num,
+					numberStep: comma_separator_number_step
+				}, 7000);
+			});
+
+			$counter.addClass('ftco-animated');
+		};
+
+		var startCounterOnScroll = function() {
+			var counterPosition = $counter[0].getBoundingClientRect();
+
+			if (counterPosition.top < window.innerHeight && counterPosition.bottom > 0) {
+				startCounter();
+				$(window).off('scroll.counter');
 			}
+		};
 
-		} , { offset: '95%' } );
+		$(window).on('scroll.counter', startCounterOnScroll);
 
 	}
 	counter();
@@ -316,4 +326,3 @@
 
 
 })(jQuery);
-

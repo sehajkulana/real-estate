@@ -1,205 +1,209 @@
-<% content_for :title, "Uptown - Property Details" %>
+<section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <% images = @property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
 
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="<%= root_path %>">Uptown</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="oi oi-menu"></span> Menu
-    </button>
-
-    <div class="collapse navbar-collapse" id="ftco-nav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a href="<%= root_path %>" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="<%= about_path %>" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="<%= agent_path %>" class="nav-link">Agent</a></li>
-        <li class="nav-item"><a href="<%= services_path %>" class="nav-link">Services</a></li>
-        <li class="nav-item"><a href="<%= properties_path %>" class="nav-link">Properties</a></li>
-        <li class="nav-item"><a href="<%= blog_path %>" class="nav-link">Blog</a></li>
-        <li class="nav-item"><a href="<%= contact_path %>" class="nav-link">Contact</a></li>
-      </ul>
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.listing_type %></span>
+      <span class="bg-obsidian-950 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= @property.property_type %></span>
+      <% p_status = @property.status.presence || 'Active' %>
+      <% status_style = case p_status.to_s.downcase
+         when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
+         when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
+         when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
+         when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
+         else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
+         end %>
+      <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= p_status %></span>
     </div>
+    <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight"><%= @property.title %></h1>
+    <p class="text-gold-400 text-sm font-medium uppercase tracking-widest mt-2 flex items-center gap-2">
+      <i class="fa-solid fa-location-dot"></i>
+      <%= [@property.address, @property.city, @property.state, @property.country].compact_blank.join(', ') %>
+    </p>
   </div>
-</nav>
 
-<section class="hero-wrap hero-wrap-2 ftco-degree-bg js-fullheight" style="background-image: url('/uptown/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center">
-      <div class="col-md-9 ftco-animate pb-5 text-center">
-        <p class="breadcrumbs"><span class="mr-2"><a href="<%= root_path %>">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Properties <i class="ion-ios-arrow-forward"></i></span></p>
-        <h1 class="mb-3 bread">Properties Single</h1>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <%# ===== Photo Gallery Column ===== %>
+    <div class="lg:col-span-7 space-y-4">
+      <div class="glass-card rounded-3xl overflow-hidden relative h-[420px] bg-black select-none group" id="property-gallery-container">
+        <% if images.any? %>
+          <img id="main-property-image" src="<%= images.first %>" alt="<%= @property.title %>" class="h-full w-full object-cover transition-opacity duration-300">
+        <% else %>
+          <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex items-center justify-center text-gray-500">
+            <i class="fa-solid fa-image text-4xl"></i>
+          </div>
+        <% end %>
+
+        <% if images.length > 1 %>
+          <!-- Arrows -->
+          <button type="button" onclick="prevDetailImage()" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl">
+            <i class="fa-solid fa-chevron-left text-sm"></i>
+          </button>
+          <button type="button" onclick="nextDetailImage()" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl">
+            <i class="fa-solid fa-chevron-right text-sm"></i>
+          </button>
+
+          <!-- Counter Badge -->
+          <div class="absolute top-4 left-4 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md">
+            <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="detail-img-current">1</span> / <%= images.length %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Thumbnails Strip %>
+      <% if images.length > 1 %>
+        <div class="flex gap-3 overflow-x-auto pb-2">
+          <% images.each_with_index do |img_url, idx| %>
+            <img src="<%= img_url %>"
+                 onclick="setDetailImageIndex(<%= idx %>)"
+                 class="detail-thumb h-20 w-28 object-cover rounded-2xl border-2 cursor-pointer transition-all opacity-60 hover:opacity-100 <%= 'border-gold-500 opacity-100 scale-105' if idx.zero? %>"
+                 data-idx="<%= idx %>">
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ===== Specifications & Action Column ===== %>
+    <div class="lg:col-span-5 space-y-6">
+      <div class="glass-card rounded-3xl p-8 space-y-6">
+        <div>
+          <span class="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Asking Price</span>
+          <p class="text-gold-400 font-serif text-4xl font-bold gold-glow">₹<%= number_with_delimiter(@property.price.to_i) %></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Area</span>
+            <span class="text-white font-semibold text-sm"><%= number_with_delimiter(@property.area) %> <%= @property.area_unit.presence || 'sq ft' %></span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Bedrooms</span>
+            <span class="text-white font-semibold text-sm"><%= @property.bedrooms %> Bed</span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Bathrooms</span>
+            <span class="text-white font-semibold text-sm"><%= @property.bathrooms %> Bath</span>
+          </div>
+          <div class="bg-obsidian-950/70 border border-white/5 rounded-2xl p-4">
+            <span class="text-gray-500 uppercase tracking-widest block text-[9px] mb-1">Parking</span>
+            <span class="text-white font-semibold text-sm"><%= @property.parking || 0 %> Spaces</span>
+          </div>
+        </div>
+
+        <% if @property.description.present? %>
+          <div>
+            <h3 class="text-xs text-gold-400 uppercase tracking-widest font-semibold mb-2">Description</h3>
+            <p class="text-gray-300 text-sm leading-relaxed"><%= @property.description %></p>
+          </div>
+        <% end %>
+
+        <div class="pt-6 border-t border-white/5 space-y-4">
+          <h3 class="text-sm text-white uppercase tracking-widest font-bold flex items-center gap-2">
+            <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
+          </h3>
+          <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+            <%= f.hidden_field :property_id, value: @property.id %>
+            <div>
+              <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <div>
+              <%= f.text_area :message, required: true, rows: 3, placeholder: "I'm interested in #{@property.title}. Please provide more details...", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>
+            </div>
+            <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-6 rounded-full transition-all cursor-pointer" %>
+          <% end %>
+        </div>
+
+        <div class="pt-4 border-t border-white/5">
+          <details class="group">
+            <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-flag"></i> Report this listing to Admin
+              </span>
+              <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+            </summary>
+            <div class="pt-3">
+              <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                <%= f.hidden_field :property_id, value: @property.id %>
+                <div>
+                  <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-950/90 px-3 py-2 text-xs text-white" %>
+                </div>
+                <div>
+                  <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/90 px-3 py-2 text-xs text-white" %>
+                </div>
+                <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
+              <% end %>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="ftco-section ftco-property-details">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-12">
-        <div class="property-details">
-          <div class="img" style="background-image: url('/uptown/images/work-1.jpg');"></div>
-          <div class="text text-center">
-            <span class="subheading">Oakland</span>
-            <h2>The Blue Sky Home</h2>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 pills">
-        <div class="bd-example bd-example-tabs">
-          <div class="d-flex justify-content-center">
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-              <li class="nav-item"><a class="nav-link active" id="pills-description-tab" data-toggle="pill" href="#pills-description" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" id="pills-manufacturer-tab" data-toggle="pill" href="#pills-manufacturer" role="tab">Description</a></li>
-              <li class="nav-item"><a class="nav-link" id="pills-review-tab" data-toggle="pill" href="#pills-review" role="tab">Review</a></li>
-            </ul>
-          </div>
+<script>
+  const detailImages = <%= raw images.to_json %>;
+  let detailImageIdx = 0;
 
-          <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-description" role="tabpanel">
-              <div class="row">
-                <div class="col-md-4">
-                  <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Lot Area: 1,250 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Bed Rooms: 4</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Bath Rooms: 4</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Luggage</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Garage: 2</li>
-                  </ul>
-                </div>
-                <div class="col-md-4">
-                  <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Floor Area: 1,300 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Year Build: 2019</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Water</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Stories: 2</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Roofing: New</li>
-                  </ul>
-                </div>
-                <div class="col-md-4">
-                  <ul class="features">
-                    <li class="check"><span class="ion-ios-checkmark"></span>Floor Area: 1,300 SQ FT</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Year Build: 2019</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Water</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Stories: 2</li>
-                    <li class="check"><span class="ion-ios-checkmark"></span>Roofing: New</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+  function updateDetailGallery() {
+    if (!detailImages || detailImages.length === 0) return;
+    const mainImg = document.getElementById("main-property-image");
+    const currentSpan = document.getElementById("detail-img-current");
+    const thumbs = document.querySelectorAll(".detail-thumb");
 
-            <div class="tab-pane fade" id="pills-manufacturer" role="tabpanel">
-              <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-              <p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way.</p>
-            </div>
+    if (mainImg) {
+      mainImg.style.opacity = "0.3";
+      setTimeout(() => {
+        mainImg.src = detailImages[detailImageIdx];
+        mainImg.style.opacity = "1";
+      }, 60);
+    }
+    if (currentSpan) currentSpan.textContent = detailImageIdx + 1;
 
-            <div class="tab-pane fade" id="pills-review" role="tabpanel">
-              <div class="row">
-                <div class="col-md-7">
-                  <h3 class="head">23 Reviews</h3>
-                  <% [{name: "Jacob Webb", image: "person_1.jpg"}, {name: "Jacob Webb", image: "person_2.jpg"}, {name: "Jacob Webb", image: "person_3.jpg"}].each do |review| %>
-                    <div class="review d-flex">
-                      <div class="user-img" style="background-image: url('/uptown/images/<%= review[:image] %>')"></div>
-                      <div class="desc">
-                        <h4>
-                          <span class="text-left"><%= review[:name] %></span>
-                          <span class="text-right">14 March 2018</span>
-                        </h4>
-                        <p class="star">
-                          <span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i></span>
-                          <span class="text-right"><a href="#" class="reply"><i class="icon-reply"></i></a></span>
-                        </p>
-                        <p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrov</p>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="col-md-5">
-                  <div class="rating-wrap">
-                    <h3 class="head">Give a Review</h3>
-                    <div class="wrap">
-                      <p class="star"><span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>(98%)</span><span>20 Reviews</span></p>
-                      <p class="star"><span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>(85%)</span><span>10 Reviews</span></p>
-                      <p class="star"><span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>(70%)</span><span>5 Reviews</span></p>
-                      <p class="star"><span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>(10%)</span><span>0 Reviews</span></p>
-                      <p class="star"><span><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>(0%)</span><span>0 Reviews</span></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    thumbs.forEach((t, i) => {
+      if (i === detailImageIdx) {
+        t.classList.add("border-gold-500", "opacity-100", "scale-105");
+        t.classList.remove("border-transparent", "opacity-60");
+      } else {
+        t.classList.remove("border-gold-500", "opacity-100", "scale-105");
+        t.classList.add("border-transparent", "opacity-60");
+      }
+    });
+  }
 
-<footer class="ftco-footer ftco-section">
-  <div class="container">
-    <div class="row mb-5">
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Uptown</h2>
-          <p>Far far away, behind the word mountains, far from the countries.</p>
-          <ul class="ftco-footer-social list-unstyled mt-5">
-            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">Community</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Search Properties</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>For Agents</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Reviews</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>FAQs</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-4">
-          <h2 class="ftco-heading-2">About Us</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Our Story</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Meet the team</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Company</h2>
-          <ul class="list-unstyled">
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>About Us</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Press</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Contact</a></li>
-            <li><a href="#"><span class="icon-long-arrow-right mr-2"></span>Careers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Have a Questions?</h2>
-          <div class="block-23 mb-3">
-            <ul>
-              <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-              <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-              <li><a href="#"><span class="icon icon-envelope pr-4"></span><span class="text">info@yourdomain.com</span></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <p>Copyright &copy;<%= Time.current.year %> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
-      </div>
-    </div>
-  </div>
-</footer>
+  function prevDetailImage() {
+    if (detailImages.length <= 1) return;
+    detailImageIdx = (detailImageIdx - 1 + detailImages.length) % detailImages.length;
+    updateDetailGallery();
+  }
+
+  function nextDetailImage() {
+    if (detailImages.length <= 1) return;
+    detailImageIdx = (detailImageIdx + 1) % detailImages.length;
+    updateDetailGallery();
+  }
+
+  function setDetailImageIndex(idx) {
+    detailImageIdx = idx;
+    updateDetailGallery();
+  }
+
+  // Swipe gesture support
+  let detailTouchStart = 0;
+  const container = document.getElementById("property-gallery-container");
+  if (container) {
+    container.addEventListener("touchstart", (e) => {
+      detailTouchStart = e.changedTouches[0].screenX;
+    }, { passive: true });
+    container.addEventListener("touchend", (e) => {
+      const end = e.changedTouches[0].screenX;
+      if (detailTouchStart - end > 40) nextDetailImage();
+      else if (end - detailTouchStart > 40) prevDetailImage();
+    }, { passive: true });
+  }
+</script>

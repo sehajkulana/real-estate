@@ -1,0 +1,132 @@
+<footer class="bg-obsidian-950 border-t border-gold-500/20 text-gray-400 font-sans">
+  <%# ===== Top Newsletter & Callback Section ===== %>
+  <div class="border-b border-white/5 bg-obsidian-900/60 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-gold-500 text-xs font-semibold uppercase tracking-[0.25em] block mb-1">Stay Connected</span>
+          <h3 class="font-serif text-2xl md:text-3xl text-white font-bold tracking-tight">Subscribe to Exclusive Property Alerts</h3>
+          <p class="text-xs text-gray-400 mt-1 max-w-lg">Get direct notifications for zero-brokerage owner listings, new builder launches, and high-yield commercial assets.</p>
+        </div>
+        <div class="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+          <div class="relative min-w-[280px]">
+            <input type="email" placeholder="Enter your email address..." class="w-full bg-obsidian-950 border border-white/10 rounded-full px-5 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500/50">
+          </div>
+          <button type="button" class="bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest px-6 py-3 rounded-full transition-all cursor-pointer whitespace-nowrap">
+            Subscribe Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ===== Main Multi-Column Directory (Coursera & MultiOwner Style) ===== %>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+      
+      <%# Column 1: Brand & Contact Info %>
+      <div class="lg:col-span-1 space-y-4">
+        <a href="<%= root_path %>" class="inline-block font-serif text-2xl font-bold text-gold-500 tracking-wider gold-glow">DUA <span class="text-xs text-gray-400 font-sans tracking-widest block font-medium uppercase">REAL ESTATE</span></a>
+        <p class="text-xs text-gray-400 leading-relaxed font-light">
+          India's premier real estate & asset advisory portal. Buy, sell, and rent luxury residences, direct owner properties, and commercial ventures with total transparency.
+        </p>
+        <div class="pt-2 space-y-2 text-xs">
+          <div class="flex items-center gap-2.5 text-gray-300">
+            <i class="fa-solid fa-phone text-gold-500 text-xs"></i>
+            <span>Toll-Free: <a href="tel:18005713376" class="hover:text-gold-400 font-semibold">1800-571-3376</a></span>
+          </div>
+          <div class="flex items-center gap-2.5 text-gray-300">
+            <i class="fa-solid fa-envelope text-gold-500 text-xs"></i>
+            <a href="mailto:support@duarealestate.com" class="hover:text-gold-400">support@duarealestate.com</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pt-3">
+          <a href="https://facebook.com" target="_blank" rel="noopener" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-gold-400 hover:border-gold-500/40 transition-all" aria-label="Facebook">
+            <i class="fa-brands fa-facebook-f text-xs"></i>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-gold-400 hover:border-gold-500/40 transition-all" aria-label="Instagram">
+            <i class="fa-brands fa-instagram text-xs"></i>
+          </a>
+          <a href="https://youtube.com" target="_blank" rel="noopener" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-gold-400 hover:border-gold-500/40 transition-all" aria-label="YouTube">
+            <i class="fa-brands fa-youtube text-xs"></i>
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-gold-400 hover:border-gold-500/40 transition-all" aria-label="LinkedIn">
+            <i class="fa-brands fa-linkedin-in text-xs"></i>
+          </a>
+        </div>
+      </div>
+
+      <%# Column 2: Popular Searches (MultiOwner Style) %>
+      <div>
+        <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-4 border-l-2 border-gold-500 pl-2">Popular Searches</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="<%= root_path(owner: 'true') %>" class="hover:text-gold-400 transition-colors">Properties by Owners</a></li>
+          <li><a href="<%= root_path(section: 'latest_projects') %>" class="hover:text-gold-400 transition-colors">Latest Builder Projects</a></li>
+          <li><a href="<%= root_path(featured: 'true') %>" class="hover:text-gold-400 transition-colors">Featured Luxury Assets</a></li>
+          <li><a href="<%= root_path(property_type: 'Villa') %>" class="hover:text-gold-400 transition-colors">Luxury Beachfront Villas</a></li>
+          <li><a href="<%= root_path(section: 'business_for_sale') %>" class="hover:text-gold-400 transition-colors">Business for Sale</a></li>
+          <li><a href="<%= properties_path(listing_type: 'Rent') %>" class="hover:text-gold-400 transition-colors">Commercial & Office Rents</a></li>
+          <li><a href="<%= properties_path(property_type: 'Penthouse') %>" class="hover:text-gold-400 transition-colors">Skyline Penthouses</a></li>
+        </ul>
+      </div>
+
+      <%# Column 3: Properties by City %>
+      <div>
+        <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-4 border-l-2 border-gold-500 pl-2">Properties by City</h4>
+        <ul class="space-y-2.5 text-xs">
+          <% (defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities) ? City.active.order(:name) : []).each do |c_obj| %>
+            <li><a href="<%= properties_path(city: c_obj.name) %>" class="hover:text-gold-400 transition-colors">Properties in <%= c_obj.name %></a></li>
+          <% end %>
+        </ul>
+      </div>
+
+      <%# Column 4: Property Types %>
+      <div>
+        <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-4 border-l-2 border-gold-500 pl-2">Property Types</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="<%= properties_path(property_type: 'Apartment') %>" class="hover:text-gold-400 transition-colors">Luxury Apartments</a></li>
+          <li><a href="<%= properties_path(property_type: 'Villa') %>" class="hover:text-gold-400 transition-colors">Independent Villas</a></li>
+          <li><a href="<%= properties_path(property_type: 'Penthouse') %>" class="hover:text-gold-400 transition-colors">Penthouses & Duplexes</a></li>
+          <li><a href="<%= properties_path(property_type: 'Farmhouse') %>" class="hover:text-gold-400 transition-colors">Country Farmhouses</a></li>
+          <li><a href="<%= properties_path(property_type: 'Office Space') %>" class="hover:text-gold-400 transition-colors">Commercial Office Spaces</a></li>
+          <li><a href="<%= properties_path(property_type: 'Shop / Retail') %>" class="hover:text-gold-400 transition-colors">High-Street Retail Shops</a></li>
+          <li><a href="<%= properties_path(property_type: 'Plot / Land') %>" class="hover:text-gold-400 transition-colors">Residential & Industrial Plots</a></li>
+        </ul>
+      </div>
+
+      <%# Column 5: Quick Links & Services %>
+      <div>
+        <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-4 border-l-2 border-gold-500 pl-2">Services & Legal</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="<%= about_path %>" class="hover:text-gold-400 transition-colors">About DUA Real Estate</a></li>
+          <li><a href="<%= services_path %>" class="hover:text-gold-400 transition-colors">Home Loan & Mortgage Assistance</a></li>
+          <li><a href="<%= admin_path %>" class="hover:text-gold-400 transition-colors">Post Property <span class="text-[9px] bg-gold-500 text-obsidian-950 font-bold px-1.5 py-0.5 rounded uppercase ml-1">Free</span></a></li>
+          <li><a href="<%= contact_path %>" class="hover:text-gold-400 transition-colors">Contact Advisory Team</a></li>
+          <li><a href="<%= blog_path %>" class="hover:text-gold-400 transition-colors">Real Estate Market Insights</a></li>
+          <li><a href="#" class="hover:text-gold-400 transition-colors">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-gold-400 transition-colors">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <%# ===== Bottom Bar (Coursera Style Copyright & Legal Row) ===== %>
+  <div class="border-t border-white/5 py-8 bg-obsidian-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="font-serif font-bold text-gold-500">DUA</span>
+          <span>© <%= Time.current.year %> DUA Real Estate Inc. All rights reserved.</span>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-6 text-gray-500">
+          <a href="#" class="hover:text-gray-300 transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-300 transition-colors">Terms of Use</a>
+          <a href="#" class="hover:text-gray-300 transition-colors">Security</a>
+          <a href="#" class="hover:text-gray-300 transition-colors">RERA Compliance</a>
+          <a href="#" class="hover:text-gray-300 transition-colors">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

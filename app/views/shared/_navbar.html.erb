@@ -1,0 +1,38 @@
+<nav class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20 md:h-24">
+      <%= link_to root_path, class: "flex-shrink-0" do %>
+        <div class="flex items-center space-x-2">
+          <span class="font-serif text-3xl md:text-4xl text-gold-500 tracking-widest font-bold">DUA</span>
+          <div class="h-8 w-[1px] bg-gold-500/40"></div>
+          <span class="text-[10px] md:text-xs tracking-[0.3em] font-medium text-gray-300 uppercase leading-none block pt-1">REAL<br>ESTATE</span>
+        </div>
+      <% end %>
+
+      <div class="hidden md:flex items-center space-x-8">
+        <%= link_to "Home", root_path, class: "relative text-sm tracking-wider uppercase transition-colors #{current_page?(root_path) ? 'text-gold-500' : 'text-gray-400 hover:text-gold-400'} font-medium py-2 px-1" %>
+        <%= link_to "Properties", properties_path, class: "relative text-sm tracking-wider uppercase transition-colors #{current_page?(properties_path) ? 'text-gold-500' : 'text-gray-400 hover:text-gold-400'} font-medium py-2 px-1" %>
+        <%= link_to "About Us", about_path, class: "relative text-sm tracking-wider uppercase transition-colors #{current_page?(about_path) ? 'text-gold-500' : 'text-gray-400 hover:text-gold-400'} font-medium py-2 px-1" %>
+        <%= link_to "Contact Us", contact_path, class: "relative text-sm tracking-wider uppercase transition-colors #{current_page?(contact_path) ? 'text-gold-500' : 'text-gray-400 hover:text-gold-400'} font-medium py-2 px-1" %>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <%= link_to "Inquire Now", contact_path, class: "hidden lg:inline-flex items-center px-6 py-2.5 border border-gold-500/30 text-xs tracking-widest text-gold-500 uppercase rounded-full hover:bg-gold-500 hover:text-obsidian-950 hover:border-gold-500 transition-all duration-300 ease-out font-semibold" %>
+
+        <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-gold-500 focus:outline-none p-2" aria-label="Toggle menu">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden md:hidden bg-obsidian-900 border-b border-gold-500/20 px-4 pt-2 pb-6 space-y-3 transition-all duration-300 ease-in-out">
+    <%= link_to "Home", root_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(root_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(root_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
+    <%= link_to "Properties", properties_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(properties_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(properties_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
+    <%= link_to "About Us", about_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(about_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(about_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
+    <%= link_to "Contact Us", contact_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(contact_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(contact_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
+    <%= link_to "Inquire Now", contact_path, class: "w-full text-center py-3 border border-gold-500/50 text-gold-500 uppercase tracking-widest text-xs rounded mt-4" %>
+  </div>
+</nav>

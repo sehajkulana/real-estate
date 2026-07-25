@@ -1,0 +1,7 @@
+<% content_for :page_title, "Add City" %>
+<% content_for :breadcrumb do %>
+  <%= link_to "Cities", admin_cities_path %> <span>/</span> New
+<% end %>
+
+<h1 style="font-size:18px;font-weight:700;color:#f9fafb;margin-bottom:20px;">Add New City</h1>
+<%= render 'form', city: @city %>

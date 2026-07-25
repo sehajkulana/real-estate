@@ -1,0 +1,13 @@
+<% content_for :page_title, "Add Property" %>
+<% content_for :breadcrumb do %>
+  <%= link_to "Properties", admin_properties_path %> <span>/</span> New
+<% end %>
+
+<div style="max-width:920px;">
+  <div style="margin-bottom:20px;">
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Create New Property</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:3px;">Fill in all required fields to publish a new listing.</p>
+  </div>
+
+  <%= render 'form', property: @property, sellers: @sellers %>
+</div>

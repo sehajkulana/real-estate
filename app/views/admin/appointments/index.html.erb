@@ -1,0 +1,108 @@
+<% content_for :page_title, "Appointments" %>
+<% content_for :breadcrumb, "Appointments" %>
+
+<!-- Header + Status Filter -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="font-size:18px;font-weight:700;color:#f9fafb;">Appointments</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:2px;"><%= @appointments.size %> total</p>
+  </div>
+</div>
+
+<!-- Status Tabs -->
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
+  <% [['All', nil], ['Scheduled','Scheduled'], ['Confirmed','Confirmed'], ['Completed','Completed'], ['Cancelled','Cancelled']].each do |label, status| %>
+    <%= link_to admin_appointments_path(status: status),
+      class: "a-btn #{params[:status] == status ? 'a-btn-gold' : 'a-btn-outline'}" do %>
+      <%= label %>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Table -->
+<div class="a-card">
+  <div class="a-table-wrap">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Buyer</th>
+          <th>Seller / Agent</th>
+          <th>Date & Time</th>
+          <th>Status</th>
+          <th>Message</th>
+          <th style="text-align:right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @appointments.any? %>
+          <% @appointments.each do |apt| %>
+            <tr id="apt-<%= apt.id %>">
+              <td>
+                <div style="font-weight:600;color:#f3f4f6;font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <%= apt.property&.title&.truncate(30) || "(Deleted)" %>
+                </div>
+                <div style="font-size:11px;color:#6b7280;"><%= apt.property&.city %></div>
+              </td>
+              <td style="font-size:13px;color:#e5e7eb;">
+                <%= apt.buyer ? "#{apt.buyer.first_name} #{apt.buyer.last_name}" : "—" %>
+              </td>
+              <td style="font-size:13px;color:#9ca3af;">
+                <%= apt.seller ? "#{apt.seller.first_name} #{apt.seller.last_name}" : "—" %>
+              </td>
+              <td style="font-size:12px;white-space:nowrap;">
+                <div style="color:#e5e7eb;font-weight:500;"><%= apt.appointment_date&.strftime("%d %b %Y") || "—" %></div>
+                <div style="color:#6b7280;"><%= apt.appointment_time&.strftime("%I:%M %p") || "—" %></div>
+              </td>
+              <td>
+                <% status_class = case apt.status
+                  when 'Scheduled'  then 'b-blue'
+                  when 'Confirmed'  then 'b-green'
+                  when 'Completed'  then 'b-gray'
+                  when 'Cancelled'  then 'b-red'
+                  else 'b-gray'
+                end %>
+                <span class="a-badge <%= status_class %>"><%= apt.status || "—" %></span>
+              </td>
+              <td style="font-size:12px;color:#9ca3af;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                <%= apt.message&.truncate(40) || "—" %>
+              </td>
+              <td style="text-align:right;">
+                <select onchange="updateAppointment(<%= apt.id %>, this.value)"
+                  class="a-input a-select"
+                  style="width:120px;padding:4px 28px 4px 8px;font-size:11px;">
+                  <% ['Scheduled','Confirmed','Completed','Cancelled'].each do |s| %>
+                    <option value="<%= s %>" <%= 'selected' if apt.status == s %>><%= s %></option>
+                  <% end %>
+                </select>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="7">
+            <div class="a-empty">
+              <i class="fa-solid fa-calendar"></i>
+              <p>No appointments yet</p>
+            </div>
+          </td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+  function updateAppointment(id, status) {
+    fetch('/admin/appointments/' + id, {
+      method: 'PATCH',
+      headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ appointment: { status: status } })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) alert('Error updating appointment.');
+    });
+  }
+</script>

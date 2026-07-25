@@ -1,124 +1,215 @@
-<% content_for :title, "Uptown - Add Property" %>
-
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="<%= root_path %>">Uptown</a>
-    <div class="ml-auto">
-      <%= link_to "Back to properties", properties_path, class: "nav-link text-white" %>
-    </div>
+<section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mb-10">
+    <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Admin Panel</span>
+    <h1 class="font-serif text-4xl md:text-5xl text-white font-bold leading-tight">Create a New Property</h1>
+    <p class="text-gray-400 mt-4 max-w-2xl">Use this page to add a fresh listing to the premium portfolio. Fill in all fields for a complete listing.</p>
   </div>
-</nav>
 
-<section class="hero-wrap hero-wrap-2 ftco-degree-bg" style="background-image: url('/uptown/images/bg_1.jpg');">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row no-gutters slider-text align-items-center justify-content-center" style="min-height: 320px;">
-      <div class="col-md-9 text-center">
-        <p class="breadcrumbs"><span><%= link_to "Home", root_path %> <i class="ion-ios-arrow-forward"></i></span> <span>Admin</span></p>
-        <h1 class="mb-3 bread">Add a Property</h1>
-      </div>
+  <% if flash[:notice] %>
+    <div class="mb-6 rounded-2xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-green-300">
+      <%= flash[:notice] %>
     </div>
-  </div>
-</section>
+  <% end %>
 
-<section class="ftco-section">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="bg-light p-4 p-md-5">
-          <h2 class="mb-4">Property details</h2>
-          <p class="mb-4">Enter the information for the property you want to list.</p>
-
-          <% if @property.errors.any? %>
-            <div class="alert alert-danger">
-              <%= @property.errors.full_messages.to_sentence %>
-            </div>
+  <% if flash[:alert] || @property&.errors&.any? %>
+    <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-red-300">
+      <% if flash[:alert] %>
+        <p class="font-semibold"><%= flash[:alert] %></p>
+      <% end %>
+      <% if @property&.errors&.any? %>
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <% @property.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
           <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
 
-          <%= form_with model: @property, url: create_property_path, local: true do |form| %>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <%= form.label :seller_id, "Seller" %>
-                  <%= form.collection_select :seller_id, @sellers, :id, ->(seller) { "#{seller.first_name} #{seller.last_name} (#{seller.email})" }, { prompt: "Select an agent" }, class: "form-control", required: true %>
-                </div>
-              </div>
-              <div class="col-md-8">
-                <div class="form-group">
-                  <%= form.label :title, "Property title" %>
-                  <%= form.text_field :title, class: "form-control", placeholder: "e.g. Modern 3 bedroom apartment", required: true %>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <%= form.label :listing_type, "Listing type" %>
-                  <%= form.select :listing_type, [ "For Sale", "For Rent" ], { prompt: "Select type" }, class: "form-control", required: true %>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <%= form.label :property_type, "Property type" %>
-                  <%= form.select :property_type, [ "Apartment", "House", "Villa", "Plot", "Commercial" ], { prompt: "Select type" }, class: "form-control", required: true %>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <%= form.label :price, "Price" %>
-                  <%= form.number_field :price, min: 0, step: 0.01, class: "form-control", placeholder: "0.00", required: true %>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <%= form.label :area, "Area" %>
-                  <%= form.number_field :area, min: 0, step: 0.01, class: "form-control", placeholder: "e.g. 1200" %>
-                </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <%= form.label :area_unit, "Unit" %>
-                  <%= form.select :area_unit, [ "sq ft", "sq m", "acre" ], { prompt: "Unit" }, class: "form-control" %>
-                </div>
-              </div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :bedrooms %><%= form.number_field :bedrooms, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :bathrooms %><%= form.number_field :bathrooms, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :balconies %><%= form.number_field :balconies, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :parking %><%= form.number_field :parking, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :age_of_property, "Property age (years)" %><%= form.number_field :age_of_property, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :construction_status, "Construction status" %><%= form.select :construction_status, [ "Ready to Move", "Under Construction" ], { prompt: "Select status" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :furnished, "Furnishing" %><%= form.select :furnished, [ "Furnished", "Semi-furnished", "Unfurnished" ], { prompt: "Select furnishing" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :ownership %><%= form.select :ownership, [ "Freehold", "Leasehold", "Co-operative Society" ], { prompt: "Select ownership" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :facing %><%= form.select :facing, [ "North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West" ], { prompt: "Select facing" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :floor %><%= form.number_field :floor, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :total_floors, "Total floors" %><%= form.number_field :total_floors, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :status %><%= form.select :status, [ "Available", "Sold", "Rented", "Inactive" ], { prompt: "Select status" }, class: "form-control" %></div></div>
-              <div class="col-md-3"><div class="form-group"><%= form.label :views %><%= form.number_field :views, min: 0, class: "form-control" %></div></div>
-              <div class="col-md-3 d-flex align-items-center"><div class="form-group mb-0"><%= form.check_box :featured %> <%= form.label :featured, "Featured property" %></div></div>
-              <div class="col-md-12">
-                <div class="form-group">
-                  <%= form.label :description %>
-                  <%= form.text_area :description, rows: 5, class: "form-control", placeholder: "Describe the property, its features, and nearby amenities." %>
-                </div>
-              </div>
-              <div class="col-md-12">
-                <div class="form-group">
-                  <%= form.label :images, "Property images" %>
-                  <%= form.file_field :images, multiple: true, accept: "image/jpeg,image/png,image/webp", class: "form-control-file" %>
-                  <small class="form-text text-muted">You may select multiple JPG, PNG, or WebP images. The first image is used as the cover image.</small>
-                </div>
-              </div>
-              <div class="col-md-12"><h4 class="mt-3 mb-3">Location</h4></div>
-              <div class="col-md-12"><div class="form-group"><%= form.label :address %><%= form.text_field :address, class: "form-control", placeholder: "Street address" %></div></div>
-              <div class="col-md-4"><div class="form-group"><%= form.label :city %><%= form.text_field :city, class: "form-control" %></div></div>
-              <div class="col-md-4"><div class="form-group"><%= form.label :state %><%= form.text_field :state, class: "form-control" %></div></div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :country %><%= form.text_field :country, class: "form-control" %></div></div>
-              <div class="col-md-2"><div class="form-group"><%= form.label :pincode, "PIN code" %><%= form.text_field :pincode, class: "form-control" %></div></div>
-            </div>
-            <div class="form-group mt-4 mb-0">
-              <%= form.submit "Add Property", class: "btn btn-primary py-3 px-5" %>
-            </div>
-          <% end %>
+  <div class="glass-card rounded-3xl p-8">
+    <%= form_with model: @property, url: create_property_path, local: true, html: { multipart: true }, class: "space-y-10" do |f| %>
+
+      <%# ===== SECTION 1: BASIC INFO ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-building-columns"></i> Basic Information
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Title <span class="text-red-400">*</span></label>
+            <%= f.text_field :title, placeholder: "e.g. Luxury Villa Malibu", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Listing Type</label>
+            <%= f.select :listing_type, options_for_select([['Sale', 'Sale'], ['Rent', 'Rent']], @property.listing_type), { include_blank: "Select Listing Type" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Property Type</label>
+            <%= f.select :property_type, options_for_select([['Residential', 'Residential'], ['Commercial', 'Commercial'], ['Apartment', 'Apartment'], ['Villa', 'Villa'], ['Penthouse', 'Penthouse'], ['Farmhouse', 'Farmhouse'], ['Plot / Land', 'Plot / Land'], ['Office Space', 'Office Space'], ['Shop / Retail', 'Shop / Retail'], ['Industrial', 'Industrial']], @property.property_type), { include_blank: "Select Property Type" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Price (₹)</label>
+            <%= f.number_field :price, step: "0.01", placeholder: "e.g. 25000000", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Status</label>
+            <%= f.select :status, options_for_select([['Active', 'Active'], ['Pending', 'Pending'], ['Sold', 'Sold'], ['Inactive', 'Inactive']], @property.status), { include_blank: "Select Status" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
         </div>
       </div>
-    </div>
+
+      <%# ===== SECTION 2: LOCATION DETAILS ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-location-dot"></i> Location Details
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <label class="block text-sm text-gray-300 mb-2">Full Address</label>
+            <%= f.text_field :address, placeholder: "e.g. 123 Ocean Drive, Suite 4B", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">City</label>
+            <% city_list = defined?(City) && ActiveRecord::Base.connection.table_exists?(:cities) ? City.order(:name).pluck(:name) : [] %>
+            <% city_list = (city_list + [f.object&.city]).compact_blank.uniq.sort if f.object&.city.present? %>
+            <% if city_list.any? %>
+              <%= f.select :city, options_for_select(city_list, f.object&.city), { include_blank: "-- Select City --" }, { class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" } %>
+            <% else %>
+              <%= f.text_field :city, placeholder: "e.g. Malibu", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+            <% end %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">State</label>
+            <%= f.text_field :state, placeholder: "e.g. California", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Country</label>
+            <%= f.text_field :country, placeholder: "e.g. United States", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Pincode / ZIP</label>
+            <%= f.text_field :pincode, placeholder: "e.g. 90265", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Latitude</label>
+            <%= f.number_field :latitude, step: "0.000001", placeholder: "e.g. 34.025922", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Longitude</label>
+            <%= f.number_field :longitude, step: "0.000001", placeholder: "e.g. -118.779757", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+        </div>
+      </div>
+
+      <%# ===== SECTION 3: PROPERTY SPECIFICATIONS ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-ruler-combined"></i> Property Specifications
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Area</label>
+            <%= f.number_field :area, step: "0.01", placeholder: "e.g. 3500", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Area Unit</label>
+            <%= f.select :area_unit, options_for_select([['sq ft', 'sq ft'], ['sq m', 'sq m'], ['sq yd', 'sq yd'], ['acres', 'acres'], ['hectares', 'hectares']], @property.area_unit), { include_blank: "Select Unit" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Bedrooms</label>
+            <%= f.number_field :bedrooms, min: 0, placeholder: "e.g. 4", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Bathrooms</label>
+            <%= f.number_field :bathrooms, min: 0, placeholder: "e.g. 3", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Balconies</label>
+            <%= f.number_field :balconies, min: 0, placeholder: "e.g. 2", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Parking Spaces</label>
+            <%= f.number_field :parking, min: 0, placeholder: "e.g. 2", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Floor</label>
+            <%= f.number_field :floor, min: 0, placeholder: "e.g. 5", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Total Floors</label>
+            <%= f.number_field :total_floors, min: 0, placeholder: "e.g. 12", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Facing</label>
+            <%= f.select :facing, options_for_select([['North', 'North'], ['South', 'South'], ['East', 'East'], ['West', 'West'], ['North-East', 'North-East'], ['North-West', 'North-West'], ['South-East', 'South-East'], ['South-West', 'South-West']], @property.facing), { include_blank: "Select Facing" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+        </div>
+      </div>
+
+      <%# ===== SECTION 4: CONSTRUCTION & FEATURES ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-hammer"></i> Construction & Features
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Construction Status</label>
+            <%= f.select :construction_status, options_for_select([['Ready to Move', 'Ready to Move'], ['Under Construction', 'Under Construction'], ['New Launch', 'New Launch']], @property.construction_status), { include_blank: "Select Status" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Age of Property (years)</label>
+            <%= f.number_field :age_of_property, min: 0, placeholder: "e.g. 3", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Furnished</label>
+            <%= f.select :furnished, options_for_select([['Furnished', 'Furnished'], ['Semi-Furnished', 'Semi-Furnished'], ['Unfurnished', 'Unfurnished']], @property.furnished), { include_blank: "Select Furnishing" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Ownership</label>
+            <%= f.select :ownership, options_for_select([['Freehold', 'Freehold'], ['Leasehold', 'Leasehold'], ['Co-operative', 'Co-operative'], ['Power of Attorney', 'Power of Attorney']], @property.ownership), { include_blank: "Select Ownership" }, class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white" %>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Featured Property</label>
+            <div class="flex items-center gap-3 mt-1">
+              <%= f.check_box :featured, class: "w-5 h-5 rounded bg-obsidian-950/70 border border-white/10 accent-gold-500 cursor-pointer" %>
+              <span class="text-sm text-gray-400">Mark as featured listing</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2">Initial Views Count</label>
+            <%= f.number_field :views, min: 0, value: @property.views || 0, placeholder: "0", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+          </div>
+        </div>
+      </div>
+
+      <%# ===== SECTION 5: DESCRIPTION ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-pen-nib"></i> Description
+        </h2>
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Property Description</label>
+          <%= f.text_area :description, rows: 5, placeholder: "Describe the property in detail — features, highlights, nearby landmarks...", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white placeholder-gray-600" %>
+        </div>
+      </div>
+
+      <%# ===== SECTION 6: IMAGES ===== %>
+      <div>
+        <h2 class="text-gold-400 font-semibold tracking-[0.2em] text-xs uppercase mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-images"></i> Property Images
+        </h2>
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Upload Images <span class="text-gray-500 text-xs">(first image becomes cover)</span></label>
+          <%= f.file_field :images, multiple: true, name: "property[images][]", class: "w-full rounded-2xl border border-white/10 bg-obsidian-950/70 px-4 py-3 text-white file:mr-4 file:rounded-full file:border-0 file:bg-gold-500 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-obsidian-950 file:uppercase file:tracking-widest hover:file:bg-gold-600 file:cursor-pointer file:transition-all" %>
+        </div>
+      </div>
+
+      <%# ===== SUBMIT ===== %>
+      <div class="flex items-center gap-4 pt-4 border-t border-white/5">
+        <%= f.submit "Create Property", class: "bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-semibold uppercase text-xs py-3 px-8 rounded-full transition-all cursor-pointer" %>
+        <%= link_to "View Listings", properties_path, class: "text-gold-400 hover:text-gold-300 text-sm" %>
+      </div>
+    <% end %>
   </div>
 </section>

@@ -1,52 +1,667 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
-    <title><%= content_for(:title) || "Uptown - Real Estate" %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= content_for(:title) || "DUA Real Estate | Ultra-Premium Residential & Commercial Spaces" %></title>
+    <meta name="description" content="Discover ultra-premium residences, executive offices, and tailored advisory experiences in a refined real estate portfolio.">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Real Estate">
+    <meta name="application-name" content="DUA Real Estate">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700,800,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/uptown/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="/uptown/css/animate.css">
-    <link rel="stylesheet" href="/uptown/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="/uptown/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="/uptown/css/magnific-popup.css">
-    <link rel="stylesheet" href="/uptown/css/aos.css">
-    <link rel="stylesheet" href="/uptown/css/ionicons.min.css">
-    <link rel="stylesheet" href="/uptown/css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="/uptown/css/jquery.timepicker.css">
-    <link rel="stylesheet" href="/uptown/css/flaticon.css">
-    <link rel="stylesheet" href="/uptown/css/icomoon.css">
-    <link rel="stylesheet" href="/uptown/css/style.css">
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: '#FAF6ED',
+                100: '#F3EAD3',
+                200: '#E7D5AA',
+                300: '#DBBF80',
+                400: '#CFA957',
+                500: '#C59B27',
+                600: '#A47D1C',
+                700: '#7E5F13',
+                800: '#58410B',
+                900: '#322303'
+              },
+              obsidian: {
+                50: '#F4F4F5',
+                900: '#141416',
+                950: '#0A0A0C'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+              serif: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-obsidian-950 text-gray-200 font-sans overflow-x-hidden antialiased selection:bg-gold-500 selection:text-obsidian-950">
+    <div id="loader" class="fixed inset-0 z-[100] bg-obsidian-950 flex flex-col justify-center items-center transition-opacity duration-700">
+      <div class="text-center">
+        <h2 class="font-serif text-5xl md:text-6xl text-gold-500 tracking-wider gold-glow loader-span mb-4">DUA</h2>
+        <p class="text-gray-400 tracking-[0.25em] text-xs uppercase">Curating Infinite Elegance</p>
+        <div class="w-48 h-[2px] bg-gray-800 mx-auto mt-8 relative overflow-hidden rounded">
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500 to-transparent w-full h-full progress-shimmer"></div>
+        </div>
+      </div>
+    </div>
 
-    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+    <%= render "shared/navbar" %>
 
-    <script src="/uptown/js/jquery.min.js"></script>
-    <script src="/uptown/js/jquery-migrate-3.0.1.min.js"></script>
-    <script src="/uptown/js/popper.min.js"></script>
-    <script src="/uptown/js/bootstrap.min.js"></script>
-    <script src="/uptown/js/jquery.easing.1.3.js"></script>
-    <script src="/uptown/js/jquery.waypoints.min.js"></script>
-    <script src="/uptown/js/jquery.stellar.min.js"></script>
-    <script src="/uptown/js/owl.carousel.min.js"></script>
-    <script src="/uptown/js/jquery.magnific-popup.min.js"></script>
-    <script src="/uptown/js/aos.js"></script>
-    <script src="/uptown/js/jquery.animateNumber.min.js"></script>
-    <script src="/uptown/js/bootstrap-datepicker.js"></script>
-    <script src="/uptown/js/jquery.timepicker.min.js"></script>
-    <script src="/uptown/js/scrollax.min.js"></script>
-    <script src="/uptown/js/google-map.js"></script>
-    <script src="/uptown/js/main.js"></script>
+    <main class="pt-24 md:pt-28 min-h-[calc(100vh-100px)]">
+      <% if flash[:notice] %>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-gold-500/40 bg-gold-500/10 px-5 py-4 text-gold-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
+            <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+            <span><%= flash[:notice] %></span>
+          </div>
+        </div>
+      <% end %>
+      <% if flash[:alert] %>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-red-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
+            <i class="fa-solid fa-circle-exclamation text-red-400 text-lg"></i>
+            <span><%= flash[:alert] %></span>
+          </div>
+        </div>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+
+    <div id="property-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div id="property-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="relative inline-block w-full max-w-5xl align-bottom overflow-hidden rounded-2xl border border-gold-500/20 bg-obsidian-900 text-left shadow-2xl sm:my-8 sm:align-middle">
+          <div class="relative h-72 bg-black md:h-[400px] select-none group/gallery" id="modal-gallery-container">
+            <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-90 transition-opacity duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent pointer-events-none"></div>
+
+            <!-- Left / Right Nav Arrows -->
+            <button type="button" id="modal-prev-img" onclick="prevModalImage(event)" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+              <i class="fa-solid fa-chevron-left text-sm"></i>
+            </button>
+            <button type="button" id="modal-next-img" onclick="nextModalImage(event)" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+              <i class="fa-solid fa-chevron-right text-sm"></i>
+            </button>
+
+            <!-- Counter Badge -->
+            <div id="modal-img-counter" class="absolute top-4 left-4 z-10 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest hidden backdrop-blur-md">
+              <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="modal-img-current">1</span> / <span id="modal-img-total">1</span>
+            </div>
+
+            <!-- Close Button -->
+            <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <span id="property-modal-badge" class="absolute bottom-6 left-6 rounded-full bg-gold-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-obsidian-950"></span>
+          </div>
+
+          <!-- Thumbnail Row for Multiple Photos -->
+          <div id="modal-thumbnails-container" class="flex gap-2.5 p-3.5 bg-obsidian-950 border-b border-white/5 overflow-x-auto hidden"></div>
+
+          <div class="space-y-10 p-6 md:p-10">
+            <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+              <div class="space-y-6 lg:col-span-7">
+                <div>
+                  <h2 id="property-modal-title" class="font-serif text-3xl font-bold leading-tight text-white md:text-4xl"></h2>
+                  <p id="property-modal-location" class="mt-1 text-sm font-medium uppercase tracking-[0.25em] text-gold-400"></p>
+                </div>
+                <p id="property-modal-description" class="text-sm font-light leading-relaxed text-gray-300 md:text-base"></p>
+
+                <div class="grid grid-cols-3 gap-4 border-y border-white/5 py-6">
+                  <div class="text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Asset Area</span>
+                    <span id="property-modal-area" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                  <div class="border-x border-white/5 text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Config/Bed</span>
+                    <span id="property-modal-bedrooms" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                  <div class="text-center">
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Bathrooms</span>
+                    <span id="property-modal-bathrooms" class="text-sm font-medium text-white md:text-base"></span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-white">Elite Amenities Provided</h3>
+                  <div id="property-modal-amenities" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Private concierge</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Ocean views</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Smart security</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Valet parking</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Spa access</div>
+                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Rooftop lounge</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 lg:col-span-5">
+                <div>
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Offering Valuation</span>
+                  <span id="property-modal-price" class="font-serif text-3xl font-bold text-gold-500 gold-glow"></span>
+                </div>
+
+                <div class="space-y-4 border-t border-white/5 pt-4">
+                  <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-white flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
+                  </h3>
+                  <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                    <input type="hidden" name="property_id" id="modal-inquiry-property-id" value="">
+                    <div>
+                      <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <div>
+                      <%= f.text_area :message, required: true, rows: 2, placeholder: "I'm interested in this property. Please contact me...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                    </div>
+                    <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-4 rounded-xl transition-all cursor-pointer shadow-lg" %>
+                  <% end %>
+                  <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.25em] text-gray-400 transition hover:text-white hover:border-gold-500/50">Analyze Investment Loans</button>
+                </div>
+
+                <div class="border-t border-white/5 pt-4">
+                  <details class="group">
+                    <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
+                      <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-flag"></i> Report this listing to Admin
+                      </span>
+                      <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <div class="pt-3">
+                      <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                        <input type="hidden" name="property_id" id="modal-report-property-id" value="">
+                        <div>
+                          <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                        </div>
+                        <div>
+                          <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                        </div>
+                        <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
+                      <% end %>
+                    </div>
+                  </details>
+                </div>
+              </div>
+            </div>
+
+            <div id="property-modal-calculator" class="space-y-6 border-t border-white/5 pt-8">
+              <h3 class="flex items-center space-x-3 font-serif text-2xl font-bold uppercase tracking-[0.25em] text-white">
+                <i class="fa-solid fa-chart-pie text-gold-500"></i>
+                <span>Mortgage Investment Calculator</span>
+              </h3>
+              <p class="text-xs font-light leading-relaxed text-gray-400 md:text-sm">
+                Instantly analyze variables to evaluate debt requirements for purchasing <strong id="property-modal-calc-name" class="font-normal text-white"></strong>. Price index auto-aligned.
+              </p>
+
+              <div class="mb-4 grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div class="space-y-6">
+                  <div>
+                    <div class="mb-1 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Target Price Index (Fixed)</span>
+                    </div>
+                    <input type="text" id="property-modal-calc-price" readonly class="w-full rounded border border-white/10 bg-obsidian-950 px-4 py-2.5 text-sm font-semibold text-gold-400 outline-none select-none">
+                  </div>
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Initial Down Payment</span>
+                      <span id="property-modal-calc-down-label" class="font-semibold text-gold-400">$400,000 (20%)</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-down" min="10" max="80" step="1" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>10% Min</span>
+                      <span>80% Max</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Loan Interest Rate</span>
+                      <span id="property-modal-calc-rate-label" class="font-semibold text-gold-400">5.5%</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-rate" min="2.0" max="12.0" step="0.1" value="5.5" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>2% Interest</span>
+                      <span>12% Max Cap</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                      <span>Loan Repayment Duration</span>
+                      <span id="property-modal-calc-term-label" class="font-semibold text-gold-400">30 Years</span>
+                    </div>
+                    <input type="range" id="property-modal-calc-term" min="5" max="30" step="1" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                      <span>5 Years</span>
+                      <span>30 Years</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 sm:grid-cols-3">
+                <div class="text-center">
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Financed Principal</span>
+                  <span id="property-modal-financed" class="text-sm font-medium text-white md:text-base"></span>
+                </div>
+                <div class="border-y border-white/5 py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0">
+                  <span class="mb-1 block text-center text-[10px] uppercase tracking-[0.25em] text-gray-500">Cumulative Interest</span>
+                  <span id="property-modal-interest" class="block text-center text-sm font-medium text-white md:text-base"></span>
+                </div>
+                <div class="text-center">
+                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gold-400">Monthly Repayments</span>
+                  <span id="property-modal-monthly" class="text-lg font-bold text-gold-500 gold-glow md:text-2xl"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function hideLoader() {
+        const loader = document.getElementById("loader");
+        if (loader) {
+          loader.classList.add("opacity-0", "pointer-events-none");
+        }
+      }
+
+      function bindMobileMenu() {
+        const menuButton = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuButton && mobileMenu) {
+          menuButton.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+          });
+        }
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value || 0);
+      }
+
+      let activePropertyModalData = null;
+      let currentModalImages = [];
+      let currentModalImageIndex = 0;
+
+      function updateModalImageDisplay() {
+        const imgElem = document.getElementById("property-modal-image");
+        const prevBtn = document.getElementById("modal-prev-img");
+        const nextBtn = document.getElementById("modal-next-img");
+        const counter = document.getElementById("modal-img-counter");
+        const currSpan = document.getElementById("modal-img-current");
+        const totalSpan = document.getElementById("modal-img-total");
+        const thumbsContainer = document.getElementById("modal-thumbnails-container");
+
+        if (!currentModalImages || currentModalImages.length === 0) {
+          if (imgElem) imgElem.src = "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1000&q=80";
+          if (prevBtn) prevBtn.classList.add("hidden");
+          if (nextBtn) nextBtn.classList.add("hidden");
+          if (counter) counter.classList.add("hidden");
+          if (thumbsContainer) thumbsContainer.classList.add("hidden");
+          return;
+        }
+
+        if (imgElem) {
+          imgElem.style.opacity = "0.3";
+          setTimeout(() => {
+            imgElem.src = currentModalImages[currentModalImageIndex];
+            imgElem.style.opacity = "1";
+          }, 60);
+        }
+
+        if (currentModalImages.length > 1) {
+          if (prevBtn) prevBtn.classList.remove("hidden");
+          if (nextBtn) nextBtn.classList.remove("hidden");
+          if (counter) counter.classList.remove("hidden");
+          if (currSpan) currSpan.textContent = currentModalImageIndex + 1;
+          if (totalSpan) totalSpan.textContent = currentModalImages.length;
+
+          if (thumbsContainer) {
+            thumbsContainer.classList.remove("hidden");
+            let html = "";
+            currentModalImages.forEach((url, i) => {
+              const activeClass = i === currentModalImageIndex ? "border-gold-500 opacity-100 scale-105" : "border-white/10 opacity-50 hover:opacity-100";
+              html += `<img src="${url}" onclick="setModalImageIndex(${i})" class="h-14 w-20 object-cover rounded-lg border-2 cursor-pointer transition-all ${activeClass}">`;
+            });
+            thumbsContainer.innerHTML = html;
+          }
+        } else {
+          if (prevBtn) prevBtn.classList.add("hidden");
+          if (nextBtn) nextBtn.classList.add("hidden");
+          if (counter) counter.classList.add("hidden");
+          if (thumbsContainer) thumbsContainer.classList.add("hidden");
+        }
+      }
+
+      function prevModalImage(e) {
+        if (e) e.stopPropagation();
+        if (!currentModalImages || currentModalImages.length <= 1) return;
+        currentModalImageIndex = (currentModalImageIndex - 1 + currentModalImages.length) % currentModalImages.length;
+        updateModalImageDisplay();
+      }
+
+      function nextModalImage(e) {
+        if (e) e.stopPropagation();
+        if (!currentModalImages || currentModalImages.length <= 1) return;
+        currentModalImageIndex = (currentModalImageIndex + 1) % currentModalImages.length;
+        updateModalImageDisplay();
+      }
+
+      function setModalImageIndex(idx) {
+        currentModalImageIndex = idx;
+        updateModalImageDisplay();
+      }
+
+      function openPropertyModalFromCard(card) {
+        if (!card) return;
+
+        const data = card.dataset || {};
+        activePropertyModalData = data;
+        document.getElementById("property-modal-title").textContent = data.title || "Luxury Property";
+        document.getElementById("property-modal-badge").textContent = data.propertyType || "Luxury";
+        document.getElementById("property-modal-price").textContent = formatCurrency(Number(data.price || 0));
+        document.getElementById("property-modal-location").textContent = data.address || data.city || "Premier Location";
+        document.getElementById("property-modal-description").textContent = data.description || "An exceptional property curated for refined living.";
+        document.getElementById("property-modal-area").textContent = data.area ? `${Number(data.area).toLocaleString()} sq ft` : "N/A";
+        document.getElementById("property-modal-bedrooms").textContent = data.bedrooms || "N/A";
+        document.getElementById("property-modal-bathrooms").textContent = data.bathrooms || "N/A";
+        const cityElement = document.getElementById("property-modal-city");
+        if (cityElement) {
+          cityElement.textContent = data.city || "N/A";
+        }
+        document.getElementById("property-modal-calc-name").textContent = data.title || "this property";
+        document.getElementById("property-modal-calc-price").value = formatCurrency(Number(data.price || 0));
+        const propId = data.id || card.getAttribute("data-id") || "";
+        const modalReportIdElem = document.getElementById("modal-report-property-id");
+        if (modalReportIdElem) {
+          modalReportIdElem.value = propId;
+        }
+        const modalInquiryIdElem = document.getElementById("modal-inquiry-property-id");
+        if (modalInquiryIdElem) {
+          modalInquiryIdElem.value = propId;
+        }
+
+        let images = [];
+        if (data.images) {
+          try {
+            images = JSON.parse(data.images);
+          } catch(e) {
+            images = [];
+          }
+        }
+        if ((!images || images.length === 0) && data.imageUrl) {
+          images = [data.imageUrl];
+        }
+
+        currentModalImages = images;
+        currentModalImageIndex = 0;
+        updateModalImageDisplay();
+
+        runPropertyModalCalculator();
+        const modal = document.getElementById("property-modal");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.style.display = "block";
+          modal.classList.add("opacity-100");
+        }
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function bindPropertyCardModalTriggers() {
+        document.querySelectorAll("[data-property-modal-trigger]").forEach(function (card) {
+          if (card.dataset.modalBound === "true") return;
+          card.dataset.modalBound = "true";
+          card.addEventListener("click", function (event) {
+            if (event.target && event.target.closest("a, button, input, select, textarea")) {
+              event.preventDefault();
+            }
+            openPropertyModalFromCard(card);
+          });
+        });
+      }
+
+      function closePropertyModal() {
+        const modal = document.getElementById("property-modal");
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.style.display = "none";
+          modal.classList.remove("opacity-100");
+        }
+        document.body.classList.remove("overflow-hidden");
+        activePropertyModalData = null;
+      }
+
+      function runPropertyModalCalculator() {
+        const price = Number(activePropertyModalData?.price || 0);
+        const downVal = Number(document.getElementById("property-modal-calc-down")?.value || 20);
+        const rateVal = Number(document.getElementById("property-modal-calc-rate")?.value || 5.5);
+        const years = Number(document.getElementById("property-modal-calc-term")?.value || 30);
+
+        const downPct = downVal / 100;
+        const annualRate = rateVal / 100;
+        const downPayment = price * downPct;
+        const loanAmount = price - downPayment;
+        const monthlyRate = annualRate / 12;
+        const months = years * 12;
+        const payment = monthlyRate > 0 ? (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)) : loanAmount / months;
+        const totalInterest = payment * months - loanAmount;
+
+        document.getElementById("property-modal-calc-down-label").textContent = `${formatCurrency(downPayment)} (${Math.round(downVal)}%)`;
+        document.getElementById("property-modal-calc-rate-label").textContent = `${Number(rateVal.toFixed(2))}%`;
+        document.getElementById("property-modal-calc-term-label").textContent = `${Math.round(years)} Years`;
+        document.getElementById("property-modal-financed").textContent = formatCurrency(loanAmount);
+        document.getElementById("property-modal-interest").textContent = formatCurrency(totalInterest);
+        document.getElementById("property-modal-monthly").textContent = `${formatCurrency(payment)}/mo`;
+      }
+
+      function scrollPropertyModalToCalculator() {
+        const target = document.getElementById("property-modal-calculator");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        window.setTimeout(hideLoader, 700);
+        bindMobileMenu();
+        bindPropertyCardModalTriggers();
+      });
+
+      document.addEventListener("turbo:load", function () {
+        window.setTimeout(hideLoader, 300);
+        bindMobileMenu();
+        bindPropertyCardModalTriggers();
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closePropertyModal();
+        }
+      });
+
+      document.addEventListener("click", function (event) {
+        if (event.target && event.target.id === "property-modal-backdrop") {
+          closePropertyModal();
+        }
+      });
+      /* ====================================
+         3D TILT MOTION EFFECT FOR PROPERTY CARDS
+         Tracks mouse position relative to card center
+         and applies rotateX/Y transforms for a premium
+         perspective-shift feel on hover.
+         ==================================== */
+      function handleCardTilt(event, card) {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const midX = rect.width / 2;
+        const midY = rect.height / 2;
+
+        // Calculate rotational values — up to 10 degrees tilt
+        const rotateY = ((x - midX) / midX) * 10;
+        const rotateX = -((y - midY) / midY) * 10;
+
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      }
+
+      function resetCardTilt(card) {
+        card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+      }
+
+      /* ====================================
+         PROPERTY SEARCH & AUTOCOMPLETE LOGIC
+         Multiowner.in style live search, suggestions,
+         and rotating placeholder.
+         ==================================== */
+      let autocompleteDebounceTimer = null;
+
+      function initPropertySearchAutocomplete() {
+        const searchInput = document.getElementById('keyword-search');
+        const dropdown = document.getElementById('autocomplete-dropdown');
+        const resultsContainer = document.getElementById('autocomplete-results');
+
+        if (!searchInput || !dropdown || !resultsContainer) return;
+
+        // Dynamic rotating placeholder animation using real properties/cities
+        const rawPlaceholders = searchInput.getAttribute("data-placeholders");
+        let placeholders = [];
+        if (rawPlaceholders) {
+          try {
+            placeholders = JSON.parse(rawPlaceholders);
+          } catch (e) {
+            placeholders = [];
+          }
+        }
+        if (!placeholders || placeholders.length === 0) {
+          placeholders = ["Search by title, city, or property type..."];
+        }
+
+        let placeholderIdx = 0;
+        setInterval(() => {
+          if (document.activeElement !== searchInput && searchInput.value === "") {
+            placeholderIdx = (placeholderIdx + 1) % placeholders.length;
+            searchInput.setAttribute("placeholder", placeholders[placeholderIdx]);
+          }
+        }, 3500);
+
+        // Autocomplete input listener
+        searchInput.addEventListener('input', function() {
+          const query = this.value.trim();
+
+          clearTimeout(autocompleteDebounceTimer);
+          if (query.length < 2) {
+            dropdown.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+            return;
+          }
+
+          autocompleteDebounceTimer = setTimeout(() => {
+            fetch(`/properties/autocomplete?q=${encodeURIComponent(query)}`)
+              .then(res => res.json())
+              .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                  resultsContainer.innerHTML = `
+                    <div class="px-5 py-4 text-xs text-gray-400 italic text-center">
+                      No matching properties found for "<span class="text-gold-400 font-semibold">${escapeHtml(query)}</span>"
+                    </div>
+                  `;
+                  dropdown.classList.remove('hidden');
+                  return;
+                }
+
+                let html = '<div class="divide-y divide-white/5">';
+                data.forEach(item => {
+                  const priceFormatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price);
+                  html += `
+                    <a href="/property/${item.id}" class="flex items-center justify-between px-5 py-3.5 hover:bg-gold-500/10 transition-colors group">
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 text-xs">
+                          <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                          <div class="text-sm text-white font-medium group-hover:text-gold-400 transition-colors">${escapeHtml(item.title)}</div>
+                          <div class="text-[10px] text-gray-400 flex items-center gap-2">
+                            <span><i class="fa-solid fa-location-dot text-gold-500/70 mr-1"></i>${escapeHtml(item.city || 'Exclusive')}</span>
+                            <span>•</span>
+                            <span class="text-gold-400/80">${escapeHtml(item.property_type || 'Property')}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <span class="text-xs font-serif text-gold-400 font-semibold block">${priceFormatted}</span>
+                        <span class="text-[9px] uppercase tracking-widest text-gray-500">${escapeHtml(item.listing_type || 'Sale')}</span>
+                      </div>
+                    </a>
+                  `;
+                });
+                html += '</div>';
+
+                resultsContainer.innerHTML = html;
+                dropdown.classList.remove('hidden');
+              })
+              .catch(err => {
+                console.error("Autocomplete error:", err);
+                dropdown.classList.add('hidden');
+              });
+          }, 250);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initPropertySearchAutocomplete();
+      });
+
+      document.addEventListener("turbo:load", function () {
+        initPropertySearchAutocomplete();
+      });
+    </script>
   </body>
 </html>
