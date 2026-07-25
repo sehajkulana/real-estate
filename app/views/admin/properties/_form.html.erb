@@ -35,10 +35,10 @@
             { include_blank: "Select…" }, class: "a-input a-select" %>
         </div>
         <div>
-          <label class="a-label">Agent / Seller</label>
+          <label class="a-label">Seller</label>
           <%= f.select :seller_id,
             options_for_select(sellers.map { |u| ["#{u.first_name} #{u.last_name}", u.id] }, property.seller_id),
-            { include_blank: "Select agent…" }, class: "a-input a-select" %>
+            { include_blank: "Select seller…" }, class: "a-input a-select" %>
         </div>
         <div style="display:flex;align-items:center;gap:12px;padding-top:22px;">
           <%= f.check_box :featured, class: "a-toggle", style: "width:18px;height:18px;accent-color:var(--gold-500);cursor:pointer;" %>

@@ -130,7 +130,7 @@ class PagesController < ApplicationController
   def about; end
 
   def agent
-    @agents = User.where(role: "agent")
+    @agents = User.where(role: "seller")
                   .left_joins(:listed_properties)
                   .group("users.id")
                   .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
@@ -259,7 +259,7 @@ class PagesController < ApplicationController
     property = Property.find_by(id: prop_id) if prop_id.present?
     property ||= Property.first
 
-    seller = property&.seller || User.find_by(role: ["agent", "admin"]) || User.first
+    seller = property&.seller || User.find_by(role: ["seller", "admin"]) || User.first
     buyer = (defined?(current_user) && current_user) ? current_user : User.first
 
     if name.blank? || email.blank?
@@ -315,20 +315,20 @@ class PagesController < ApplicationController
 
   def admin
     @property = Property.new
-    @sellers = User.where(role: "agent").order(:first_name, :last_name)
+    @sellers = User.where(role: "seller").order(:first_name, :last_name)
   end
 
   def create_property
     @property = Property.new(property_params)
     if @property.seller_id.blank?
-      default_seller = User.find_by(role: "agent") || User.first || User.create!(first_name: "Admin", last_name: "User", email: "admin@dua.com", password: "password", role: "agent")
+      default_seller = User.find_by(role: "seller") || User.first || User.create!(first_name: "Admin", last_name: "User", email: "admin@dua.com", password: "password", role: "seller")
       @property.seller = default_seller
     end
 
     if save_property_with_images
       redirect_to admin_path, notice: "Property was added successfully."
     else
-      @sellers = User.where(role: "agent").order(:first_name, :last_name)
+      @sellers = User.where(role: "seller").order(:first_name, :last_name)
       error_msg = @property.errors.full_messages.presence&.join(", ") || "Could not save property. Please check all required fields."
       flash.now[:alert] = "Error: #{error_msg}"
       render :admin, status: :unprocessable_entity
