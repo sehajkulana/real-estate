@@ -366,7 +366,7 @@ class PagesController < ApplicationController
 
     minimum, maximum = range.split("-", 2).map(&:to_d)
     arel_column = Property.arel_table[column]
-    
+
     scope = scope.where(arel_column.gteq(minimum))
     maximum.positive? ? scope.where(arel_column.lteq(maximum)) : scope
   end
