@@ -8,7 +8,6 @@ class Admin::UsersController < Admin::BaseController
     @total_counts = {
       all:    User.count,
       admin:  User.where(role: "admin").count,
-      agent:  User.where(role: "agent").count,
       seller: User.where(role: "seller").count,
       user:   User.where(role: ["user", "buyer", nil]).count
     }
@@ -16,9 +15,13 @@ class Admin::UsersController < Admin::BaseController
 
   def update
     @user = User.find(params[:id])
-    allowed_params = params.require(:user).permit(:status, :is_verified)
-    allowed_params[:role] = params[:user][:role] if params[:user].key?(:role)
-    if @user.update(allowed_params)
+    user_params = params.require(:user)
+    attrs = {}
+    attrs[:role] = user_params[:role] if user_params.key?(:role)
+    attrs[:status] = user_params[:status] if user_params.key?(:status)
+    attrs[:is_verified] = user_params[:is_verified] if user_params.key?(:is_verified)
+
+    if @user.update(attrs)
       render json: {
         success: true,
         role: @user.role,

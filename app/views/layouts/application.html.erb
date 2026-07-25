@@ -604,7 +604,20 @@
                 data.forEach(item => {
                   const priceFormatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price);
                   html += `
-                    <a href="/property/${item.id}" class="flex items-center justify-between px-5 py-3.5 hover:bg-gold-500/10 transition-colors group">
+                    <button type="button" class="w-full text-left flex items-center justify-between px-5 py-3.5 hover:bg-gold-500/10 transition-colors group"
+                      data-property-modal-trigger="true"
+                      data-id="${item.id}"
+                      data-title="${escapeHtml(item.title)}"
+                      data-description="${escapeHtml(item.description)}"
+                      data-price="${item.price}"
+                      data-city="${escapeHtml(item.city)}"
+                      data-address="${escapeHtml(item.address)}"
+                      data-property-type="${escapeHtml(item.property_type)}"
+                      data-bedrooms="${item.bedrooms || 0}"
+                      data-bathrooms="${item.bathrooms || 0}"
+                      data-area="${item.area || 0}"
+                      data-image-url="${escapeHtml(item.image_url)}"
+                      data-images="${escapeHtml(JSON.stringify(item.images || []))}">
                       <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 text-xs">
                           <i class="fa-solid fa-building"></i>
@@ -622,12 +635,13 @@
                         <span class="text-xs font-serif text-gold-400 font-semibold block">${priceFormatted}</span>
                         <span class="text-[9px] uppercase tracking-widest text-gray-500">${escapeHtml(item.listing_type || 'Sale')}</span>
                       </div>
-                    </a>
+                    </button>
                   `;
                 });
                 html += '</div>';
 
                 resultsContainer.innerHTML = html;
+                bindPropertyCardModalTriggers();
                 dropdown.classList.remove('hidden');
               })
               .catch(err => {

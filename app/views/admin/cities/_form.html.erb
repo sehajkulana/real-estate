@@ -30,8 +30,12 @@
           <label class="a-label">Upload Image</label>
           <%= f.file_field :image, accept: "image/*", class: "a-input", style: "cursor:pointer;" %>
           <% if city.persisted? && city.image.attached? %>
-            <div style="margin-top:10px;">
+            <div style="margin-top:10px; display:flex; align-items:flex-end; gap:15px;">
               <img src="<%= url_for(city.image) %>" style="height:80px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);">
+              <label class="a-label" style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;">
+                <%= f.check_box :remove_image %>
+                <span style="color:#f87171; font-weight:600;">Remove this image</span>
+              </label>
             </div>
           <% end %>
         </div>

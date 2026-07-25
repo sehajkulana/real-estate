@@ -30,7 +30,7 @@ class PagesController < ApplicationController
                                           .order(created_at: :desc)
                                           .limit(10)
 
-    @agents = User.where(role: "agent")
+    @agents = User.where(role: "seller")
                   .left_joins(:listed_properties)
                   .group("users.id")
                   .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
@@ -83,7 +83,7 @@ class PagesController < ApplicationController
       if title.present?
         "#{title} in #{city}"
       else
-        "#{ptype.presence || 'Luxury Property'} in #{city}"
+        "#{ptype.presence || "Luxury Property"} in #{city}"
       end
     end.compact_blank.uniq
 
@@ -194,7 +194,7 @@ class PagesController < ApplicationController
       if title.present?
         "#{title} in #{city}"
       else
-        "#{ptype.presence || 'Luxury Property'} in #{city}"
+        "#{ptype.presence || "Luxury Property"} in #{city}"
       end
     end.compact_blank.uniq
 
@@ -207,19 +207,27 @@ class PagesController < ApplicationController
 
     if query.length >= 2
       keyword_pattern = "%#{query}%"
-      properties = Property.active_listings.where(
+      properties = Property.active_listings.includes(property_images: { image_attachment: :blob }).where(
         "properties.title ILIKE :q OR properties.city ILIKE :q OR properties.address ILIKE :q OR properties.state ILIKE :q OR properties.property_type ILIKE :q",
         q: keyword_pattern
-      ).select(:id, :title, :city, :property_type, :price, :listing_type).limit(8)
+      ).limit(8)
 
       results = properties.map do |p|
+        img_urls = p.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank
         {
           id: p.id,
-          title: p.title,
-          city: p.city,
-          property_type: p.property_type,
+          title: p.title.to_s,
+          description: p.description.to_s,
+          city: p.city.to_s,
+          address: p.address.to_s,
+          property_type: p.property_type.to_s,
           price: p.price.to_i,
-          listing_type: p.listing_type
+          bedrooms: p.bedrooms,
+          bathrooms: p.bathrooms,
+          area: p.area,
+          listing_type: p.listing_type.to_s,
+          image_url: img_urls.first.to_s,
+          images: img_urls
         }
       end
     end
@@ -273,7 +281,7 @@ class PagesController < ApplicationController
       prop_title = property ? "'#{property.title}'" : "the property"
       redirect_back fallback_location: contact_path, notice: "Thank you! Your inquiry for #{prop_title} has been submitted successfully."
     else
-      redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(', ')}"
+      redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(", ")}"
     end
   end
 
@@ -301,7 +309,7 @@ class PagesController < ApplicationController
     if report.save
       redirect_back fallback_location: root_path, notice: "Thank you! The property listing has been flagged and submitted to administrators for review."
     else
-      redirect_back fallback_location: root_path, alert: "Could not submit report: #{report.errors.full_messages.join(', ')}"
+      redirect_back fallback_location: root_path, alert: "Could not submit report: #{report.errors.full_messages.join(", ")}"
     end
   end
 

@@ -216,6 +216,12 @@
                 <% if pi.is_cover %>
                   <span style="position:absolute;top:3px;left:3px;background:var(--gold-500);color:#0a0a0c;font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px;">COVER</span>
                 <% end %>
+                <%= f.fields_for :property_images, pi do |pi_form| %>
+                  <label style="position:absolute; bottom: 3px; right: 3px; background: rgba(0,0,0,0.7); padding: 2px 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <%= pi_form.check_box :_destroy, style: "margin:0;" %>
+                    <span style="color: #f87171; font-size: 9px; font-weight: bold; letter-spacing: 0.5px;">DEL</span>
+                  </label>
+                <% end %>
               <% end %>
             </div>
           <% end %>
