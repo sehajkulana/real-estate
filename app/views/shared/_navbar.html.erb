@@ -16,8 +16,69 @@
         <%= link_to "Contact Us", contact_path, class: "relative text-sm tracking-wider uppercase transition-colors #{current_page?(contact_path) ? 'text-gold-500' : 'text-gray-400 hover:text-gold-400'} font-medium py-2 px-1" %>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <%= link_to "Inquire Now", contact_path, class: "hidden lg:inline-flex items-center px-6 py-2.5 border border-gold-500/30 text-xs tracking-widest text-gold-500 uppercase rounded-full hover:bg-gold-500 hover:text-obsidian-950 hover:border-gold-500 transition-all duration-300 ease-out font-semibold" %>
+      <div class="flex items-center space-x-3 md:space-x-4">
+        <%= link_to "Inquire Now", contact_path, class: "hidden xl:inline-flex items-center px-5 py-2 border border-gold-500/30 text-xs tracking-widest text-gold-500 uppercase rounded-full hover:bg-gold-500 hover:text-obsidian-950 hover:border-gold-500 transition-all duration-300 ease-out font-semibold" %>
+
+        <% if user_signed_in? %>
+          <div class="relative inline-block text-left">
+            <!-- User Icon Button -->
+            <button id="user-menu-btn" type="button" onclick="toggleUserDropdown(event)" class="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/40 text-gold-400 hover:bg-gold-500 hover:text-obsidian-950 flex items-center justify-center transition-all duration-300 shadow-md focus:outline-none cursor-pointer" aria-label="User Menu">
+              <i class="fa-solid fa-user text-base"></i>
+            </button>
+
+            <!-- User Account Modal / Dropdown -->
+            <div id="user-modal-dropdown" class="hidden absolute right-0 mt-3 w-72 rounded-2xl border border-gold-500/30 bg-obsidian-900/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden transform transition-all duration-200 ease-out origin-top-right">
+              <!-- Account Header -->
+              <div class="px-5 py-4 bg-gradient-to-r from-obsidian-950 via-obsidian-900 to-obsidian-950 border-b border-white/5 flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-full bg-gold-500/20 border border-gold-500/50 flex items-center justify-center text-gold-400 text-lg font-bold flex-shrink-0">
+                  <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="text-sm font-semibold text-white truncate"><%= current_user.first_name.presence || "User Account" %> <%= current_user.last_name %></div>
+                  <div class="text-xs text-gray-400 truncate"><%= current_user.email %></div>
+                  <span class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold-400 bg-gold-500/10 rounded border border-gold-500/20">
+                    <%= current_user.role.presence || "Member" %>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Account Links List -->
+              <div class="py-2 px-1 divide-y divide-white/5">
+                <div class="space-y-0.5">
+                  <%= link_to root_path, class: "flex items-center space-x-3 px-4 py-2.5 text-xs text-gray-300 hover:text-gold-400 hover:bg-gold-500/10 rounded-xl transition-all font-medium" do %>
+                    <i class="fa-solid fa-house text-gold-500/80 w-4 text-center"></i>
+                    <span>Home Overview</span>
+                  <% end %>
+                  <%= link_to properties_path, class: "flex items-center space-x-3 px-4 py-2.5 text-xs text-gray-300 hover:text-gold-400 hover:bg-gold-500/10 rounded-xl transition-all font-medium" do %>
+                    <i class="fa-solid fa-building text-gold-500/80 w-4 text-center"></i>
+                    <span>Browse Properties</span>
+                  <% end %>
+                  <%= link_to contact_path, class: "flex items-center space-x-3 px-4 py-2.5 text-xs text-gray-300 hover:text-gold-400 hover:bg-gold-500/10 rounded-xl transition-all font-medium" do %>
+                    <i class="fa-solid fa-envelope text-gold-500/80 w-4 text-center"></i>
+                    <span>Contact Support</span>
+                  <% end %>
+                  <%= link_to about_path, class: "flex items-center space-x-3 px-4 py-2.5 text-xs text-gray-300 hover:text-gold-400 hover:bg-gold-500/10 rounded-xl transition-all font-medium" do %>
+                    <i class="fa-solid fa-circle-info text-gold-500/80 w-4 text-center"></i>
+                    <span>About DUA Real Estate</span>
+                  <% end %>
+                </div>
+
+                <!-- Log Out Section -->
+                <div class="pt-2 mt-1">
+                  <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, method: :delete, class: "w-full flex items-center space-x-3 px-4 py-2.5 text-xs text-red-400 hover:text-white hover:bg-red-500/20 rounded-xl transition-all font-semibold" do %>
+                    <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
+                    <span>Log Out Account</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <%= link_to new_user_session_path, class: "inline-flex items-center px-5 py-2 bg-gold-500 text-obsidian-950 text-xs tracking-widest uppercase rounded-full hover:bg-gold-400 transition-all duration-300 font-bold shadow-lg shadow-gold-500/20" do %>
+            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span>Log In</span>
+          <% end %>
+        <% end %>
 
         <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-gold-500 focus:outline-none p-2" aria-label="Toggle menu">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,6 +94,38 @@
     <%= link_to "Properties", properties_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(properties_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(properties_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
     <%= link_to "About Us", about_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(about_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(about_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
     <%= link_to "Contact Us", contact_path, class: "block w-full text-left px-3 py-2 text-base #{current_page?(contact_path) ? 'text-gold-500' : 'text-gray-300'} font-medium tracking-wider border-l-2 #{current_page?(contact_path) ? 'border-gold-500 bg-gold-500/5' : 'border-transparent'}" %>
-    <%= link_to "Inquire Now", contact_path, class: "w-full text-center py-3 border border-gold-500/50 text-gold-500 uppercase tracking-widest text-xs rounded mt-4" %>
+
+    <% if user_signed_in? %>
+      <div class="pt-3 border-t border-gold-500/10 flex items-center justify-between">
+        <span class="text-sm text-gray-300 font-medium"><%= current_user.email %></span>
+        <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete }, method: :delete, class: "px-4 py-2 border border-red-500/30 text-red-400 text-xs font-semibold uppercase rounded hover:bg-red-500/10 transition-all" %>
+      </div>
+    <% else %>
+      <div class="pt-3 border-t border-gold-500/10 flex space-x-3">
+        <%= link_to "Log In", new_user_session_path, class: "flex-1 text-center py-2.5 bg-gold-500 text-obsidian-950 uppercase tracking-widest text-xs rounded font-bold hover:bg-gold-400 transition-all shadow-md" %>
+        <%= link_to "Inquire Now", contact_path, class: "flex-1 text-center py-2.5 border border-gold-500/50 text-gold-500 uppercase tracking-widest text-xs rounded font-semibold hover:bg-gold-500/10 transition-all" %>
+      </div>
+    <% end %>
   </div>
 </nav>
+
+<script>
+  function toggleUserDropdown(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    var dropdown = document.getElementById("user-modal-dropdown");
+    if (dropdown) {
+      dropdown.classList.toggle("hidden");
+    }
+  }
+
+  document.addEventListener("click", function(event) {
+    var btn = document.getElementById("user-menu-btn");
+    var dropdown = document.getElementById("user-modal-dropdown");
+    if (btn && dropdown && !btn.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.classList.add("hidden");
+    }
+  });
+</script>

@@ -88,203 +88,206 @@
 
     <%= render "shared/footer" %>
 
-    <div id="property-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div id="property-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="relative inline-block w-full max-w-5xl align-bottom overflow-hidden rounded-2xl border border-gold-500/20 bg-obsidian-900 text-left shadow-2xl sm:my-8 sm:align-middle">
-          <div class="relative h-72 bg-black md:h-[400px] select-none group/gallery" id="modal-gallery-container">
-            <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-90 transition-opacity duration-300">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent pointer-events-none"></div>
+    <% unless respond_to?(:devise_controller?) && devise_controller? %>
+      <div id="property-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div id="property-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div class="relative inline-block w-full max-w-5xl align-bottom overflow-hidden rounded-2xl border border-gold-500/20 bg-obsidian-900 text-left shadow-2xl sm:my-8 sm:align-middle">
+            <div class="relative h-72 bg-black md:h-[400px] select-none group/gallery" id="modal-gallery-container">
+              <img id="property-modal-image" src="" alt="" class="h-full w-full object-cover opacity-90 transition-opacity duration-300">
+              <div class="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent pointer-events-none"></div>
 
-            <!-- Left / Right Nav Arrows -->
-            <button type="button" id="modal-prev-img" onclick="prevModalImage(event)" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
-              <i class="fa-solid fa-chevron-left text-sm"></i>
-            </button>
-            <button type="button" id="modal-next-img" onclick="nextModalImage(event)" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
-              <i class="fa-solid fa-chevron-right text-sm"></i>
-            </button>
+              <!-- Left / Right Nav Arrows -->
+              <button type="button" id="modal-prev-img" onclick="prevModalImage(event)" class="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+                <i class="fa-solid fa-chevron-left text-sm"></i>
+              </button>
+              <button type="button" id="modal-next-img" onclick="nextModalImage(event)" class="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950 shadow-2xl z-10 hidden cursor-pointer">
+                <i class="fa-solid fa-chevron-right text-sm"></i>
+              </button>
 
-            <!-- Counter Badge -->
-            <div id="modal-img-counter" class="absolute top-4 left-4 z-10 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest hidden backdrop-blur-md">
-              <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="modal-img-current">1</span> / <span id="modal-img-total">1</span>
+              <!-- Counter Badge -->
+              <div id="modal-img-counter" class="absolute top-4 left-4 z-10 rounded-full bg-obsidian-950/80 border border-white/10 px-3.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest hidden backdrop-blur-md">
+                <i class="fa-solid fa-camera mr-1 text-gold-400"></i> <span id="modal-img-current">1</span> / <span id="modal-img-total">1</span>
+              </div>
+
+              <!-- Close Button -->
+              <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <span id="property-modal-badge" class="absolute bottom-6 left-6 rounded-full bg-gold-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-obsidian-950"></span>
             </div>
 
-            <!-- Close Button -->
-            <button type="button" onclick="closePropertyModal()" class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-obsidian-950/80 text-white transition hover:bg-gold-500 hover:text-obsidian-950">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-            <span id="property-modal-badge" class="absolute bottom-6 left-6 rounded-full bg-gold-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-obsidian-950"></span>
-          </div>
+            <!-- Thumbnail Row for Multiple Photos -->
+            <div id="modal-thumbnails-container" class="flex gap-2.5 p-3.5 bg-obsidian-950 border-b border-white/5 overflow-x-auto hidden"></div>
 
-          <!-- Thumbnail Row for Multiple Photos -->
-          <div id="modal-thumbnails-container" class="flex gap-2.5 p-3.5 bg-obsidian-950 border-b border-white/5 overflow-x-auto hidden"></div>
+            <div class="space-y-10 p-6 md:p-10">
+              <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+                <div class="space-y-6 lg:col-span-7">
+                  <div>
+                    <h2 id="property-modal-title" class="font-serif text-3xl font-bold leading-tight text-white md:text-4xl"></h2>
+                    <p id="property-modal-location" class="mt-1 text-sm font-medium uppercase tracking-[0.25em] text-gold-400"></p>
+                  </div>
+                  <p id="property-modal-description" class="text-sm font-light leading-relaxed text-gray-300 md:text-base"></p>
 
-          <div class="space-y-10 p-6 md:p-10">
-            <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-              <div class="space-y-6 lg:col-span-7">
-                <div>
-                  <h2 id="property-modal-title" class="font-serif text-3xl font-bold leading-tight text-white md:text-4xl"></h2>
-                  <p id="property-modal-location" class="mt-1 text-sm font-medium uppercase tracking-[0.25em] text-gold-400"></p>
+                  <div class="grid grid-cols-3 gap-4 border-y border-white/5 py-6">
+                    <div class="text-center">
+                      <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Asset Area</span>
+                      <span id="property-modal-area" class="text-sm font-medium text-white md:text-base"></span>
+                    </div>
+                    <div class="border-x border-white/5 text-center">
+                      <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Config/Bed</span>
+                      <span id="property-modal-bedrooms" class="text-sm font-medium text-white md:text-base"></span>
+                    </div>
+                    <div class="text-center">
+                      <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Bathrooms</span>
+                      <span id="property-modal-bathrooms" class="text-sm font-medium text-white md:text-base"></span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-white">Elite Amenities Provided</h3>
+                    <div id="property-modal-amenities" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Private concierge</div>
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Ocean views</div>
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Smart security</div>
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Valet parking</div>
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Spa access</div>
+                      <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Rooftop lounge</div>
+                    </div>
+                  </div>
                 </div>
-                <p id="property-modal-description" class="text-sm font-light leading-relaxed text-gray-300 md:text-base"></p>
 
-                <div class="grid grid-cols-3 gap-4 border-y border-white/5 py-6">
+                <div class="space-y-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 lg:col-span-5">
+                  <div>
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Offering Valuation</span>
+                    <span id="property-modal-price" class="font-serif text-3xl font-bold text-gold-500 gold-glow"></span>
+                  </div>
+
+                  <div class="space-y-4 border-t border-white/5 pt-4">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-white flex items-center gap-2">
+                      <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
+                    </h3>
+                    <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                      <input type="hidden" name="property_id" id="modal-inquiry-property-id" value="">
+                      <div>
+                        <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                      </div>
+                      <div>
+                        <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                      </div>
+                      <div>
+                        <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                      </div>
+                      <div>
+                        <%= f.text_area :message, required: true, rows: 2, placeholder: "I'm interested in this property. Please contact me...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
+                      </div>
+                      <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-4 rounded-xl transition-all cursor-pointer shadow-lg" %>
+                    <% end %>
+                    <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.25em] text-gray-400 transition hover:text-white hover:border-gold-500/50">Analyze Investment Loans</button>
+                  </div>
+
+                  <div class="border-t border-white/5 pt-4">
+                    <details class="group">
+                      <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
+                        <span class="flex items-center gap-2">
+                          <i class="fa-solid fa-flag"></i> Report this listing to Admin
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
+                      </summary>
+                      <div class="pt-3">
+                        <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                          <input type="hidden" name="property_id" id="modal-report-property-id" value="">
+                          <div>
+                            <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                          </div>
+                          <div>
+                            <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
+                          </div>
+                          <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
+                        <% end %>
+                      </div>
+                    </details>
+                  </div>
+                </div>
+              </div>
+
+              <div id="property-modal-calculator" class="space-y-6 border-t border-white/5 pt-8">
+                <h3 class="flex items-center space-x-3 font-serif text-2xl font-bold uppercase tracking-[0.25em] text-white">
+                  <i class="fa-solid fa-chart-pie text-gold-500"></i>
+                  <span>Mortgage Investment Calculator</span>
+                </h3>
+                <p class="text-xs font-light leading-relaxed text-gray-400 md:text-sm">
+                  Instantly analyze variables to evaluate debt requirements for purchasing <strong id="property-modal-calc-name" class="font-normal text-white"></strong>. Price index auto-aligned.
+                </p>
+
+                <div class="mb-4 grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <div class="space-y-6">
+                    <div>
+                      <div class="mb-1 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                        <span>Target Price Index (Fixed)</span>
+                      </div>
+                      <input type="text" id="property-modal-calc-price" readonly class="w-full rounded border border-white/10 bg-obsidian-950 px-4 py-2.5 text-sm font-semibold text-gold-400 outline-none select-none">
+                    </div>
+                    <div>
+                      <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                        <span>Initial Down Payment</span>
+                        <span id="property-modal-calc-down-label" class="font-semibold text-gold-400">$400,000 (20%)</span>
+                      </div>
+                      <input type="range" id="property-modal-calc-down" min="10" max="80" step="1" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                      <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                        <span>10% Min</span>
+                        <span>80% Max</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-6">
+                    <div>
+                      <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                        <span>Loan Interest Rate</span>
+                        <span id="property-modal-calc-rate-label" class="font-semibold text-gold-400">5.5%</span>
+                      </div>
+                      <input type="range" id="property-modal-calc-rate" min="2.0" max="12.0" step="0.1" value="5.5" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                      <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                        <span>2% Interest</span>
+                        <span>12% Max Cap</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
+                        <span>Loan Repayment Duration</span>
+                        <span id="property-modal-calc-term-label" class="font-semibold text-gold-400">30 Years</span>
+                      </div>
+                      <input type="range" id="property-modal-calc-term" min="5" max="30" step="1" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
+                      <div class="mt-1 flex justify-between text-[10px] text-gray-600">
+                        <span>5 Years</span>
+                        <span>30 Years</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 sm:grid-cols-3">
                   <div class="text-center">
-                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Asset Area</span>
-                    <span id="property-modal-area" class="text-sm font-medium text-white md:text-base"></span>
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Financed Principal</span>
+                    <span id="property-modal-financed" class="text-sm font-medium text-white md:text-base"></span>
                   </div>
-                  <div class="border-x border-white/5 text-center">
-                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Config/Bed</span>
-                    <span id="property-modal-bedrooms" class="text-sm font-medium text-white md:text-base"></span>
+                  <div class="border-y border-white/5 py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0">
+                    <span class="mb-1 block text-center text-[10px] uppercase tracking-[0.25em] text-gray-500">Cumulative Interest</span>
+                    <span id="property-modal-interest" class="block text-center text-sm font-medium text-white md:text-base"></span>
                   </div>
                   <div class="text-center">
-                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Bathrooms</span>
-                    <span id="property-modal-bathrooms" class="text-sm font-medium text-white md:text-base"></span>
+                    <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gold-400">Monthly Repayments</span>
+                    <span id="property-modal-monthly" class="text-lg font-bold text-gold-500 gold-glow md:text-2xl"></span>
                   </div>
-                </div>
-
-                <div>
-                  <h3 class="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-white">Elite Amenities Provided</h3>
-                  <div id="property-modal-amenities" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Private concierge</div>
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Ocean views</div>
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Smart security</div>
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Valet parking</div>
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Spa access</div>
-                    <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300">Rooftop lounge</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 lg:col-span-5">
-                <div>
-                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Offering Valuation</span>
-                  <span id="property-modal-price" class="font-serif text-3xl font-bold text-gold-500 gold-glow"></span>
-                </div>
-
-                <div class="space-y-4 border-t border-white/5 pt-4">
-                  <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-white flex items-center gap-2">
-                    <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
-                  </h3>
-                  <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
-                    <input type="hidden" name="property_id" id="modal-inquiry-property-id" value="">
-                    <div>
-                      <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
-                    </div>
-                    <div>
-                      <%= f.email_field :email, required: true, placeholder: "Your Email *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
-                    </div>
-                    <div>
-                      <%= f.telephone_field :phone, placeholder: "Your Phone Number", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
-                    </div>
-                    <div>
-                      <%= f.text_area :message, required: true, rows: 2, placeholder: "I'm interested in this property. Please contact me...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
-                    </div>
-                    <%= f.submit "Send Inquiry", class: "w-full bg-gold-500 hover:bg-gold-600 text-obsidian-950 font-bold uppercase text-xs tracking-widest py-3 px-4 rounded-xl transition-all cursor-pointer shadow-lg" %>
-                  <% end %>
-                  <button type="button" onclick="scrollPropertyModalToCalculator()" class="w-full rounded border border-white/10 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.25em] text-gray-400 transition hover:text-white hover:border-gold-500/50">Analyze Investment Loans</button>
-                </div>
-
-                <div class="border-t border-white/5 pt-4">
-                  <details class="group">
-                    <summary class="flex items-center justify-between text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer py-1 select-none">
-                      <span class="flex items-center gap-2">
-                        <i class="fa-solid fa-flag"></i> Report this listing to Admin
-                      </span>
-                      <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
-                    </summary>
-                    <div class="pt-3">
-                      <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
-                        <input type="hidden" name="property_id" id="modal-report-property-id" value="">
-                        <div>
-                          <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
-                        </div>
-                        <div>
-                          <%= f.text_area :description, rows: 2, placeholder: "Briefly explain the issue...", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
-                        </div>
-                        <%= f.submit "Submit Report", class: "w-full bg-red-500/80 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest py-2.5 px-4 rounded-xl transition-all cursor-pointer" %>
-                      <% end %>
-                    </div>
-                  </details>
-                </div>
-              </div>
-            </div>
-
-            <div id="property-modal-calculator" class="space-y-6 border-t border-white/5 pt-8">
-              <h3 class="flex items-center space-x-3 font-serif text-2xl font-bold uppercase tracking-[0.25em] text-white">
-                <i class="fa-solid fa-chart-pie text-gold-500"></i>
-                <span>Mortgage Investment Calculator</span>
-              </h3>
-              <p class="text-xs font-light leading-relaxed text-gray-400 md:text-sm">
-                Instantly analyze variables to evaluate debt requirements for purchasing <strong id="property-modal-calc-name" class="font-normal text-white"></strong>. Price index auto-aligned.
-              </p>
-
-              <div class="mb-4 grid grid-cols-1 gap-8 md:grid-cols-2">
-                <div class="space-y-6">
-                  <div>
-                    <div class="mb-1 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
-                      <span>Target Price Index (Fixed)</span>
-                    </div>
-                    <input type="text" id="property-modal-calc-price" readonly class="w-full rounded border border-white/10 bg-obsidian-950 px-4 py-2.5 text-sm font-semibold text-gold-400 outline-none select-none">
-                  </div>
-                  <div>
-                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
-                      <span>Initial Down Payment</span>
-                      <span id="property-modal-calc-down-label" class="font-semibold text-gold-400">$400,000 (20%)</span>
-                    </div>
-                    <input type="range" id="property-modal-calc-down" min="10" max="80" step="1" value="20" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
-                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
-                      <span>10% Min</span>
-                      <span>80% Max</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="space-y-6">
-                  <div>
-                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
-                      <span>Loan Interest Rate</span>
-                      <span id="property-modal-calc-rate-label" class="font-semibold text-gold-400">5.5%</span>
-                    </div>
-                    <input type="range" id="property-modal-calc-rate" min="2.0" max="12.0" step="0.1" value="5.5" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
-                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
-                      <span>2% Interest</span>
-                      <span>12% Max Cap</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="mb-2 flex justify-between text-[11px] uppercase tracking-[0.25em] text-gray-400">
-                      <span>Loan Repayment Duration</span>
-                      <span id="property-modal-calc-term-label" class="font-semibold text-gold-400">30 Years</span>
-                    </div>
-                    <input type="range" id="property-modal-calc-term" min="5" max="30" step="1" value="30" class="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-gold-500" oninput="runPropertyModalCalculator()">
-                    <div class="mt-1 flex justify-between text-[10px] text-gray-600">
-                      <span>5 Years</span>
-                      <span>30 Years</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 gap-6 rounded-xl border border-white/5 bg-obsidian-950 p-6 sm:grid-cols-3">
-                <div class="text-center">
-                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gray-500">Financed Principal</span>
-                  <span id="property-modal-financed" class="text-sm font-medium text-white md:text-base"></span>
-                </div>
-                <div class="border-y border-white/5 py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0">
-                  <span class="mb-1 block text-center text-[10px] uppercase tracking-[0.25em] text-gray-500">Cumulative Interest</span>
-                  <span id="property-modal-interest" class="block text-center text-sm font-medium text-white md:text-base"></span>
-                </div>
-                <div class="text-center">
-                  <span class="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gold-400">Monthly Repayments</span>
-                  <span id="property-modal-monthly" class="text-lg font-bold text-gold-500 gold-glow md:text-2xl"></span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    <% end %>
     </div>
 
     <script>
@@ -301,6 +304,29 @@
         if (menuButton && mobileMenu) {
           menuButton.addEventListener("click", function () {
             mobileMenu.classList.toggle("hidden");
+          });
+        }
+      }
+
+      window.toggleUserDropdown = function(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        const dropdown = document.getElementById("user-modal-dropdown");
+        if (dropdown) {
+          dropdown.classList.toggle("hidden");
+        }
+      };
+
+      function bindUserMenu() {
+        const userBtn = document.getElementById("user-menu-btn");
+        const userDropdown = document.getElementById("user-modal-dropdown");
+        if (userBtn && userDropdown) {
+          document.addEventListener("click", function (e) {
+            if (!userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+              userDropdown.classList.add("hidden");
+            }
           });
         }
       }
@@ -494,12 +520,14 @@
       document.addEventListener("DOMContentLoaded", function () {
         window.setTimeout(hideLoader, 700);
         bindMobileMenu();
+        bindUserMenu();
         bindPropertyCardModalTriggers();
       });
 
       document.addEventListener("turbo:load", function () {
         window.setTimeout(hideLoader, 300);
         bindMobileMenu();
+        bindUserMenu();
         bindPropertyCardModalTriggers();
       });
 

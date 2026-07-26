@@ -427,6 +427,12 @@
             <i class="fa-solid fa-plus"></i>
             <span>Add Property</span>
           <% end %>
+          <% if respond_to?(:user_signed_in?) && user_signed_in? %>
+            <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, method: :delete, class: "a-btn a-btn-outline a-btn-sm", style: "border-color: rgba(239,68,68,0.4); color: #f87171;" do %>
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Log Out</span>
+            <% end %>
+          <% end %>
         </div>
       </header>
 
