@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
+  devise_for :users
 
   root "pages#home"
   get "about" => "pages#about", as: :about
@@ -26,7 +27,6 @@ Rails.application.routes.draw do
         patch :toggle_status
       end
     end
-
     # Users — list + quick status/role/verify updates
     resources :users, only: [:index, :update]
 
