@@ -30,8 +30,8 @@
   </div>
   <div class="a-stat">
     <div class="a-stat-icon ico-purple"><i class="fa-solid fa-user-tie"></i></div>
-    <div class="a-stat-val"><%= @stats[:total_sellers] || @stats[:total_agents] %></div>
-    <div class="a-stat-lbl">Sellers</div>
+    <div class="a-stat-val"><%= @stats[:total_clients] %></div>
+    <div class="a-stat-lbl">Clients</div>
   </div>
   <div class="a-stat">
     <div class="a-stat-icon ico-green"><i class="fa-solid fa-user"></i></div>
@@ -122,7 +122,7 @@
     <!-- Quick Stats -->
     <div class="a-card">
       <div class="a-card-hdr">
-        <div class="a-card-title"><i class="fa-solid fa-users"></i> Users & Sellers Breakdown</div>
+        <div class="a-card-title"><i class="fa-solid fa-users"></i> Users & Clients Breakdown</div>
       </div>
       <div style="padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
@@ -130,12 +130,12 @@
           <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:regular_users] %></span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-user-tie" style="color:#c084fc;margin-right:8px;"></i>Sellers (Role: Seller)</span>
-          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:total_sellers] %></span>
+          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-user-tie" style="color:#c084fc;margin-right:8px;"></i>Clients (Role: Client)</span>
+          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:total_clients] %></span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-user-check" style="color:#4ade80;margin-right:8px;"></i>Verified Sellers</span>
-          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:verified_sellers] || @stats[:verified_agents] %></span>
+          <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-user-check" style="color:#4ade80;margin-right:8px;"></i>Verified Clients</span>
+          <span style="font-size:18px;font-weight:700;color:#f9fafb;"><%= @stats[:verified_clients] %></span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
           <span style="font-size:13px;color:#9ca3af;"><i class="fa-solid fa-city" style="color:var(--gold-500);margin-right:8px;"></i>Active Cities</span>

@@ -140,87 +140,100 @@
   <% end %>
 
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <% @properties.each do |property| %>
-      <div class="tilt-wrapper">
-        <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
-        <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
-                 data-property-modal-trigger="true"
-                 data-id="<%= property.id %>"
-                 data-title="<%= j(property.title) %>"
-                 data-description="<%= j(property.description.to_s) %>"
-                 data-price="<%= property.price.to_i %>"
-                 data-city="<%= j(property.city.to_s) %>"
-                 data-address="<%= j(property.address.to_s) %>"
-                 data-property-type="<%= j(property.property_type.to_s) %>"
-                 data-bedrooms="<%= property.bedrooms %>"
-                 data-bathrooms="<%= property.bathrooms %>"
-                 data-area="<%= property.area %>"
-                 data-image-url="<%= img_urls.first.to_s %>"
-                 data-images="<%= img_urls.to_json %>"
-                 onmousemove="handleCardTilt(event, this)"
-                 onmouseleave="resetCardTilt(this)">
-          <div class="relative h-64 overflow-hidden bg-black">
-            <% if img_urls.first.present? %>
-              <img src="<%= img_urls.first %>" alt="<%= property.title %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
-            <% else %>
-              <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex flex-col items-center justify-center text-gold-400 p-4">
-                <i class="fa-solid fa-building text-3xl mb-2 opacity-50"></i>
-                <span class="text-[10px] tracking-widest uppercase font-semibold text-gray-400">DUA Real Estate</span>
+  <% if @properties.present? && @properties.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% @properties.each do |property| %>
+        <div class="tilt-wrapper">
+          <% img_urls = property.property_images.map { |pi| (pi.respond_to?(:image) && pi.image.attached?) ? url_for(pi.image) : pi.image_url }.compact_blank %>
+          <article class="glass-card cursor-pointer overflow-hidden rounded-3xl shadow-xl flex flex-col group h-full"
+                   data-property-modal-trigger="true"
+                   data-id="<%= property.id %>"
+                   data-title="<%= j(property.title) %>"
+                   data-description="<%= j(property.description.to_s) %>"
+                   data-price="<%= property.price.to_i %>"
+                   data-city="<%= j(property.city.to_s) %>"
+                   data-address="<%= j(property.address.to_s) %>"
+                   data-property-type="<%= j(property.property_type.to_s) %>"
+                   data-bedrooms="<%= property.bedrooms %>"
+                   data-bathrooms="<%= property.bathrooms %>"
+                   data-area="<%= property.area %>"
+                   data-image-url="<%= img_urls.first.to_s %>"
+                   data-images="<%= img_urls.to_json %>"
+                   onmousemove="handleCardTilt(event, this)"
+                   onmouseleave="resetCardTilt(this)">
+            <div class="relative h-64 overflow-hidden bg-black">
+              <% if img_urls.first.present? %>
+                <img src="<%= img_urls.first %>" alt="<%= property.title %>" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+              <% else %>
+                <div class="h-full w-full bg-gradient-to-br from-gold-500/20 to-obsidian-900 flex flex-col items-center justify-center text-gold-400 p-4">
+                  <i class="fa-solid fa-building text-3xl mb-2 opacity-50"></i>
+                  <span class="text-[10px] tracking-widest uppercase font-semibold text-gray-400">DUA Real Estate</span>
+                </div>
+              <% end %>
+              <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
+              <% p_status = property.status.presence || 'Active' %>
+              <% status_style = case p_status.to_s.downcase
+                 when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
+                 when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
+                 when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
+                 when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
+                 else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
+                 end %>
+              <div class="absolute top-4 right-4 z-10">
+                <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur-md">
+                  <%= p_status %>
+                </span>
               </div>
-            <% end %>
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent"></div>
-            <% p_status = property.status.presence || 'Active' %>
-            <% status_style = case p_status.to_s.downcase
-               when 'active'   then 'bg-emerald-500/90 text-obsidian-950 border-emerald-400/50'
-               when 'sold'     then 'bg-red-500/90 text-white border-red-400/50'
-               when 'pending'  then 'bg-amber-500/90 text-obsidian-950 border-amber-400/50'
-               when 'inactive' then 'bg-gray-600/90 text-gray-200 border-gray-500/50'
-               else                 'bg-gold-500/90 text-obsidian-950 border-gold-400/50'
-               end %>
-            <div class="absolute top-4 right-4 z-10">
-              <span class="<%= status_style %> border font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur-md">
-                <%= p_status %>
-              </span>
+              <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
+                <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
+              </div>
             </div>
-            <div class="absolute bottom-4 left-4 flex items-center gap-2">
-              <span class="bg-obsidian-950/90 border border-gold-500/40 text-gold-400 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.listing_type %></span>
-              <span class="bg-gold-500 text-obsidian-950 font-bold tracking-widest text-[9px] uppercase px-3 py-1 rounded-full"><%= property.property_type %></span>
-            </div>
-          </div>
-          <div class="p-7 flex-grow flex flex-col justify-between space-y-4">
-            <div>
-              <p class="text-gold-400 text-[10px] tracking-widest uppercase font-medium mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <%= [property.city, property.country].compact_blank.join(', ') %></p>
-              <h3 class="font-serif text-2xl text-white mb-3 group-hover:text-gold-400 transition-colors"><%= property.title %></h3>
-              <p class="text-gray-400 text-sm leading-relaxed"><%= truncate(property.description, length: 120) %></p>
-            </div>
-            <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4 text-center">
+            <div class="p-7 flex-grow flex flex-col justify-between space-y-4">
               <div>
-                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Est. Area</span>
-                <span class="text-xs text-white font-medium"><%= number_with_delimiter(property.area) %> <%= property.area_unit.presence || 'sq ft' %></span>
+                <p class="text-gold-400 text-[10px] tracking-widest uppercase font-medium mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <%= [property.city, property.country].compact_blank.join(', ') %></p>
+                <h3 class="font-serif text-2xl text-white mb-3 group-hover:text-gold-400 transition-colors"><%= property.title %></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><%= truncate(property.description, length: 120) %></p>
               </div>
-              <div class="border-x border-white/5">
-                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Configuration</span>
-                <span class="text-xs text-white font-medium"><%= property.bedrooms %> Bed</span>
+              <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4 text-center">
+                <div>
+                  <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Est. Area</span>
+                  <span class="text-xs text-white font-medium"><%= number_with_delimiter(property.area) %> <%= property.area_unit.presence || 'sq ft' %></span>
+                </div>
+                <div class="border-x border-white/5">
+                  <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Configuration</span>
+                  <span class="text-xs text-white font-medium"><%= property.bedrooms %> Bed</span>
+                </div>
+                <div>
+                  <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Bathrooms</span>
+                  <span class="text-xs text-white font-medium"><%= property.bathrooms %> Bath</span>
+                </div>
               </div>
-              <div>
-                <span class="block text-[8px] tracking-widest text-gray-500 uppercase">Bathrooms</span>
-                <span class="text-xs text-white font-medium"><%= property.bathrooms %> Bath</span>
+              <div class="flex items-center justify-between border-t border-white/5 pt-4">
+                <div>
+                  <span class="text-[9px] text-gray-500 uppercase tracking-widest block"><%= property.listing_type %></span>
+                  <p class="text-gold-400 text-lg font-serif font-semibold">₹<%= number_with_delimiter(property.price.to_i) %></p>
+                </div>
+                <button type="button" class="text-xs text-gold-400 uppercase tracking-widest font-bold group-hover:translate-x-1.5 transition-transform flex items-center space-x-1">
+                  <span>View Details</span>
+                  <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
               </div>
             </div>
-            <div class="flex items-center justify-between border-t border-white/5 pt-4">
-              <div>
-                <span class="text-[9px] text-gray-500 uppercase tracking-widest block"><%= property.listing_type %></span>
-                <p class="text-gold-400 text-lg font-serif font-semibold">₹<%= number_with_delimiter(property.price.to_i) %></p>
-              </div>
-              <button type="button" class="text-xs text-gold-400 uppercase tracking-widest font-bold group-hover:translate-x-1.5 transition-transform flex items-center space-x-1">
-                <span>View Details</span>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-              </button>
-            </div>
-          </div>
-        </article>
+          </article>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="glass-card rounded-3xl p-10 md:p-14 text-center max-w-2xl mx-auto my-12 border border-gold-500/30 shadow-2xl">
+      <div class="w-20 h-20 rounded-full bg-gold-500/10 border border-gold-500/40 flex items-center justify-center text-gold-400 text-3xl mx-auto mb-6 shadow-inner">
+        <i class="fa-solid fa-building-circle-xmark"></i>
       </div>
-    <% end %>
-  </div>
+      <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-gold-400 block mb-2">No Listings Found</span>
+      <h3 class="font-serif text-2xl md:text-3xl text-white font-bold mb-3">No Properties Available</h3>
+      <p class="text-sm text-gray-400 font-light leading-relaxed max-w-md mx-auto">
+        There are currently no properties available in the portfolio.
+      </p>
+    </div>
+  <% end %>
 </section>

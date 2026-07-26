@@ -12,7 +12,7 @@ class PagesController < ApplicationController
       @featured_properties = base_properties.includes(property_images: { image_attachment: :blob }).order(created_at: :desc).limit(10)
     end
 
-    owner_user_ids = User.where(role: ["owner", "seller", "user"]).pluck(:id)
+    owner_user_ids = User.where(role: ["owner", "client", "user"]).pluck(:id)
     @owner_properties = base_properties.where(seller_id: owner_user_ids)
                                        .or(base_properties.where("ownership ILIKE ?", "%owner%"))
                                        .includes(property_images: { image_attachment: :blob })
@@ -30,7 +30,7 @@ class PagesController < ApplicationController
                                           .order(created_at: :desc)
                                           .limit(10)
 
-    @agents = User.where(role: "seller")
+    @agents = User.where(role: "client")
                   .left_joins(:listed_properties)
                   .group("users.id")
                   .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
@@ -130,7 +130,7 @@ class PagesController < ApplicationController
   def about; end
 
   def agent
-    @agents = User.where(role: "seller")
+    @agents = User.where(role: "client")
                   .left_joins(:listed_properties)
                   .group("users.id")
                   .order(Arel.sql("COUNT(properties.id) DESC"), :first_name, :last_name)
@@ -150,7 +150,7 @@ class PagesController < ApplicationController
     end
 
     if params[:owner] == "true"
-      owner_user_ids = User.where(role: ["owner", "seller", "user"]).pluck(:id)
+      owner_user_ids = User.where(role: ["owner", "client", "user"]).pluck(:id)
       @properties = @properties.where(seller_id: owner_user_ids).or(@properties.where("ownership ILIKE ?", "%owner%"))
     end
 
@@ -247,9 +247,14 @@ class PagesController < ApplicationController
   def contact; end
 
   def create_inquiry
-    name = params[:name].to_s.strip
-    email = params[:email].to_s.strip
-    phone = params[:phone].to_s.strip
+    unless user_signed_in?
+      redirect_to new_user_session_path, alert: "Please log in first to send an inquiry."
+      return
+    end
+
+    name = params[:name].to_s.strip.presence || "#{current_user.first_name} #{current_user.last_name}".strip
+    email = params[:email].to_s.strip.presence || current_user.email
+    phone = params[:phone].to_s.strip.presence || current_user.phone
     message = params[:message].to_s.strip
 
     prop_id = params[:property_id].presence ||
@@ -257,15 +262,8 @@ class PagesController < ApplicationController
               params.dig(:inquiry, :property_id).presence
 
     property = Property.find_by(id: prop_id) if prop_id.present?
-    property ||= Property.first
 
-    seller = property&.seller || User.find_by(role: ["seller", "admin"]) || User.first
-    buyer = (defined?(current_user) && current_user) ? current_user : User.first
-
-    if name.blank? || email.blank?
-      redirect_back fallback_location: contact_path, alert: "Please provide your Name and Email to submit an inquiry."
-      return
-    end
+    seller = property&.seller || User.find_by(role: ["client", "admin"]) || User.first
 
     inquiry = PropertyInquiry.new(
       name: name,
@@ -274,24 +272,32 @@ class PagesController < ApplicationController
       message: message,
       property: property,
       seller: seller,
-      buyer: buyer
+      buyer: current_user
     )
 
     if inquiry.save
-      prop_title = property ? "\"#{property.title}\"" : "the property"
-      redirect_back fallback_location: contact_path, notice: "Thank you! Your inquiry for #{prop_title} has been submitted successfully."
+      if current_user.role != "admin"
+        current_user.update(role: "client")
+      end
+
+      notice_msg = property ? "Thank you! Your inquiry for \"#{property.title}\" has been submitted successfully." : "Thank you! Your inquiry has been submitted successfully."
+      redirect_back fallback_location: contact_path, notice: notice_msg
     else
       redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(", ")}"
     end
   end
 
   def create_report
+    unless user_signed_in?
+      redirect_to new_user_session_path, alert: "Please log in first to report a listing."
+      return
+    end
+
     prop_id = params[:property_id].presence
     reason = params[:reason].to_s.strip
     description = params[:description].to_s.strip
 
     property = Property.find_by(id: prop_id)
-    user = (defined?(current_user) && current_user) ? current_user : User.first
 
     if property.nil?
       redirect_back fallback_location: root_path, alert: "Could not submit report: Property not found."
@@ -300,7 +306,7 @@ class PagesController < ApplicationController
 
     report = Report.new(
       property: property,
-      reported_by: user,
+      reported_by: current_user,
       reason: reason.presence || "Inaccurate Information",
       description: description.presence || "User reported an issue with this property listing.",
       status: "pending"
@@ -315,20 +321,20 @@ class PagesController < ApplicationController
 
   def admin
     @property = Property.new
-    @sellers = User.where(role: "seller").order(:first_name, :last_name)
+    @clients = User.where(role: "client").order(:first_name, :last_name)
   end
 
   def create_property
     @property = Property.new(property_params)
     if @property.seller_id.blank?
-      default_seller = User.find_by(role: "seller") || User.first || User.create!(first_name: "Admin", last_name: "User", email: "admin@dua.com", password: "password", role: "seller")
-      @property.seller = default_seller
+      default_client = User.find_by(role: "client") || User.first || User.create!(first_name: "Admin", last_name: "User", email: "admin@dua.com", password: "password", role: "client")
+      @property.seller = default_client
     end
 
     if save_property_with_images
       redirect_to admin_path, notice: "Property was added successfully."
     else
-      @sellers = User.where(role: "seller").order(:first_name, :last_name)
+      @clients = User.where(role: "client").order(:first_name, :last_name)
       error_msg = @property.errors.full_messages.presence&.join(", ") || "Could not save property. Please check all required fields."
       flash.now[:alert] = "Error: #{error_msg}"
       render :admin, status: :unprocessable_entity

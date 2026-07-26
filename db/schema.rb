@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_092404) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_225800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,8 +168,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_092404) do
     t.text "message"
     t.string "name"
     t.string "phone"
-    t.integer "property_id", null: false
-    t.integer "seller_id", null: false
+    t.integer "property_id"
+    t.integer "seller_id"
     t.datetime "updated_at", null: false
     t.index ["buyer_id"], name: "index_property_inquiries_on_buyer_id"
     t.index ["property_id"], name: "index_property_inquiries_on_property_id"

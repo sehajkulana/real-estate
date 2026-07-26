@@ -1,6 +1,6 @@
 class Admin::UsersController < Admin::BaseController
   def index
-    User.where(role: "agent").update_all(role: "seller") rescue nil
+    User.where(role: "agent").update_all(role: "client") rescue nil
     @users = User.order(created_at: :desc)
     @users = @users.where(role: params[:role]) if params[:role].present?
     @users = @users.where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ?",
@@ -9,7 +9,7 @@ class Admin::UsersController < Admin::BaseController
     @total_counts = {
       all:    User.count,
       admin:  User.where(role: "admin").count,
-      seller: User.where(role: "seller").count,
+      client: User.where(role: "client").count,
       user:   User.where(role: ["user", "buyer", nil]).count
     }
   end

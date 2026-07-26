@@ -15,7 +15,7 @@ class Admin::PropertiesController < Admin::BaseController
 
   def new
     @property = Property.new
-    @sellers = User.where(role: "seller").order(:first_name, :last_name)
+    @clients = User.where(role: "client").order(:first_name, :last_name)
     @amenities = Amenity.order(:name)
   end
 
@@ -23,16 +23,16 @@ class Admin::PropertiesController < Admin::BaseController
     @property = Property.new(property_params)
 
     if @property.seller_id.blank?
-      default_seller = User.find_by(role: "seller") || User.first ||
+      default_client = User.find_by(role: "client") || User.first ||
         User.create!(first_name: "Admin", last_name: "User",
-                     email: "admin@dua.com", password: "password", role: "seller")
-      @property.seller = default_seller
+                     email: "admin@dua.com", password: "password", role: "client")
+      @property.seller = default_client
     end
 
     if save_property_with_images
       redirect_to admin_properties_path, notice: "Property \"#{@property.title}\" was created successfully."
     else
-      @sellers = User.where(role: "seller").order(:first_name, :last_name)
+      @clients = User.where(role: "client").order(:first_name, :last_name)
       @amenities = Amenity.order(:name)
       error_msg = @property.errors.full_messages.join(", ").presence || "Could not save property."
       flash.now[:alert] = "Error: #{error_msg}"
@@ -41,7 +41,7 @@ class Admin::PropertiesController < Admin::BaseController
   end
 
   def edit
-    @sellers = User.where(role: "seller").order(:first_name, :last_name)
+    @clients = User.where(role: "client").order(:first_name, :last_name)
     @amenities = Amenity.order(:name)
   end
 
@@ -50,7 +50,7 @@ class Admin::PropertiesController < Admin::BaseController
     if save_property_with_images
       redirect_to admin_properties_path, notice: "Property updated successfully."
     else
-      @sellers = User.where(role: "seller").order(:first_name, :last_name)
+      @clients = User.where(role: "client").order(:first_name, :last_name)
       @amenities = Amenity.order(:name)
       render :edit, status: :unprocessable_entity
     end

@@ -6,4 +6,12 @@ class User < ApplicationRecord
         :recoverable,
         :rememberable,
         :validatable
+
+  before_validation :set_default_role, on: :create
+
+  private
+
+  def set_default_role
+    self.role ||= "user"
+  end
 end
