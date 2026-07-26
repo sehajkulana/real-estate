@@ -278,7 +278,7 @@ class PagesController < ApplicationController
     )
 
     if inquiry.save
-      prop_title = property ? "'#{property.title}'" : "the property"
+      prop_title = property ? "\"#{property.title}\"" : "the property"
       redirect_back fallback_location: contact_path, notice: "Thank you! Your inquiry for #{prop_title} has been submitted successfully."
     else
       redirect_back fallback_location: contact_path, alert: "Could not submit inquiry: #{inquiry.errors.full_messages.join(", ")}"

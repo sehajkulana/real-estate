@@ -12,7 +12,7 @@ class Admin::CitiesController < Admin::BaseController
   def create
     @city = City.new(city_params)
     if @city.save
-      redirect_to admin_cities_path, notice: "City '#{@city.name}' added successfully."
+      redirect_to admin_cities_path, notice: "City \"#{@city.name}\" added successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -22,7 +22,7 @@ class Admin::CitiesController < Admin::BaseController
 
   def update
     if @city.update(city_params)
-      redirect_to admin_cities_path, notice: "City '#{@city.name}' updated."
+      redirect_to admin_cities_path, notice: "City \"#{@city.name}\" updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class Admin::CitiesController < Admin::BaseController
   def destroy
     name = @city.name
     @city.destroy
-    redirect_to admin_cities_path, notice: "City '#{name}' removed."
+    redirect_to admin_cities_path, notice: "City \"#{name}\" removed."
   end
 
   private
