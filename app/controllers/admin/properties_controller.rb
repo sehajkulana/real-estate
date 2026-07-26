@@ -30,7 +30,7 @@ class Admin::PropertiesController < Admin::BaseController
     end
 
     if save_property_with_images
-      redirect_to admin_properties_path, notice: "Property '#{@property.title}' was created successfully."
+      redirect_to admin_properties_path, notice: "Property \"#{@property.title}\" was created successfully."
     else
       @sellers = User.where(role: "seller").order(:first_name, :last_name)
       @amenities = Amenity.order(:name)
@@ -59,7 +59,7 @@ class Admin::PropertiesController < Admin::BaseController
   def destroy
     title = @property.title
     @property.destroy
-    redirect_to admin_properties_path, notice: "Property '#{title}' deleted."
+    redirect_to admin_properties_path, notice: "Property \"#{title}\" deleted."
   end
 
   def toggle_featured
