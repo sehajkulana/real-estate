@@ -5,7 +5,7 @@ one:
   last_name: MyString
   email: one@example.com
   phone: MyString
-  password_digest: MyString
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   role: MyString
   profile_image: MyString
   address: MyText
@@ -21,7 +21,7 @@ two:
   last_name: MyString
   email: two@example.com
   phone: MyString
-  password_digest: MyString
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   role: MyString
   profile_image: MyString
   address: MyText

@@ -31,4 +31,3 @@ cities_list.each do |cd|
   c = City.find_or_initialize_by(name: cd[:name])
   c.update!(state: cd[:state], image_url: cd[:image_url], active: true)
 end
-
