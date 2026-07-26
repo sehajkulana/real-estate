@@ -101,7 +101,7 @@
           <h3 class="text-sm text-white uppercase tracking-widest font-bold flex items-center gap-2">
             <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
           </h3>
-          <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+          <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3", data: { require_login: (!user_signed_in?).to_s } do |f| %>
             <%= f.hidden_field :property_id, value: @property.id %>
             <div>
               <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-950/80 px-3.5 py-2.5 text-xs text-white" %>

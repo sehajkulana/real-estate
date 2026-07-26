@@ -68,18 +68,28 @@
 
     <main class="pt-24 md:pt-28 min-h-[calc(100vh-100px)]">
       <% if flash[:notice] %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-          <div class="rounded-2xl border border-gold-500/40 bg-gold-500/10 px-5 py-4 text-gold-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
-            <span><%= flash[:notice] %></span>
+        <div class="flash-banner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-gold-500/40 bg-gold-500/10 px-5 py-4 text-gold-300 text-sm font-semibold flex items-center justify-between shadow-lg">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+              <span><%= flash[:notice] %></span>
+            </div>
+            <button type="button" onclick="this.closest('.flash-banner').remove()" class="text-gold-400/70 hover:text-gold-300 p-1 transition-colors cursor-pointer" aria-label="Close">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
           </div>
         </div>
       <% end %>
       <% if flash[:alert] %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-          <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-red-300 text-sm font-semibold flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-exclamation text-red-400 text-lg"></i>
-            <span><%= flash[:alert] %></span>
+        <div class="flash-banner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-5 py-4 text-red-300 text-sm font-semibold flex items-center justify-between shadow-lg">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle-exclamation text-red-400 text-lg"></i>
+              <span><%= flash[:alert] %></span>
+            </div>
+            <button type="button" onclick="this.closest('.flash-banner').remove()" class="text-red-400/70 hover:text-red-300 p-1 transition-colors cursor-pointer" aria-label="Close">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
           </div>
         </div>
       <% end %>
@@ -168,7 +178,7 @@
                     <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-white flex items-center gap-2">
                       <i class="fa-solid fa-envelope text-gold-400"></i> Send Inquiry For This Property
                     </h3>
-                    <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                    <%= form_with url: create_inquiry_path, method: :post, local: true, class: "space-y-3", data: { require_login: (!user_signed_in?).to_s } do |f| %>
                       <input type="hidden" name="property_id" id="modal-inquiry-property-id" value="">
                       <div>
                         <%= f.text_field :name, required: true, placeholder: "Your Name *", class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3.5 py-2.5 text-xs text-white" %>
@@ -196,7 +206,7 @@
                         <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-open:rotate-180"></i>
                       </summary>
                       <div class="pt-3">
-                        <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3" do |f| %>
+                        <%= form_with url: create_report_path, method: :post, local: true, class: "space-y-3", data: { require_login: (!user_signed_in?).to_s } do |f| %>
                           <input type="hidden" name="property_id" id="modal-report-property-id" value="">
                           <div>
                             <%= f.select :reason, options_for_select(['Fake / Misleading Listing', 'Incorrect Price', 'Wrong Location', 'Duplicate Listing', 'Spam / Fraudulent', 'Other Issue']), {}, class: "w-full rounded-xl border border-white/10 bg-obsidian-900 px-3 py-2 text-xs text-white" %>
@@ -696,6 +706,54 @@
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#039;');
       }
+
+      window.closeLuxuryToast = function() {
+        const toast = document.getElementById("luxury-toast");
+        if (toast) {
+          toast.classList.remove("opacity-100", "translate-y-0", "pointer-events-auto");
+          toast.classList.add("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+        }
+      };
+
+      function showLuxuryToast(message, type) {
+        let toast = document.getElementById("luxury-toast");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "luxury-toast";
+          toast.className = "fixed top-24 right-6 z-[200] max-w-md w-full transition-all duration-500 transform translate-y-[-20px] opacity-0 pointer-events-none";
+          document.body.appendChild(toast);
+        }
+
+        const icon = type === "alert" ? "fa-solid fa-lock text-gold-400" : "fa-solid fa-circle-check text-gold-400";
+        toast.innerHTML = `
+          <div class="rounded-2xl border border-gold-500/50 bg-obsidian-950/95 backdrop-blur-xl px-5 py-4 text-white text-sm font-medium flex items-center justify-between shadow-2xl shadow-black/90 pointer-events-auto">
+            <div class="flex items-center gap-3">
+              <i class="${icon} text-base"></i>
+              <span>${message}</span>
+            </div>
+            <button type="button" onclick="closeLuxuryToast()" class="text-gray-400 hover:text-white p-1 ml-3 cursor-pointer transition-colors" aria-label="Close">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+        `;
+
+        requestAnimationFrame(() => {
+          toast.classList.remove("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+          toast.classList.add("opacity-100", "translate-y-0", "pointer-events-auto");
+        });
+      }
+
+      document.addEventListener("submit", function(e) {
+        const form = e.target;
+        if (form && form.getAttribute("data-require-login") === "true") {
+          e.preventDefault();
+          e.stopPropagation();
+          showLuxuryToast("Please log in first to send an inquiry.", "alert");
+          setTimeout(function() {
+            window.location.href = "<%= new_user_session_path %>";
+          }, 500);
+        }
+      }, true);
 
       document.addEventListener("DOMContentLoaded", function () {
         initPropertySearchAutocomplete();

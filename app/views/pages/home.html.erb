@@ -169,66 +169,68 @@
   </div>
 
   <%# ===== BROWSE BY PROPERTY CITY ===== %>
-  <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
-      <div>
-        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Popular Locations</span>
-        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property City</h2>
-      </div>
-      <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Explore premium real estate in top cities across the country.</p>
-    </div>
-
-    <!-- Single horizontal row with overlay move buttons -->
-    <div class="relative group/cities">
-      <button type="button"
-              onclick="scrollCitiesLeft()"
-              aria-label="Scroll left"
-              class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
-      <div id="cities-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
-        <% cities_to_display = @cities.presence || (@available_cities || []).map { |c| City.find_by(name: c) || City.new(name: c) } %>
-        <% cities_to_display.each do |c_obj| %>
-          <% city_name = c_obj.name %>
-          <% city_count = Property.active_listings.where("city ILIKE ?", city_name).count %>
-          <% next if city_count == 0 %>
-          <% img_src = c_obj.respond_to?(:display_image_url) ? c_obj.display_image_url : 'https://images.unsplash.com/photo-1571210983196-17b1ff4473de?auto=format&fit=crop&w=800&q=80' %>
-          <a href="<%= properties_path(city: city_name) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
-            <img src="<%= img_src %>" alt="<%= city_name %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
-            <div class="relative z-10">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
-                <%= city_count %> <%= 'Listing'.pluralize(city_count) %>
-              </span>
-              <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
-                <span><%= city_name %></span>
-                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
-              </h3>
-            </div>
-          </a>
-        <% end %>
+  <% if Property.active_listings.any? %>
+    <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div>
+          <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Popular Locations</span>
+          <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property City</h2>
+        </div>
+        <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Explore premium real estate in top cities across the country.</p>
       </div>
 
-      <button type="button"
-              onclick="scrollCitiesRight()"
-              aria-label="Scroll right"
-              class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-    </div>
-  </div>
+      <!-- Single horizontal row with overlay move buttons -->
+      <div class="relative group/cities">
+        <button type="button"
+                onclick="scrollCitiesLeft()"
+                aria-label="Scroll left"
+                class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
 
-  <script>
-    function scrollCitiesLeft() {
-      const container = document.getElementById("cities-scroll-container");
-      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-    function scrollCitiesRight() {
-      const container = document.getElementById("cities-scroll-container");
-      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  </script>
+        <div id="cities-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
+          <% cities_to_display = @cities.presence || (@available_cities || []).map { |c| City.find_by(name: c) || City.new(name: c) } %>
+          <% cities_to_display.each do |c_obj| %>
+            <% city_name = c_obj.name %>
+            <% city_count = Property.active_listings.where("city ILIKE ?", city_name).count %>
+            <% next if city_count == 0 %>
+            <% img_src = c_obj.respond_to?(:display_image_url) ? c_obj.display_image_url : 'https://images.unsplash.com/photo-1571210983196-17b1ff4473de?auto=format&fit=crop&w=800&q=80' %>
+            <a href="<%= properties_path(city: city_name) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
+              <img src="<%= img_src %>" alt="<%= city_name %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
+              <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
+              <div class="relative z-10">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
+                  <%= city_count %> <%= 'Listing'.pluralize(city_count) %>
+                </span>
+                <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
+                  <span><%= city_name %></span>
+                  <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
+                </h3>
+              </div>
+            </a>
+          <% end %>
+        </div>
+
+        <button type="button"
+                onclick="scrollCitiesRight()"
+                aria-label="Scroll right"
+                class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/cities:opacity-100 pointer-events-none group-hover/cities:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function scrollCitiesLeft() {
+        const container = document.getElementById("cities-scroll-container");
+        if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+      }
+      function scrollCitiesRight() {
+        const container = document.getElementById("cities-scroll-container");
+        if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+    </script>
+  <% end %>
 
   <%# ===== SHOWCASE SECTIONS (LATEST PROJECTS OR SEARCH RESULTS) ===== %>
   <% if @is_filtered %>
@@ -244,6 +246,20 @@
   <% end %>
 
   <% showcase_sections.each do |sec| %>
+    <% if sec[:properties].blank? %>
+      <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
+        <div class="glass-card rounded-3xl p-10 text-center max-w-2xl mx-auto border border-gold-500/30 shadow-2xl">
+          <div class="w-16 h-16 rounded-full bg-gold-500/10 border border-gold-500/40 flex items-center justify-center text-gold-400 text-2xl mx-auto mb-4">
+            <i class="fa-solid fa-building-circle-xmark"></i>
+          </div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-gold-400 block mb-1">No Listings Found</span>
+          <h3 class="font-serif text-2xl text-white font-bold mb-2">No Properties Available</h3>
+          <p class="text-xs text-gray-400 max-w-md mx-auto">
+            There are currently no properties available to display.
+          </p>
+        </div>
+      </div>
+    <% end %>
     <% if sec[:properties].present? && sec[:properties].any? %>
       <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
@@ -462,84 +478,88 @@
   </script>
 
   <%# ===== BROWSE BY PROPERTY TYPE CATEGORIES ===== %>
-  <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
-      <div>
-        <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Portfolio Categories</span>
-        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property Type</h2>
-      </div>
-      <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Click any property type below to view curated listings in that category.</p>
-    </div>
-
-    <!-- Single horizontal row with overlay move buttons -->
-    <div class="relative group/categories">
-      <button type="button"
-              onclick="scrollCategoriesLeft()"
-              aria-label="Scroll left"
-              class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
-      <div id="categories-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
-        <% (@property_type_categories || []).each do |cat| %>
-          <a href="<%= properties_path(property_type: cat[:name]) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
-            <img src="<%= cat[:image_url] %>" alt="<%= cat[:name] %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
-            <div class="relative z-10">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
-                <%= cat[:count] %> <%= 'Listing'.pluralize(cat[:count]) %>
-              </span>
-              <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
-                <span><%= cat[:name] %></span>
-                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
-              </h3>
-            </div>
-          </a>
-        <% end %>
+  <% if Property.active_listings.any? %>
+    <div class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/5">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div>
+          <span class="text-gold-500 font-semibold tracking-[0.25em] text-xs uppercase block mb-3">Portfolio Categories</span>
+          <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight tracking-tight">Browse by Property Type</h2>
+        </div>
+        <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-0 max-w-md">Click any property type below to view curated listings in that category.</p>
       </div>
 
-      <button type="button"
-              onclick="scrollCategoriesRight()"
-              aria-label="Scroll right"
-              class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
+      <!-- Single horizontal row with overlay move buttons -->
+      <div class="relative group/categories">
+        <button type="button"
+                onclick="scrollCategoriesLeft()"
+                aria-label="Scroll left"
+                class="absolute left-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div id="categories-scroll-container" class="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none px-1">
+          <% (@property_type_categories || []).each do |cat| %>
+            <a href="<%= properties_path(property_type: cat[:name]) %>" class="snap-start flex-none w-72 md:w-80 group relative rounded-3xl overflow-hidden glass-card h-[360px] flex flex-col justify-end p-6 border border-white/10 hover:border-gold-500/50 transition-all duration-500">
+              <img src="<%= cat[:image_url] %>" alt="<%= cat[:name] %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-95">
+              <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/40 to-transparent"></div>
+              <div class="relative z-10">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400 block mb-1">
+                  <%= cat[:count] %> <%= 'Listing'.pluralize(cat[:count]) %>
+                </span>
+                <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition-colors flex items-center justify-between">
+                  <span><%= cat[:name] %></span>
+                  <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 text-gold-400"></i>
+                </h3>
+              </div>
+            </a>
+          <% end %>
+        </div>
+
+        <button type="button"
+                onclick="scrollCategoriesRight()"
+                aria-label="Scroll right"
+                class="absolute right-1 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-gold-400 text-3xl sm:text-4xl font-bold bg-transparent border-0 p-2 cursor-pointer transition-opacity duration-300 opacity-0 group-hover/categories:opacity-100 pointer-events-none group-hover/categories:pointer-events-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
-  </div>
 
-  <script>
-    function scrollCategoriesLeft() {
-      const container = document.getElementById("categories-scroll-container");
-      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-    function scrollCategoriesRight() {
-      const container = document.getElementById("categories-scroll-container");
-      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  </script>
+    <script>
+      function scrollCategoriesLeft() {
+        const container = document.getElementById("categories-scroll-container");
+        if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+      }
+      function scrollCategoriesRight() {
+        const container = document.getElementById("categories-scroll-container");
+        if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+    </script>
+  <% end %>
 
-  <div class="bg-obsidian-900/40 py-12 border-y border-gold-500/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        <div class="p-4 border-r border-white/5 last:border-0">
-          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">₹15,000 Cr+</span>
-          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Premium Sales Volume</span>
-        </div>
-        <div class="p-4 border-r border-white/5 last:border-0">
-          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">450+</span>
-          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Curated Handpicked Assets</span>
-        </div>
-        <div class="p-4 border-r border-white/5 last:border-0">
-          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">98.4%</span>
-          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">VIP Client Retention</span>
-        </div>
-        <div class="p-4 last:border-0">
-          <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">40+</span>
-          <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Years of Advisory Experience</span>
+  <% if Property.active_listings.any? %>
+    <div class="bg-obsidian-900/40 py-12 border-y border-gold-500/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div class="p-4 border-r border-white/5 last:border-0">
+            <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">₹15,000 Cr+</span>
+            <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Premium Sales Volume</span>
+          </div>
+          <div class="p-4 border-r border-white/5 last:border-0">
+            <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">450+</span>
+            <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Curated Handpicked Assets</span>
+          </div>
+          <div class="p-4 border-r border-white/5 last:border-0">
+            <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">98.4%</span>
+            <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">VIP Client Retention</span>
+          </div>
+          <div class="p-4 last:border-0">
+            <span class="block font-serif text-3xl md:text-5xl text-gold-500 font-bold tracking-tight mb-2">40+</span>
+            <span class="text-[11px] md:text-xs tracking-[0.2em] text-gray-400 uppercase">Years of Advisory Experience</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="py-24 bg-obsidian-950 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
