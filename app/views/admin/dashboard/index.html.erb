@@ -51,7 +51,7 @@
 </div>
 
 <!-- ═══ MAIN GRID ════════════════════════════════════════════ -->
-<div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;">
+<div class="a-dashboard-grid">
 
   <!-- Recent Properties -->
   <div class="a-card">
@@ -209,7 +209,7 @@
 </div>
 
 <!-- ═══ QUICK ACTIONS ════════════════════════════════════════ -->
-<div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+<div class="a-quick-actions">
   <%= link_to new_admin_property_path, class: "a-btn a-btn-gold" do %>
     <i class="fa-solid fa-plus"></i> Add Property
   <% end %>
