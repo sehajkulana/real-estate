@@ -127,7 +127,10 @@ class PagesController < ApplicationController
     end
   end
 
-  def about; end
+  def about
+    @total_properties = Property.active_listings.count
+    @featured_properties = Property.active_listings.where(featured: true).limit(3)
+  end
 
   def agent
     @agents = User.where(role: "client")

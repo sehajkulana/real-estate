@@ -62,7 +62,7 @@
       <div class="mb-5">
         <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium block mb-2">Quick Filters</span>
         <div class="flex flex-wrap gap-2">
-          <% quick_types = ['Apartment', 'Villa', 'Penthouse', 'Farmhouse', 'Office Space', 'Shop / Retail', 'Plot / Land', 'Industrial'] %>
+          <% quick_types = ['Apartment', 'Villa', 'Office Space', 'Shop / Retail', 'Plot / Land', 'Industrial'] %>
           <% quick_types.each do |type| %>
             <% is_selected = @filters['property_type'].to_s.downcase == type.downcase %>
             <% tag_params = is_selected ? @filters.except('property_type') : @filters.merge(property_type: type) %>

@@ -9,7 +9,7 @@
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
       <div class="inline-flex items-center space-x-2 bg-gold-500/10 border border-gold-500/30 px-4 py-1.5 rounded-full mb-6">
         <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-ping"></span>
-        <span class="text-[10px] md:text-xs tracking-[0.25em] text-gold-300 uppercase font-medium">PREMIUM REAL ESTATE</span>
+        <span class="text-[10px] md:text-xs tracking-[0.25em] text-gold-300 uppercase font-medium">YOUR TRUSTED REAL ESTATE PARTNER</span>
       </div>
 
       <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bold tracking-tight leading-tight mb-5 max-w-4xl mx-auto">
@@ -75,7 +75,7 @@
           <div class="mb-5">
             <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium block mb-2">Quick Filters</span>
             <div class="flex flex-wrap gap-2">
-              <% quick_types = ['Apartment', 'Villa', 'Penthouse', 'Farmhouse', 'Office Space', 'Shop / Retail', 'Plot / Land', 'Industrial'] %>
+              <% quick_types = ['Apartment', 'Villa', 'Office Space', 'Shop / Retail', 'Plot / Land', 'Industrial'] %>
               <% quick_types.each do |type| %>
                 <% is_selected = @filters['property_type'].to_s.downcase == type.downcase %>
                 <% tag_params = is_selected ? @filters.except('property_type') : @filters.merge(property_type: type) %>
